@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalize Your Early-Warning Workspace — PulseCheck Neo</title>
+    <style>
+        :root {
+            --bg-absolute-void: #020308;
+            --ps5-blue-glow: #0043e0;
+            --ps5-blue-electric: #2575fc;
+            --text-ultra-white: #ffffff;
+            --text-cyber-silver: #cbd5e1;
+            --text-muted-slate: #64748b;
+            --border-neon-dim: rgba(37, 117, 252, 0.25);
+            --border-neon-bright: #2575fc;
+            --terminal-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html {
+            width: 100%; height: 100%; font-family: var(--terminal-font);
+            background-color: var(--bg-absolute-void); color: var(--text-cyber-silver);
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
+        }
+
+        #ps5-fluid-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
+        .ambient-vignette { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 50%, transparent 10%, rgba(2, 3, 8, 0.9) 90%); z-index: 2; pointer-events: none; }
+
+        /* Minimalist Claude-inspired Black Container Box Box */
+        .workspace-card-envelope {
+            position: relative; z-index: 10; width: 460px; max-width: 90%;
+            background: linear-gradient(165deg, #050814 0%, #010206 100%);
+            border: 1px solid var(--border-neon-dim); border-radius: 24px; padding: 48px 40px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9), 0 0 50px rgba(0, 67, 224, 0.12);
+            backdrop-filter: blur(40px); text-align: center;
+        }
+
+        .claude-greeting-meta { font-size: 11px; color: var(--ps5-blue-electric); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
+        .workspace-title { color: var(--text-ultra-white); font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 10px; }
+        .workspace-desc { font-size: 14px; color: var(--text-muted-slate); line-height: 1.5; margin-bottom: 36px; }
+
+        .input-floating-group { position: relative; width: 100%; margin-bottom: 30px; }
+        .profile-name-input {
+            width: 100%; background: rgba(4, 7, 18, 0.9); border: 1px solid rgba(51, 65, 85, 0.7);
+            border-radius: 12px; padding: 16px 20px; color: var(--text-ultra-white); font-size: 16px;
+            outline: none; text-align: center; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .profile-name-input:focus {
+            border-color: var(--border-neon-bright);
+            box-shadow: 0 0 16px rgba(37, 117, 252, 0.25);
+            background: #060a18;
+        }
+        .profile-name-input::placeholder { color: #3b485c; }
+
+        .btn-continue-workspace {
+            width: 100%; background: linear-gradient(135deg, var(--ps5-blue-glow) 0%, #1d4ed8 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08); color: var(--text-ultra-white);
+            padding: 15px; border-radius: 10px; font-size: 14px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-continue-workspace:hover {
+            background: linear-gradient(135deg, #0052ff 0%, #2563eb 100%);
+            box-shadow: 0 8px 24px rgba(37, 117, 252, 0.4); transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="ps5-fluid-canvas"></canvas>
+<div class="ambient-vignette"></div>
+
+<section class="workspace-card-envelope">
+    <div class="claude-greeting-meta">Secure Channel Identity Initialization</div>
+    <h1 class="workspace-title">Welcome to PulseCheck Matrix</h1>
+    <p class="workspace-desc">Before configuring your corporate telemetry vectors, please specify your name or operational moniker to calibrate the early-warning turnaround workspace.</p>
+
+    <form action="/setup" method="POST">
+        <div class="input-floating-group">
+            <input type="text", 
+                   name="user_name" 
+                   id="user-name-field" 
+                   class="profile-name-input" 
+                   placeholder="Enter your name or callsign..." 
+                   required 
+                   autocomplete="off" 
+                   maxlength="30">
+        </div>
+
+        <button type="submit" class="btn-continue-workspace">
+            <span>Initialize My Diagnostic Command</span>
+            <svg style="width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2.5;" viewBox="0 0 24 24">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+        </button>
+    </form>
+</section>
+
+<script>
+    // PS5 Fluid Ambient Canvas Engine (Preserved for cross-page graphical sync stability)
+    const canvas = document.getElementById('ps5-fluid-canvas');
+    const ctx = canvas.getContext('2d');
+    let w, h, timingIndex = 0;
+
+    function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+
+    class WaveLayer {
+        constructor(baseY, amp, period, speed, colors) {
+            this.baseY = baseY; this.amplitude = amp; this.period = period; this.speed = speed; this.colors = colors;
+        }
+        draw(t) {
+            ctx.beginPath(); ctx.moveTo(0, h * this.baseY);
+            for (let x = 0; x <= w; x += 25) {
+                let offset = Math.sin(x * this.period + (t * this.speed)) * this.amplitude * Math.cos(x * 0.0004 + (t * 0.08));
+                ctx.lineTo(x, (h * this.baseY) + offset);
+            }
+            let gradient = ctx.createLinearGradient(0, 0, w, 0);
+            gradient.addColorStop(0, this.colors[0]); gradient.addColorStop(0.5, this.colors[1]); gradient.addColorStop(1, this.colors[2]);
+            ctx.strokeStyle = gradient; ctx.lineWidth = 45; ctx.lineCap = 'round'; ctx.globalCompositeOperation = 'screen'; ctx.stroke();
+        }
+    }
+
+    const layers = [
+        new WaveLayer(0.4, 130, 0.001, 0.6, ['rgba(0,67,224,0.04)', 'rgba(37,117,252,0.05)', 'rgba(0,229,255,0.01)']),
+        new WaveLayer(0.48, 160, 0.0007, 0.3, ['rgba(29,78,216,0.04)', 'rgba(6,182,212,0.03)', 'rgba(30,58,138,0.05)'])
+    ];
+
+    function runAnimation() {
+        ctx.fillStyle = 'rgba(2,3,8,0.08)'; ctx.globalCompositeOperation = 'source-over'; ctx.fillRect(0, 0, w, h);
+        timingIndex += 0.005;
+        layers.forEach(l => l.draw(timingIndex));
+        requestAnimationFrame(runAnimation);
+    }
+    runAnimation();
+    
+    // Auto-focus on input to create premium software flow
+    document.getElementById('user-name-field').focus();
+</script>
+</body>
+</html>

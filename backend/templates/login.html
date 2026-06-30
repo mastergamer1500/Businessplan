@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseCheck Neo — Secure Gateway Authentication</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark-base: #020617;
+            --card-glass: rgba(15, 23, 42, 0.65);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --brand-ps5-blue: #00439c;
+            --brand-ps5-ambient: #1f75fe;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --amazon-orange: #ff9900;
+            --amazon-orange-hover: #e68a00;
+            --success: #10b981;
+            --danger: #ef4444;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark-base);
+            color: var(--text-light);
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #ps5WaveCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .auth-outer-canvas {
+            width: 100%;
+            max-width: 480px;
+            padding: 24px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .auth-glass-card {
+            background: var(--card-glass);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-glass-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(31, 117, 254, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .auth-header-wrapper {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .auth-logo-box {
+            width: 56px;
+            height: 56px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: var(--transition-smooth);
+        }
+
+        .auth-logo-box i {
+            font-size: 28px;
+            color: var(--brand-ps5-ambient);
+        }
+
+        .auth-glass-card:hover .auth-logo-box {
+            border-color: var(--brand-ps5-ambient);
+            box-shadow: 0 0 16px rgba(31, 117, 254, 0.4);
+        }
+
+        .auth-header-wrapper h2 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .auth-header-wrapper p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .alert-error-message-box {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: #fca5a5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: shake 0.4s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .form-fields-stack {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group-container label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .input-wrapper-inner {
+            position: relative;
+        }
+
+        .input-wrapper-inner i.input-lead-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 18px;
+            transition: var(--transition-smooth);
+        }
+
+        .input-wrapper-inner input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px 12px 44px;
+            font-size: 14px;
+            color: white;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        .input-wrapper-inner input:focus {
+            border-color: var(--brand-ps5-ambient);
+            box-shadow: 0 0 0 3px rgba(31, 117, 254, 0.15);
+            background: #0f172a;
+        }
+
+        .input-wrapper-inner input:focus ~ i.input-lead-icon {
+            color: var(--brand-ps5-ambient);
+        }
+
+        .password-toggle-trigger {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .password-toggle-trigger:hover {
+            color: var(--text-light);
+        }
+
+        .password-strength-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--danger);
+            transition: var(--transition-smooth);
+        }
+
+        .account-switcher-panel {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+
+        .account-switcher-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .switcher-chips-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .account-chip {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition-smooth);
+        }
+
+        .account-chip:hover {
+            background: rgba(31, 117, 254, 0.15);
+            border-color: var(--brand-ps5-ambient);
+        }
+
+        .captcha-verification-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .captcha-question-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .captcha-equation-text {
+            font-family: monospace;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--amazon-orange);
+            background: rgba(255,255,255,0.05);
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .captcha-input-field {
+            width: 80px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+            padding: 6px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .amazon-utilities-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .amazon-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+            user-select: none;
+        }
+
+        .amazon-checkbox-label input[type="checkbox"] {
+            accent-color: var(--amazon-orange);
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+        }
+
+        .amazon-utility-link {
+            color: var(--brand-ps5-ambient);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .amazon-utility-link:hover {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
+        .submit-action-button {
+            width: 100%;
+            background: var(--brand-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0, 67, 156, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .submit-action-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(31, 117, 254, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .amazon-assistance-accordion {
+            margin-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .accordion-trigger-button {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+            transition: var(--transition-smooth);
+        }
+
+        .accordion-trigger-button:hover {
+            color: var(--text-light);
+        }
+
+        .accordion-trigger-button i {
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-trigger-button.expanded i {
+            transform: rotate(90deg);
+        }
+
+        .accordion-content-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .accordion-inner-links {
+            padding-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-left: 22px;
+        }
+
+        .accordion-inner-links a {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .accordion-inner-links a:hover {
+            color: var(--amazon-orange);
+        }
+
+        .auth-footer-notice {
+            text-align: center;
+            margin-top: 28px;
+            font-size: 11px;
+            color: rgba(148, 163, 184, 0.5);
+            line-height: 1.5;
+            position: relative;
+            z-index: 2;
+        }
+
+        .auth-footer-notice a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .auth-footer-notice a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="ps5WaveCanvas"></canvas>
+
+    <div class="auth-outer-canvas">
+        <div class="auth-glass-card">
+            
+            <header class="auth-header-wrapper">
+                <div class="auth-logo-box">
+                    <i class="ri-pulse-line"></i>
+                </div>
+                <h2>Sign in</h2>
+                <p>Telemetry Node Management Control Room</p>
+            </header>
+
+            {% if error %}
+            <div class="alert-error-message-box" id="errorBlock">
+                <i class="ri-error-warning-line"></i>
+                <span><strong>Authentication Error:</strong> Operational identifier field entry is mandatory.</span>
+            </div>
+            {% endif %}
+
+            <div class="account-switcher-panel" id="switcherPanel" style="display: none;">
+                <div class="account-switcher-title">Cached Profiles</div>
+                <div class="switcher-chips-row" id="switcherChips"></div>
+            </div>
+
+            <form action="/login" method="POST" onsubmit="return validateFormInterception(event)">
+                <div class="form-fields-stack">
+                    
+                    <div class="input-group-container">
+                        <label for="username">Corporate Identity Handle (Email or ID)</label>
+                        <div class="input-wrapper-inner">
+                            <i class="ri-user-security-line input-lead-icon"></i>
+                            <input type="text" id="username" name="username" placeholder="administrator@pulsecheck.local" autocomplete="off" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group-container">
+                        <label for="password">
+                            <span>Security Clearance Keyphrase</span>
+                            <a href="#" class="amazon-utility-link">Forgot password?</a>
+                        </label>
+                        <div class="input-wrapper-inner">
+                            <i class="ri-lock-password-line input-lead-icon"></i>
+                            <input type="password" id="password" placeholder="••••••••••••" onkeyup="checkPasswordStrength(this.value)">
+                            <i class="ri-eye-off-line password-toggle-trigger" id="passToggleIcon" onclick="togglePasswordVisibility()"></i>
+                        </div>
+                        <div class="password-strength-container">
+                            <div class="password-strength-bar" id="strengthBar"></div>
+                        </div>
+                    </div>
+
+                    <div class="captcha-verification-box">
+                        <div class="captcha-question-row">
+                            <span>Verify Node Protocol Security Challenge:</span>
+                            <span class="captcha-equation-text" id="captchaEq">4 + 7 = ?</span>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end;">
+                            <input type="text" class="captcha-input-field" id="captchaAns" placeholder="Result" required>
+                        </div>
+                    </div>
+
+                    <div class="amazon-utilities-row">
+                        <label class="amazon-checkbox-label">
+                            <input type="checkbox" id="chkKeepSignedIn">
+                            Keep me signed in
+                        </label>
+                        <span style="color: var(--text-muted); cursor: help;" title="Select only on trusted personal machinery.">Details <i class="ri-question-line"></i></span>
+                    </div>
+
+                    <button type="submit" class="submit-action-button">
+                        <span>Continue securely</span>
+                        <i class="ri-arrow-right-s-line"></i>
+                    </button>
+
+                </div>
+            </form>
+
+            <div class="amazon-assistance-accordion">
+                <div class="accordion-trigger-button" onclick="toggleAssistanceAccordionPanel(this)">
+                    <i class="ri-arrow-right-s-fill"></i>
+                    <span>Need assistance or missing secure tokens?</span>
+                </div>
+                <div class="accordion-content-panel" id="accordionPanel">
+                    <div class="accordion-inner-links">
+                        <a href="#"><i class="ri-shield-user-line"></i> Unlock cryptographic terminal hardware node profiles</a>
+                        <a href="#"><i class="ri-customer-service-line"></i> Contact enterprise technical operations center desk</a>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="auth-footer-notice">
+                By continuing, you agree to PulseCheck's <a href="#">Conditions of Infrastructure Use</a> and <a href="#">Privacy Notice Tracker</a>. © 2026 PulseCheck Enterprise.
+            </footer>
+
+        </div>
+    </div>
+
+    <script>
+        const canvasElement = document.getElementById('ps5WaveCanvas');
+        const canvasCtx = canvasElement.getContext('2d');
+
+        let viewWidth = canvasElement.width = window.innerWidth;
+        let viewHeight = canvasElement.height = window.innerHeight;
+        let expectedCaptchaResult = 0;
+
+        window.addEventListener('resize', () => {
+            viewWidth = canvasElement.width = window.innerWidth;
+            viewHeight = canvasElement.height = window.innerHeight;
+        });
+
+        const wavePathsArray = [
+            { segmentFrequency: 0.005, velocityShift: 0.008, horizontalAmplitude: 45, verticalPlacementOffset: 0.50, hexColor: 'rgba(31, 117, 254, 0.35)' },
+            { segmentFrequency: 0.008, velocityShift: 0.012, horizontalAmplitude: 30, verticalPlacementOffset: 0.52, hexColor: 'rgba(0, 67, 156, 0.45)' },
+            { segmentFrequency: 0.003, velocityShift: 0.005, horizontalAmplitude: 60, verticalPlacementOffset: 0.48, hexColor: 'rgba(56, 189, 248, 0.15)' }
+        ];
+
+        let executionRuntimeCounter = 0;
+
+        function runDynamicWavePipelineAnimationLoop() {
+            canvasCtx.fillStyle = 'rgba(2, 6, 23, 0.08)';
+            canvasCtx.fillRect(0, 0, viewWidth, viewHeight);
+
+            executionRuntimeCounter += 1;
+
+            wavePathsArray.forEach(path => {
+                canvasCtx.beginPath();
+                canvasCtx.lineWidth = 1.5;
+                canvasCtx.strokeStyle = path.hexColor;
+
+                for (let coordinateX = 0; coordinateX < viewWidth; coordinateX += 2) {
+                    const calculationY = (viewHeight * path.verticalPlacementOffset) + 
+                                         Math.sin(coordinateX * path.segmentFrequency + (executionRuntimeCounter * path.velocityShift)) * path.horizontalAmplitude +
+                                         Math.cos((coordinateX + executionRuntimeCounter) * 0.002) * 15;
+                    
+                    if (coordinateX === 0) {
+                        canvasCtx.moveTo(coordinateX, calculationY);
+                    } else {
+                        canvasCtx.lineTo(coordinateX, calculationY);
+                    }
+                }
+                canvasCtx.stroke();
+            });
+
+            requestAnimationFrame(runDynamicWavePipelineAnimationLoop);
+        }
+        
+        runDynamicWavePipelineAnimationLoop();
+
+        function togglePasswordVisibility() {
+            const passInputField = document.getElementById('password');
+            const passToggleIconElement = document.getElementById('passToggleIcon');
+            
+            if (passInputField.type === 'password') {
+                passInputField.type = 'text';
+                passToggleIconElement.className = 'ri-eye-line password-toggle-trigger';
+            } else {
+                passInputField.type = 'password';
+                passToggleIconElement.className = 'ri-eye-off-line password-toggle-trigger';
+            }
+        }
+
+        function toggleAssistanceAccordionPanel(triggerElement) {
+            triggerElement.classList.toggle('expanded');
+            const targetPanel = document.getElementById('accordionPanel');
+            
+            if (triggerElement.classList.contains('expanded')) {
+                targetPanel.style.maxHeight = targetPanel.scrollHeight + "px";
+            } else {
+                targetPanel.style.maxHeight = "0px";
+            }
+        }
+
+        function checkPasswordStrength(password) {
+            const bar = document.getElementById('strengthBar');
+            let percentage = 0;
+            if (password.length > 4) percentage += 30;
+            if (password.match(/[A-Z]/)) percentage += 30;
+            if (password.match(/[0-9]/)) percentage += 20;
+            if (password.match(/[^A-Za-z0-9]/)) percentage += 20;
+
+            bar.style.width = percentage + "%";
+            if (percentage < 40) bar.style.background = 'var(--danger)';
+            else if (percentage < 75) bar.style.background = 'var(--amazon-orange)';
+            else bar.style.background = 'var(--success)';
+        }
+
+        function generateCaptchaChallenge() {
+            const numA = Math.floor(Math.random() * 9) + 2;
+            const numB = Math.floor(Math.random() * 9) + 2;
+            expectedCaptchaResult = numA + numB;
+            document.getElementById('captchaEq').innerText = `${numA} + ${numB} = ?`;
+        }
+
+        function validateFormInterception(event) {
+            const ans = parseInt(document.getElementById('captchaAns').value);
+            if (ans !== expectedCaptchaResult) {
+                alert("Security Gateway Flag: Matrix equation verify calculation path mismatch.");
+                generateCaptchaChallenge();
+                event.preventDefault();
+                return false;
+            }
+
+            const collectedUsernameInput = document.getElementById('username').value.trim();
+            if (document.getElementById('chkKeepSignedIn').checked && collectedUsernameInput) {
+                let currentProfiles = JSON.parse(localStorage.getItem('pulsecheck_profiles') || '[]');
+                if (!currentProfiles.includes(collectedUsernameInput)) {
+                    currentProfiles.push(collectedUsernameInput);
+                    localStorage.setItem('pulsecheck_profiles', JSON.stringify(currentProfiles));
+                }
+                localStorage.setItem('pulsecheck_cached_node_user', collectedUsernameInput);
+            }
+            return true;
+        }
+
+        function hydrateProfileSwitcher() {
+            const currentProfiles = JSON.parse(localStorage.getItem('pulsecheck_profiles') || '[]');
+            if (currentProfiles.length > 0) {
+                const container = document.getElementById('switcherChips');
+                container.innerHTML = '';
+                currentProfiles.forEach(prof => {
+                    const chip = document.createElement('div');
+                    chip.className = 'account-chip';
+                    chip.innerHTML = `<i class="ri-user-line"></i> ${prof}`;
+                    chip.onclick = () => {
+                        document.getElementById('username').value = prof;
+                    };
+                    container.appendChild(chip);
+                });
+                document.getElementById('switcherPanel').style.display = 'block';
+            }
+        }
+
+        window.onload = function() {
+            generateCaptchaChallenge();
+            hydrateProfileSwitcher();
+            const cachedHandleName = localStorage.getItem('pulsecheck_cached_node_user');
+            if (cachedHandleName) {
+                document.getElementById('username').value = cachedHandleName;
+                document.getElementById('chkKeepSignedIn').checked = true;
+            }
+        };
+    </script>
+</body>
+</html>

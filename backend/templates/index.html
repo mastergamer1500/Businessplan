@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseCheck Neo — Executive Command Suite (v2.4.0-Enterprise)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <style>
+        /* --- GLOBAL ROOT VARIABALIZED DECLARATIONS --- */
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-sidebar: #0f172a;
+            --bg-sidebar-hover: #1e293b;
+            --bg-card: #ffffff;
+            --bg-card-header: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-white: #ffffff;
+            --brand-color: #2563eb;
+            --brand-color-dark: #1d4ed8;
+            --brand-light: #eff6ff;
+            --brand-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            --border-color: #e2e8f0;
+            --border-focus: #3b82f6;
+            --success: #10b981;
+            --success-light: #f0fdf4;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --warning: #f59e0b;
+            --warning-light: #fefbeb;
+            --info: #06b6d4;
+            --info-light: #ecfeff;
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition-fast: all 0.15s ease;
+            --transition-normal: all 0.25s ease;
+        }
+
+        /* --- GLOBAL STYLING RESETS --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        /* --- LEFT SIDEBAR APPLICATION SHELL SYSTEM --- */
+        .sidebar-nav {
+            width: 280px;
+            min-width: 280px;
+            background-color: var(--bg-sidebar);
+            color: var(--text-white);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 28px 20px;
+            box-shadow: var(--shadow-lg);
+            z-index: 100;
+            position: relative;
+        }
+
+        .brand-logo-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .brand-logo-area i {
+            font-size: 26px;
+            color: #38bdf8;
+            animation: pulse 3s infinite;
+        }
+
+        .brand-logo-area h1 {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(120deg, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links-group {
+            margin-top: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-grow: 1;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            transition: var(--transition-normal);
+        }
+
+        .nav-link:hover {
+            background-color: var(--bg-sidebar-hover);
+            color: var(--text-white);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: var(--brand-gradient);
+            color: var(--text-white);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .nav-link i {
+            font-size: 20px;
+        }
+
+        .sidebar-system-alerts {
+            background: #1e293b;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 24px;
+            border: 1px solid #334155;
+        }
+
+        .system-alert-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .system-alert-desc {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #1e293b;
+            padding-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .avatar-circle {
+            width: 44px;
+            height: 44px;
+            background: var(--brand-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-white);
+            box-shadow: var(--shadow-sm);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-meta-data h5 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-white);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+        }
+
+        .user-meta-data p {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* --- MAIN HUB APPLICATION WORKSPACE LAYOUT --- */
+        .main-workspace {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: calc(100vw - 280px);
+            overflow: hidden;
+        }
+
+        .top-navbar {
+            background-color: var(--bg-card);
+            height: 80px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: var(--shadow-sm);
+            z-index: 50;
+        }
+
+        .welcome-title-block h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .welcome-title-block p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .top-navbar-actions-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .system-status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--success-light);
+            color: var(--success);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .system-status-indicator .ping-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+        }
+
+        .exit-session-link {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition-fast);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+        }
+
+        .exit-session-link:hover {
+            color: var(--danger);
+            background-color: var(--danger-light);
+        }
+
+        /* --- DASHBOARD CANVAS SCROLL CONTAINER --- */
+        .dashboard-grid-canvas {
+            flex-grow: 1;
+            padding: 32px 40px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 32px;
+        }
+
+        /* --- REAL-TIME DATA ADJUSTMENT SANDBOX PANEL --- */
+        .sandbox-panel-card {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            gap: 32px;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sandbox-panel-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--brand-gradient);
+        }
+
+        .sandbox-meta-title {
+            min-width: 180px;
+        }
+
+        .sandbox-meta-title h4 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sandbox-meta-title p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .sandbox-control-slider {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sandbox-control-slider label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sandbox-control-slider label span {
+            font-family: monospace;
+            font-size: 15px;
+            color: var(--brand-color);
+            background: white;
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .sandbox-control-slider input[type=range] {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #cbd5e1;
+            outline: none;
+        }
+
+        .sandbox-control-slider input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--brand-color);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sandbox-control-slider input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            background: var(--brand-color-dark);
+        }
+
+        /* --- EXECUTIVE SCORECARDS CONTAINER --- */
+        .metrics-summary-row {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .metric-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-normal);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .metric-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .metric-info h3 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -1px;
+        }
+
+        .metric-icon-box {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* --- ONEPREP DESIGN ROADMAP PLANNER SECTION --- */
+        .planner-card-section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+        }
+
+        .planner-header-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .planner-header-group h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .planner-header-group p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .badge-interval {
+            background: var(--brand-light);
+            color: var(--brand-color);
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            border: 1px solid rgba(37, 99, 235, 0.1);
+        }
+
+        /* NEW INTEGRATED DASHBOARD PROGRESS BAR */
+        .progress-meta-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .progress-meta-details span {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-tracking-bar-container {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 10px;
+            width: 100%;
+            margin-bottom: 24px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Filtering controls row styles */
+        .controls-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .filter-buttons-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .filter-btn:hover {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .filter-btn.active {
+            background: var(--bg-sidebar);
+            color: var(--text-white);
+            border-color: var(--bg-sidebar);
+        }
+
+        .filter-btn.overdue-btn {
+            background: var(--danger-light);
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .filter-btn.overdue-btn:hover {
+            background: var(--danger);
+            color: var(--text-white);
+        }
+
+        .search-box-input {
+            position: relative;
+            flex-grow: 0.6;
+        }
+
+        .search-box-input i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .search-box-input input {
+            width: 100%;
+            padding: 10px 16px 10px 42px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            outline: none;
+            background-color: #f8fafc;
+            transition: var(--transition-fast);
+        }
+
+        .search-box-input input:focus {
+            background-color: white;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Interactive Timeline View Axis */
+        .timeline-scroll-axis {
+            max-height: 480px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .timeline-scroll-axis::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .timeline-scroll-axis::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .timeline-scroll-axis::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .timeline-row-item {
+            display: flex;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            margin-bottom: 12px;
+            align-items: center;
+            transition: var(--transition-normal);
+        }
+
+        .timeline-row-item:hover {
+            border-color: #cbd5e1;
+            box-shadow: var(--shadow-sm);
+            transform: translateX(2px);
+        }
+
+        .date-badge-column {
+            width: 85px;
+            min-width: 85px;
+            border-right: 1px dashed var(--border-color);
+            padding-right: 12px;
+            margin-right: 18px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .date-badge-column .day-lbl {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .date-badge-column .date-lbl {
+            font-size: 16px;
+            font-weight: 700;
+            color: #334155;
+            margin-top: 2px;
+        }
+
+        .content-middle {
+            flex-grow: 1;
+            padding-right: 16px;
+        }
+
+        .meta-tags-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .meta-tags-row h4 {
+            margin: 0;
+            font-size: 15px;
+            color: #0f172a;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+
+        .category-tag {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .overdue-pill {
+            background: var(--danger-light);
+            color: var(--danger);
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .content-middle p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .action-right-side button {
+            cursor: pointer;
+            background: var(--brand-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: var(--transition-fast);
+            white-space: nowrap;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .action-right-side button:hover {
+            background: var(--brand-color-dark);
+        }
+
+        /* --- SPLIT CANVAS CO-PILOT CHAT DRAWER LAYOUT --- */
+        .co-pilot-sidebar-drawer {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+            height: 645px;
+            position: relative;
+        }
+
+        .chat-drawer-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background-color: var(--bg-card-header);
+            border-top-left-radius: var(--radius-lg);
+            border-top-right-radius: var(--radius-lg);
+        }
+
+        .chat-drawer-header i {
+            font-size: 24px;
+            color: var(--brand-color);
+        }
+
+        .chat-drawer-header h3 {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .chat-drawer-header p {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .chat-messages-container {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background-color: #fefefe;
+        }
+
+        .chat-messages-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages-container::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 2px;
+        }
+
+        .chat-bubble {
+            max-width: 88%;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            line-height: 1.5;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chat-bubble.bot {
+            background-color: #f1f5f9;
+            color: var(--text-main);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .chat-bubble.user {
+            background: var(--brand-gradient);
+            color: var(--text-white);
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .chat-input-wrapper {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            background-color: var(--bg-card-header);
+            border-bottom-left-radius: var(--radius-lg);
+            border-bottom-right-radius: var(--radius-lg);
+        }
+
+        .chat-input-wrapper input {
+            flex-grow: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            outline: none;
+            transition: var(--transition-fast);
+            background-color: white;
+        }
+
+        .chat-input-wrapper input:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .chat-input-wrapper button {
+            background: var(--brand-gradient);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 16px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chat-input-wrapper button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        /* --- ANIMATION KEYFRAMES HOOKS --- */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar-nav">
+        <div class="top-nav-block">
+            <div class="brand-logo-area">
+                <i class="ri-pulse-line"></i>
+                <h1>PulseCheck Neo</h1>
+            </div>
+            
+            <nav class="nav-links-group">
+                <a href="#" class="nav-link active"><i class="ri-dashboard-2-line"></i> Dashboard Map</a>
+                <a href="/setup" class="nav-link"><i class="ri-equalizer-line"></i> Operational Inputs</a>
+                <a href="#" class="nav-link"><i class="ri-file-list-3-line"></i> Complete Playbook</a>
+                <a href="#" class="nav-link"><i class="ri-line-chart-line"></i> Risk Analytics</a>
+                <a href="#" class="nav-link"><i class="ri-settings-4-line"></i> Node Settings</a>
+            </nav>
+        </div>
+
+        <div class="bottom-nav-block">
+            <div class="sidebar-system-alerts">
+                <div class="system-alert-title">
+                    <i class="ri-shield-check-line"></i> Protection Active
+                </div>
+                <div class="system-alert-desc">
+                    Operational matrix telemetry is computing anomalies under continuous SDK optimization tracking parameters.
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="avatar-circle">
+                    {{ matrix.username[0] | upper if matrix.username else 'F' }}
+                </div>
+                <div class="user-meta-data" style="flex-grow: 1; overflow: hidden;">
+                    <h5>{{ matrix.username }}</h5>
+                    <p>System Administrator</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-workspace">
+        <header class="top-navbar">
+            <div class="welcome-title-block">
+                <h2>Executive Control Suite</h2>
+                <p>Welcome back, {{ matrix.username }}! Mapped analytics pipeline online.</p>
+            </div>
+            <div class="top-navbar-actions-area">
+                <div class="system-status-indicator">
+                    <span class="ping-dot"></span> Live Telemetry Connected
+                </div>
+                <a href="/login" class="exit-session-link"><i class="ri-logout-box-r-line"></i> Exit Session</a>
+            </div>
+        </header>
+
+        <div class="dashboard-grid-canvas">
+            
+            <section class="sandbox-panel-card">
+                <div class="sandbox-meta-title">
+                    <h4><i class="ri-flask-line"></i> Live Sandbox</h4>
+                    <p>Slide metrics to model variable cash configurations instantly.</p>
+                </div>
+                <div class="sandbox-control-slider">
+                    <label>Inflow Variable (Revenue Target): <span id="lblRev">{{ matrix.revenue }}</span></label>
+                    <input type="range" id="sliderRev" min="2000" max="80000" step="500" value="{{ matrix.raw_revenue }}" oninput="executeLiveRecalculate()">
+                </div>
+                <div class="sandbox-control-slider">
+                    <label>Outflow Variable (Expense Control): <span id="lblExp">{{ matrix.expenses }}</span></label>
+                    <input type="range" id="sliderExp" min="2000" max="80000" step="500" value="{{ matrix.raw_expenses }}" oninput="executeLiveRecalculate()">
+                </div>
+            </section>
+
+            <section class="metrics-summary-row" id="metricsSummaryRow">
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <p>Adjusted Inflow</p>
+                        <h3 id="cellRev">{{ matrix.revenue }}</h3>
+                    </div>
+                    <div class="metric-icon-box indicator-green"><i class="ri-arrow-up-circle-line"></i></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <p>Adjusted Outflow</p>
+                        <h3 id="cellExp">{{ matrix.expenses }}</h3>
+                    </div>
+                    <div class="metric-icon-box indicator-red"><i class="ri-arrow-down-circle-line"></i></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <p>Calculated Runway</p>
+                        <h3 id="cellRunway">{{ matrix.cash_runway }}</h3>
+                    </div>
+                    <div class="metric-icon-box {% if matrix.status_indicators.runway == 'green' %}indicator-green{% else %}indicator-red{% endif %}" id="boxRunway">
+                        <i class="ri-time-line"></i>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <p>Mortality Index</p>
+                        <h3 id="cellRisk">{{ matrix.risk_score }}</h3>
+                    </div>
+                    <div class="metric-icon-box {% if matrix.status_indicators.risk == 'green' %}indicator-green{% else %}indicator-red{% endif %}" id="boxRisk">
+                        <i class="ri-shield-flash-line"></i>
+                    </div>
+                </div>
+            </section>
+
+            <section class="planner-card-section">
+                <div class="planner-header-group">
+                    <div>
+                        <h2><i class="ri-calendar-todo-line"></i> Action Agenda Timeline</h2>
+                        <p>Yearly schedule matrix generated automatically under corporate blueprint guidance parameters</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <button class="filter-btn" onclick="triggerPlaybookCSVExport()" style="background: #f0fdf4; color: #16a34a; border-color: rgba(22, 163, 74, 0.2); display: flex; align-items: center; gap: 6px;">
+                            <i class="ri-download-cloud-2-line"></i> Export CSV
+                        </button>
+                        <span class="badge-interval">{{ matrix.plan_type }} Tracking</span>
+                    </div>
+                </div>
+
+                <div class="progress-meta-details">
+                    <span>Task Milestones Tracking Bar</span>
+                    <span id="txtProgressPct">0% Completed</span>
+                </div>
+                <div class="progress-tracking-bar-container">
+                    <div class="progress-bar-fill" id="plannerProgressFill"></div>
+                </div>
+
+                <div class="controls-wrapper">
+                    <div class="filter-buttons-row">
+                        <button onclick="filterPlanner('all', this)" class="filter-btn active">All Items</button>
+                        <button onclick="filterPlanner('Overdue', this)" class="filter-btn overdue-btn">⚠️ Overdue</button>
+                        <button onclick="filterPlanner('Expense Mitigation', this)" class="filter-btn">Expenses Only</button>
+                    </div>
+                    <div class="search-box-input">
+                        <i class="ri-search-line"></i>
+                        <input type="text" id="plannerSearch" onkeyup="searchPlanner()" placeholder="Filter through complete yearly targets...">
+                    </div>
+                </div>
+
+                <div class="timeline-scroll-axis">
+                    {% for task in matrix.playbook_tasks %}
+                    <div class="timeline-row-item" data-category="{{ task.category }}" data-status="{{ task.status }}" id="item_{{ task.id }}">
+                        <div class="date-badge-column">
+                            <span class="day-lbl">{{ task.day_label }}</span>
+                            <span class="date-lbl">{{ task.date_string }}</span>
+                        </div>
+                        <div class="content-middle">
+                            <div class="meta-tags-row">
+                                <h4>{{ task.title }}</h4>
+                                <span class="category-tag">{{ task.category }}</span>
+                                {% if task.status == 'Overdue' %}
+                                    <span class="overdue-pill">Overdue</span>
+                                {% endif %}
+                            </div>
+                            <p class="task-desc-text">{{ task.description }}</p>
+                        </div>
+                        <div class="action-right-side">
+                            <button onclick="toggleTaskCompletion('{{ task.id }}', this)">
+                                Mark Complete
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="co-pilot-sidebar-drawer">
+                <div class="chat-drawer-header">
+                    <i class="ri-customer-service-2-line"></i>
+                    <div>
+                        <h3>AI Operations Advisor</h3>
+                        <p>Linked Directly Into Calculated Active Matrix Matrix Variables</p>
+                    </div>
+                </div>
+                <div class="chat-messages-container" id="chatContainer">
+                    <div class="chat-bubble bot">
+                        Data handshake confirmed. Initializing interactive telemetry workspace layout. How can I help fine-tune your operational structure today?
+                    </div>
+                </div>
+                <div class="chat-input-wrapper">
+                    <input type="text" id="chatInput" placeholder="Inquire regarding risk metrics indices...">
+                    <button onclick="sendChatMessage()"><i class="ri-send-plane-2-line"></i></button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // Real-time slider interface interpolation layer
+        function executeLiveRecalculate() {
+            const revVal = document.getElementById('sliderRev').value;
+            const expVal = document.getElementById('sliderExp').value;
+            
+            document.getElementById('lblRev').innerText = "$" + parseFloat(revVal).toLocaleString();
+            document.getElementById('lblExp').innerText = "$" + parseFloat(expVal).toLocaleString();
+
+            fetch('/api/v1/telemetry/recalculate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    revenue: revVal,
+                    expenses: expVal,
+                    plan_type: '{{ matrix.plan_type }}'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('cellRev').innerText = data.revenue;
+                document.getElementById('cellExp').innerText = data.expenses;
+                document.getElementById('cellRunway').innerText = data.cash_runway;
+                document.getElementById('cellRisk').innerText = data.risk_score;
+
+                // Adjust state visualization colors parameters instantly on UI
+                const boxRun = document.getElementById('boxRunway');
+                const boxRsk = document.getElementById('boxRisk');
+                
+                if(data.status_indicators.runway === 'green') {
+                    boxRun.className = 'metric-icon-box indicator-green';
+                } else {
+                    boxRun.className = 'metric-icon-box indicator-red';
+                }
+
+                if(data.status_indicators.risk === 'green') {
+                    boxRsk.className = 'metric-icon-box indicator-green';
+                } else {
+                    boxRsk.className = 'metric-icon-box indicator-red';
+                }
+            });
+        }
+
+        // Checklist data filter controller functions
+        function filterPlanner(criterion, buttonElement) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+
+            const items = document.querySelectorAll('.timeline-row-item');
+            items.forEach(item => {
+                if (criterion === 'all') {
+                    item.style.display = 'flex';
+                } else if (criterion === 'Overdue') {
+                    item.style.display = item.getAttribute('data-status') === 'Overdue' ? 'flex' : 'none';
+                } else {
+                    item.style.display = item.getAttribute('data-category') === criterion ? 'flex' : 'none';
+                }
+            });
+        }
+
+        // Live inline incremental search string pattern matching
+        function searchPlanner() {
+            const query = document.getElementById('plannerSearch').value.toLowerCase();
+            const items = document.querySelectorAll('.timeline-row-item');
+            
+            items.forEach(item => {
+                const textContent = item.querySelector('.task-desc-text').innerText.toLowerCase();
+                const titleContent = item.querySelector('h4').innerText.toLowerCase();
+                if (textContent.includes(query) || titleContent.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // State machine action trigger pipeline loops
+        function toggleTaskCompletion(taskId, buttonElement) {
+            fetch('/api/v1/tasks/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task_id: taskId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const targetRow = document.getElementById('item_' + taskId);
+                    if (data.new_status === 'Completed') {
+                        buttonElement.style.background = '#10b981';
+                        buttonElement.innerHTML = '<i class="ri-checkbox-circle-line"></i> Done';
+                        targetRow.style.opacity = '0.5';
+                        targetRow.setAttribute('data-status', 'Completed');
+                    } else {
+                        buttonElement.style.background = 'var(--brand-color)';
+                        buttonElement.innerText = 'Mark Complete';
+                        targetRow.style.opacity = '1';
+                        targetRow.setAttribute('data-status', 'Pending');
+                    }
+                    recalculateProgressIndex();
+                }
+            });
+        }
+
+        // Client-side execution percentage indexing calculator
+        function recalculateProgressIndex() {
+            const totalElements = document.querySelectorAll('.timeline-row-item').length;
+            const completedElements = document.querySelectorAll('.timeline-row-item[data-status="Completed"]').length;
+            
+            const dynamicPercentage = totalElements > 0 ? Math.round((completedElements / totalElements) * 100) : 0;
+            
+            document.getElementById('plannerProgressFill').style.width = dynamicPercentage + "%";
+            document.getElementById('txtProgressPct').innerText = dynamicPercentage + "% Completed";
+        }
+
+        // Structured table agenda extraction engine system
+        function triggerPlaybookCSVExport() {
+            let csvRowsData = "data:text/csv;charset=utf-8,Scheduled Date,Weekday,Target Task Directive,Core Focus Category,Operational Description\n";
+            
+            document.querySelectorAll('.timeline-row-item').forEach(rowElement => {
+                const dateVal = rowElement.querySelector('.date-lbl').innerText;
+                const dayVal = rowElement.querySelector('.day-lbl').innerText;
+                const titleVal = rowElement.querySelector('h4').innerText;
+                const categoryVal = rowElement.querySelector('.category-tag').innerText;
+                const descriptiveText = rowElement.querySelector('.task-desc-text').innerText.replace(/,/g, ' ');
+                
+                csvRowsData += `"${dateVal}","${dayVal}","${titleVal}","${categoryVal}","${descriptiveText}"\n`;
+            });
+            
+            const encodedDataUri = encodeURI(csvRowsData);
+            const downloadAnchorElement = document.createElement("a");
+            downloadAnchorElement.setAttribute("href", encodedDataUri);
+            downloadAnchorElement.setAttribute("download", "PulseCheck_Neo_Yearly_Turnaround_Plan.csv");
+            document.body.appendChild(downloadAnchorElement);
+            downloadAnchorElement.click();
+            document.body.removeChild(downloadAnchorElement);
+        }
+
+        // Chat stream text dispatcher connection link
+        function sendChatMessage() {
+            const entryField = document.getElementById('chatInput');
+            const userPromptText = entryField.value.trim();
+            if (!userPromptText) return;
+
+            const chatScrollContainer = document.getElementById('chatContainer');
+            
+            const dynamicUserBubble = document.createElement('div');
+            dynamicUserBubble.className = 'chat-bubble user';
+            dynamicUserBubble.innerText = userPromptText;
+            chatScrollContainer.appendChild(dynamicUserBubble);
+            entryField.value = '';
+            chatScrollContainer.scrollTop = chatScrollContainer.scrollHeight;
+
+            fetch('/api/v1/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: userPromptText,
+                    current_matrix: {
+                        revenue: '{{ matrix.revenue }}',
+                        expenses: '{{ matrix.expenses }}',
+                        cash_runway: '{{ matrix.cash_runway }}',
+                        growth_rate: '{{ matrix.growth_rate }}',
+                        risk_score: '{{ matrix.risk_score }}'
+                    }
+                })
+            })
+            .then(res => res.json())
+            .then(responseData => {
+                const dynamicBotBubble = document.createElement('div');
+                dynamicBotBubble.className = 'chat-bubble bot';
+                dynamicBotBubble.innerHTML = responseData.reply;
+                chatScrollContainer.appendChild(dynamicBotBubble);
+                chatScrollContainer.scrollTop = chatScrollContainer.scrollHeight;
+            });
+        }
+
+        // Window startup cycle triggers initialization hook parameters
+        window.onload = function() {
+            recalculateProgressIndex();
+        };
+    </script>
+</body>
+</html>
