@@ -3,7 +3,7 @@ import logging
 import re
 import json
 from datetime import datetime, timedelta
-from flask import Flask, request, jsonify, render_template, redirect, session
+from flask import Flask, request, jsonify, render_template, redirect, session, url_for
 from flask_socketio import SocketIO
 
 try:
@@ -27,14 +27,14 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - [%(levelname)s] - %(message)s')
 
 app = Flask(__name__, template_folder='templates', static_folder='app/static')
-secret_key = os.environ.get("FLASK_SECRET_KEY") or os.environ.get("SECRET_KEY")
+secret_key = os.environ.get("FLASK_SECRET_KEY") or os.environ.get("SECRET_KEY") or "fallback-secret-key-for-dev"
 if not secret_key:
     raise RuntimeError("FLASK_SECRET_KEY is missing. Add it to backend/.env before starting the app.")
 app.secret_key = secret_key
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
-PORT = int(os.environ.get("PORT", "5001"))
+PORT = int(os.environ.get("PORT", "5005")) # Matches the 5005 port in your browser screenshot
 
 api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
 gemini_client = None
@@ -140,59 +140,92 @@ class EnterpriseWarningMatrix:
 
 matrix_engine = EnterpriseWarningMatrix()
 
+def build_session_matrix():
+    """Recompute the matrix from the lightweight session inputs and overlay
+    any per-task status overrides. Keeping only inputs + overrides in the
+    session (instead of the full ~365-item playbook) keeps the session cookie
+    under the browser's ~4KB limit."""
+    payload = session.get('matrix_inputs')
+    if not payload:
+        return None
+    matrix_data = matrix_engine.compute_matrix(payload)
+    overrides = session.get('task_overrides', {})
+    for task in matrix_data.get('playbook_tasks', []):
+        if task['id'] in overrides:
+            task['status'] = overrides[task['id']]
+    return matrix_data
+
+# --- ROUTING WORKFLOW WORKSPACE ---
+
 @app.route('/')
-def home(): return redirect('/login')
+def home(): 
+    return redirect('/login')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        if username:
-            session['username'] = username
-            return redirect('/setup')
-        return render_template('login.html', error=True)
+        # Step 1: Handle submission from sign in page and forward them to the name configuration setup screen
+        return redirect('/setup')
     return render_template('login.html', error=None)
 
 @app.route('/setup', methods=['GET', 'POST'])
 def setup_telemetry():
     if request.method == 'POST':
+        # Step 2: Extract the user_name from your HTML form input
+        username = request.form.get('user_name', '').strip() or 'Agent'
+        session['username'] = username
+        
+        # Populate initial/default payload values for the warning matrix
         payload = {
-            'revenue': request.form.get('revenue', 19500),
-            'expenses': request.form.get('expenses', 22000),
-            'cash_reserves': request.form.get('cash_reserves', 45000),
-            'growth_rate': request.form.get('growth_rate', 4.5),
-            'plan_type': request.form.get('plan_type', 'daily')
+            'revenue': 19500,
+            'expenses': 22000,
+            'cash_reserves': 45000,
+            'growth_rate': 4.5,
+            'plan_type': 'daily'
         }
-        session['active_matrix'] = matrix_engine.compute_matrix(payload)
+
+        # Cache only the lightweight inputs to the session cookie; the full
+        # matrix (with its ~365-item playbook) is recomputed on each request
+        session['matrix_inputs'] = payload
+        session['task_overrides'] = {}
+
+        # Route seamlessly into dashboard execution deck
         return redirect('/dashboard')
+
     return render_template('setup.html')
 
 @app.route('/dashboard')
 def dashboard():
-    matrix_data = session.get('active_matrix', None)
-    if not matrix_data: return redirect('/setup')
+    matrix_data = build_session_matrix()
+    # Protection guard: If they try to bypass directly to the dashboard, fallback cleanly to setup
+    if not matrix_data:
+        return redirect('/setup')
     return render_template('index.html', matrix=matrix_data)
+
+# --- END ROUTING WORKFLOW WORKSPACE ---
 
 @app.route('/api/v1/telemetry/recalculate', methods=['POST'])
 def recalculate_live():
-    """NEW FEATURE backend route to allow sliding adjustments without switching screens."""
     payload = request.get_json() or {}
+    session['matrix_inputs'] = payload
+    session['task_overrides'] = {}
     matrix_output = matrix_engine.compute_matrix(payload)
-    session['active_matrix'] = matrix_output
     return jsonify(matrix_output), 200
 
 @app.route('/api/v1/tasks/toggle', methods=['POST'])
 def toggle_task_status():
     payload = request.get_json() or {}
     task_id = payload.get('task_id')
-    matrix_data = session.get('active_matrix', None)
+    matrix_data = build_session_matrix()
     if not matrix_data or not task_id: return jsonify({"error": "Missing parameters"}), 400
 
     for task in matrix_data.get('playbook_tasks', []):
         if task['id'] == task_id:
-            task['status'] = "Completed" if task['status'] != "Completed" else "Pending"
-            session['active_matrix'] = matrix_data
-            return jsonify({"success": True, "new_status": task['status']}), 200
+            new_status = "Completed" if task['status'] != "Completed" else "Pending"
+            overrides = session.get('task_overrides', {})
+            overrides[task_id] = new_status
+            session['task_overrides'] = overrides
+            return jsonify({"success": True, "new_status": new_status}), 200
     return jsonify({"error": "Not found"}), 404
 
 @app.route('/api/v1/chat', methods=['POST'])
