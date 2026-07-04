@@ -27,9 +27,9 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - [%(levelname)s] - %(message)s')
 
 app = Flask(__name__, template_folder='templates', static_folder='app/static')
-secret_key = os.environ.get("FLASK_SECRET_KEY") or os.environ.get("SECRET_KEY") or "fallback-secret-key-for-dev"
+secret_key = os.environ.get("FLASK_SECRET_KEY") or os.environ.get("SECRET_KEY")
 if not secret_key:
-    raise RuntimeError("FLASK_SECRET_KEY is missing. Add it to backend/.env before starting the app.")
+    raise RuntimeError("FLASK_SECRET_KEY is missing. Set it in backend/.env locally, or as an environment variable in the Render dashboard.")
 app.secret_key = secret_key
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
@@ -140,6 +140,34 @@ class EnterpriseWarningMatrix:
 
 matrix_engine = EnterpriseWarningMatrix()
 
+def format_chat_reply(reply_text):
+    """Format AI reply into up to 5 readable bullet points."""
+    if not reply_text:
+        return "• No update available."
+
+    text = re.sub(r"\s+", " ", str(reply_text)).strip()
+    if not text:
+        return "• No update available."
+
+    lines = [line.strip(" -•\n\r") for line in str(reply_text).splitlines() if line.strip()]
+    bullets = []
+
+    if lines:
+        for line in lines:
+            clean = re.sub(r"^[-•\s]+", "", line).strip()
+            if clean:
+                bullets.append(clean)
+    else:
+        sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
+        bullets = sentences
+
+    bullets = [b if len(b) <= 300 else b[:297].rstrip(" ,;:.") + "..." for b in bullets][:5]
+
+    if not bullets:
+        return "• No update available."
+
+    return "<br>".join(f"• {b}" for b in bullets)
+
 def build_session_matrix():
     """Recompute the matrix from the lightweight session inputs and overlay
     any per-task status overrides. Keeping only inputs + overrides in the
@@ -238,7 +266,7 @@ def chatbot_api():
             model='gemini-2.5-flash', contents=user_msg,
             config=types.GenerateContentConfig(system_instruction="Be an encouraging short business advisor.", temperature=0.3)
         )
-        return jsonify({"reply": response.text or "Acknowledged."}), 200
+        return jsonify({"reply": format_chat_reply(response.text or "Acknowledged.")}), 200
     except: return jsonify({"reply": "API link timeout."}), 500
 
 if __name__ == '__main__':

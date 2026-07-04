@@ -4,7 +4,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app.app.routes.ai_core import format_chat_reply
+from app import format_chat_reply
 
 
 class ChatFormattingTests(unittest.TestCase):
