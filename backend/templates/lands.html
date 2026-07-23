@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRIVE — Predict. Prevent. Grow.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 10% 20%, rgba(15, 18, 36, 1) 0%, rgba(8, 8, 12, 1) 90%);
+        }
+        .glow-text { text-shadow: 0 0 30px rgba(147, 51, 234, 0.35); }
+        .glow-btn {
+            box-shadow: 0 0 25px rgba(147, 51, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        .glow-btn:hover {
+            box-shadow: 0 0 40px rgba(147, 51, 234, 0.7);
+            transform: translateY(-1px);
+        }
+        .chart-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 3s ease-out forwards;
+        }
+        @keyframes drawLine { to { stroke-dashoffset: 0; } }
+    </style>
+</head>
+<body class="text-gray-300 min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-purple-600 selection:text-white">
+
+    <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center z-50">
+        <div class="flex items-center space-x-3">
+            <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-md shadow-purple-900/50">
+                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <a href="{{ url_for('landing') }}" class="text-white font-bold tracking-widest text-xl uppercase">STRIVE</a>
+        </div>
+        
+        <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-400">
+            <a href="{{ url_for('landing_features') }}" class="hover:text-white transition">Features</a>
+            <a href="{{ url_for('landing_built') }}" class="hover:text-white transition">How it's built</a>
+            <a href="{{ url_for('landing_model') }}" class="hover:text-white transition">The Model</a>
+        </nav>
+
+        <a href="{{ url_for('login') }}" class="bg-white/10 hover:bg-white/20 border border-white/10 text-white text-xs font-semibold px-4 py-2 rounded-full transition backdrop-blur-md">
+            Launch Platform ↗
+        </a>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center justify-center text-center px-4 py-12 relative">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div class="inline-flex items-center space-x-2 bg-white/[0.03] border border-white/10 px-4 py-1.5 rounded-full text-xs text-gray-400 mb-8 backdrop-blur-sm">
+            <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+            <span>Predictive Analytics Engine Layer Active</span>
+        </div>
+
+        <h1 class="text-5xl md:text-7xl font-bold tracking-widest text-white uppercase mb-4 glow-text">
+            STRIVE
+        </h1>
+        <p class="text-lg md:text-xl text-purple-300 font-medium tracking-wide mb-6">
+            Predict. Prevent. Grow.
+        </p>
+
+        <p class="max-w-2xl text-sm md:text-base text-gray-400 leading-relaxed mb-10">
+            An advanced telemetry platform designed for founders. We map your <span class="text-white font-medium">net cash velocity</span>, identify micro-trends signaling <span class="text-white font-medium">operational decline</span> before it accelerates, and automatically configure tactical survival paths.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 z-10">
+            <a href="{{ url_for('login') }}" class="glow-btn w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium text-sm px-8 py-3.5 rounded-xl shadow-lg transition text-center">
+                Access Risk Deck ↗
+            </a>
+            <a href="{{ url_for('landing_features') }}" class="w-full sm:w-auto bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white font-medium text-sm px-8 py-3.5 rounded-xl transition text-center backdrop-blur-sm">
+                Analyze Strategy ↓
+            </a>
+        </div>
+
+        <div class="w-full max-w-3xl px-6 h-24 flex items-center justify-center relative">
+            <div class="absolute inset-0 border-y border-white/[0.03] pointer-events-none"></div>
+            <svg class="w-full h-full" viewBox="0 0 800 100" preserveAspectRatio="none">
+                <line x1="0" y1="50" x2="800" y2="50" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
+                <path class="chart-line" d="M0,80 Q100,75 200,60 T400,65 T600,30 T800,20" fill="none" stroke="url(#neoPurpleGrad)" stroke-width="2.5" />
+                <defs>
+                    <linearGradient id="neoPurpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#818cf8" />
+                        <stop offset="50%" stop-color="#c084fc" />
+                        <stop offset="100%" stop-color="#34d399" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div class="absolute left-6 bottom-0 text-[10px] text-gray-600 tracking-wider font-mono">HISTORICAL DECAY ENGINE</div>
+            <div class="absolute right-6 top-0 text-[10px] text-emerald-500 tracking-wider font-mono animate-pulse">OPTIMIZED EXPANSION ZONE</div>
+        </div>
+    </main>
+
+    <footer class="w-full text-center py-8 z-50">
+        <span class="text-xs uppercase tracking-[0.4em] text-gray-500 font-semibold font-mono">// Telemetry Monitor Active</span>
+    </footer>
+</body>
+</html>

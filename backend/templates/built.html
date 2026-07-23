@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Architecture — Pulse Check Neo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: radial-gradient(circle at 0% 100%, rgba(18, 24, 48, 1) 0%, rgba(8, 8, 12, 1) 80%); 
+        }
+        .code-font { font-family: 'JetBrains Mono', monospace; }
+        .tech-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+    </style>
+</head>
+<body class="text-gray-300 min-h-screen flex flex-col justify-between p-4 md:p-8 selection:bg-indigo-600 selection:text-white">
+
+    <header class="w-full max-w-7xl mx-auto py-4 flex justify-between items-center border-b border-white/5 backdrop-blur-md sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+            <div class="h-6 w-6 rounded bg-gradient-to-tr from-indigo-600 to-purple-500 flex items-center justify-center">
+                <span class="text-white text-xs font-bold">Δ</span>
+            </div>
+            <span class="text-white font-bold tracking-wider text-sm uppercase">Neo Architecture Console</span>
+        </div>
+        <a href="{{ url_for('landing') }}" class="text-xs uppercase tracking-wider text-gray-400 hover:text-white transition">
+            ← Back to Platform Gate
+        </a>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full py-12 md:py-20 space-y-16">
+        
+        <div class="max-w-3xl border-l-4 border-indigo-500 pl-6">
+            <div class="text-xs font-mono text-indigo-400 uppercase tracking-widest mb-1">// SYSTEM DEPENDENCY AND BACKEND LIFE CYCLES</div>
+            <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tight">
+                High-Speed Infrastructure. Simple Layout.
+            </h1>
+            <p class="text-sm text-gray-400 mt-2 leading-relaxed">
+                Pulse Check Neo runs on an optimized asynchronous processing pipeline, allowing rapid execution calculations without increasing server overhead constraints.
+            </p>
+        </div>
+
+        <section class="tech-card rounded-2xl p-6 md:p-8 bg-black/40">
+            <h2 class="text-sm font-mono text-gray-400 uppercase tracking-wider mb-6">// FLOW MAP OF YOUR INPUT DATA OVER NETWORK LAYERS</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                <div class="bg-white/[0.02] border border-white/5 p-4 rounded-xl relative">
+                    <div class="text-xs font-mono text-indigo-400 mb-1">01 / INGESTION PORT</div>
+                    <div class="text-white font-semibold text-sm mb-1">User Input Fields</div>
+                    <p class="text-[11px] text-gray-500 font-sans mt-2">You fill out secure forms on your screen (Money In, Out, and Total Savings parameters).</p>
+                </div>
+                <div class="bg-white/[0.02] border border-white/5 p-4 rounded-xl">
+                    <div class="text-xs font-mono text-purple-400 mb-1">02 / CORE RUNTIME</div>
+                    <div class="text-white font-semibold text-sm mb-1">Math Processing Engine</div>
+                    <p class="text-[11px] text-gray-500 font-sans mt-2">Flask script evaluates parameters, computing security runways and threat scores instantly.</p>
+                </div>
+                <div class="bg-white/[0.02] border border-white/5 p-4 rounded-xl">
+                    <div class="text-xs font-mono text-cyan-400 mb-1">03 / COGNITIVE LLM</div>
+                    <div class="text-white font-semibold text-sm mb-1">Gemini AI Synthesis Model</div>
+                    <p class="text-[11px] text-gray-500 font-sans mt-2">App sends indicators via advanced system profiles to generate daily step-by-step guidelines.</p>
+                </div>
+                <div class="bg-white/[0.02] border border-white/5 p-4 rounded-xl">
+                    <div class="text-xs font-mono text-emerald-400 mb-1">04 / INTERFACE FEED</div>
+                    <div class="text-white font-semibold text-sm mb-1">Websocket Streaming Layer</div>
+                    <p class="text-[11px] text-gray-500 font-sans mt-2">SocketIO protocols stream recalculated updates across dashboard wrappers smoothly.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <div class="lg:col-span-5 space-y-4">
+                <h2 class="text-xl font-bold text-white tracking-tight">Platform Performance Architecture</h2>
+                <p class="text-xs text-gray-400 leading-relaxed">
+                    By managing state execution vectors completely inside transient memory sessions, the app bypasses bulky corporate database architectures. Any entrepreneur can experience sub-millisecond page response thresholds.
+                </p>
+
+                <div class="space-y-2 font-mono text-xs pt-2">
+                    <div class="flex justify-between border-b border-white/5 pb-2">
+                        <span class="text-gray-500">Routing Core Gateway Framework</span>
+                        <span class="text-indigo-400">`Python Flask Engine Layer`</span>
+                    </div>
+                    <div class="flex justify-between border-b border-white/5 pb-2">
+                        <span class="text-gray-500">Asynchronous System Server Mode</span>
+                        <span class="text-purple-400">`gevent Virtual Coroutines`</span>
+                    </div>
+                    <div class="flex justify-between border-b border-white/5 pb-2">
+                        <span class="text-gray-500">Storage Footprint Limits</span>
+                        <span class="text-cyan-400">`Zero-Retention Secure Session Memory`</span>
+                    </div>
+                    <div class="flex justify-between border-b border-white/5 pb-2">
+                        <span class="text-gray-500">Artificial Advisor Interface Model</span>
+                        <span class="text-emerald-400">`Google Gemini API Nodes`</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 bg-[#090a10] border border-white/5 rounded-xl p-5 shadow-2xl space-y-4">
+                <div class="flex justify-between items-center border-b border-white/5 pb-3 font-mono text-[11px]">
+                    <span class="text-gray-400 font-semibold">// APP DEPENDENCY TREE PLATFORM DECLARATIONS</span>
+                    <span class="text-indigo-400 font-medium">requirements.txt</span>
+                </div>
+                
+                <div class="bg-black/60 border border-white/5 p-4 rounded-lg font-mono text-xs text-gray-400 space-y-1 overflow-x-auto">
+                    <div class="text-gray-600"># Core code libraries used to build this lightweight, elite environment</div>
+                    <div>Flask==3.0.2 <span class="text-gray-600">// Core routing web app</span></div>
+                    <div>Flask-SocketIO==5.3.6 <span class="text-gray-600">// Live stream link module</span></div>
+                    <div>gevent-websocket==0.10.1 <span class="text-gray-600">// Fast asynchronous network backend</span></div>
+                    <div>google-genai==0.1.1 <span class="text-gray-600">// Connects application parameters to AI models</span></div>
+                    <div>python-dotenv==1.0.1 <span class="text-gray-600">// Safe credentials manager layer</span></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="w-full text-center py-8 border-t border-white/5 mt-12">
+        <span class="text-xs font-mono text-gray-600 uppercase tracking-widest">// ARCHITECTURE PREVIEW SHUTDOWN COMPLETE</span>
+    </footer>
+
+</body>
+</html>

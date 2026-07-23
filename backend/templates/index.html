@@ -3,48 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PulseCheck Neo — Executive Command Suite (v2.4.0-Enterprise)</title>
+    <title>PulseCheck Neo — Executive Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+    <!-- Tailwind CDN (Phase 4 widgets only) — Preflight disabled so it layers on top of the
+         existing hand-rolled design system above instead of resetting it. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { corePlugins: { preflight: false } };
+    </script>
+
     <style>
-        /* --- GLOBAL ROOT VARIABALIZED DECLARATIONS --- */
+        /* --- LIGHT EXECUTIVE SUITE THEME VARIABLE ENGINE --- */
         :root {
-            --bg-primary: #f8fafc;
-            --bg-sidebar: #0f172a;
-            --bg-sidebar-hover: #1e293b;
-            --bg-card: #ffffff;
-            --bg-card-header: #f8fafc;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --text-white: #ffffff;
-            --brand-color: #2563eb;
-            --brand-color-dark: #1d4ed8;
-            --brand-light: #eff6ff;
-            --brand-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-            --border-color: #e2e8f0;
-            --border-focus: #3b82f6;
-            --success: #10b981;
-            --success-light: #f0fdf4;
-            --danger: #ef4444;
+            --bg-app: #f3f5f8;
+            --bg-sidebar: #16213a;
+            --bg-sidebar-active: rgba(6, 182, 212, 0.18);
+            --bg-sidebar-hover: rgba(255, 255, 255, 0.06);
+            --sidebar-text: #aab4c8;
+            --sidebar-text-active: #ffffff;
+            --card-bg: #ffffff;
+            --card-border: #e5e9f0;
+            --ink: #1f2937;
+            --ink-soft: #374151;
+            --ink-muted: #6b7280;
+            --brand-color: #0891b2;
+            --brand-color-dark: #0e7490;
+            --brand-light: #ecfeff;
+            --brand-gradient: linear-gradient(135deg, #06b6d4 0%, #6366f1 100%);
+            --border-color: #e5e9f0;
+            --success: #16a34a;
+            --success-light: #ecfdf3;
+            --danger: #dc2626;
             --danger-light: #fef2f2;
-            --warning: #f59e0b;
-            --warning-light: #fefbeb;
-            --info: #06b6d4;
+            --warning: #d97706;
+            --warning-light: #fffbeb;
+            --info: #0891b2;
             --info-light: #ecfeff;
             --radius-sm: 6px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
+            --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.10);
             --transition-fast: all 0.15s ease;
-            --transition-normal: all 0.25s ease;
+            --transition-normal: all 0.2s ease;
         }
 
-        /* --- GLOBAL STYLING RESETS --- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -55,25 +63,25 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-main);
+            background-color: var(--bg-app);
+            color: var(--ink);
             display: flex;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
+            position: relative;
         }
 
-        /* --- LEFT SIDEBAR APPLICATION SHELL SYSTEM --- */
+        /* --- SIDEBAR NAVIGATION RAIL --- */
         .sidebar-nav {
-            width: 280px;
-            min-width: 280px;
-            background-color: var(--bg-sidebar);
-            color: var(--text-white);
+            width: 264px;
+            min-width: 264px;
+            background: var(--bg-sidebar);
+            color: var(--sidebar-text-active);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 28px 20px;
-            box-shadow: var(--shadow-lg);
+            padding: 24px 16px;
             z-index: 100;
             position: relative;
         }
@@ -81,167 +89,204 @@
         .brand-logo-area {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding-bottom: 28px;
-            border-bottom: 1px solid #1e293b;
+            gap: 12px;
+            padding: 4px 8px 20px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .brand-logo-area i {
-            font-size: 26px;
-            color: #38bdf8;
-            animation: pulse 3s infinite;
+        .brand-logo-mark {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            border-radius: 9px;
+            background: var(--brand-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-logo-mark i {
+            font-size: 16px;
+            color: #ffffff;
         }
 
         .brand-logo-area h1 {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 800;
-            letter-spacing: -0.5px;
-            background: linear-gradient(120deg, #ffffff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.2px;
+            color: #ffffff;
+        }
+
+        .nav-section-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 18px 12px 8px 12px;
         }
 
         .nav-links-group {
-            margin-top: 32px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 2px;
             flex-grow: 1;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 14px 16px;
-            color: #94a3b8;
+            gap: 12px;
+            padding: 10px 12px;
+            color: var(--sidebar-text);
             text-decoration: none;
             font-size: 14px;
-            font-weight: 600;
-            border-radius: var(--radius-md);
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            border-left: 3px solid transparent;
             transition: var(--transition-normal);
         }
 
         .nav-link:hover {
             background-color: var(--bg-sidebar-hover);
-            color: var(--text-white);
-            transform: translateX(4px);
+            color: #ffffff;
         }
 
         .nav-link.active {
-            background: var(--brand-gradient);
-            color: var(--text-white);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            background-color: var(--bg-sidebar-active);
+            color: #ffffff;
+            border-left-color: var(--brand-color);
+            font-weight: 700;
+        }
+
+        .sandbox-special-link {
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .sandbox-special-link:hover {
+            background-color: rgba(6, 182, 212, 0.12) !important;
+            border-color: var(--brand-color);
+        }
+
+        .sandbox-special-link.active {
+            background: var(--bg-sidebar-active) !important;
+            border: 1px solid var(--brand-color) !important;
+            border-left: 3px solid var(--brand-color) !important;
         }
 
         .nav-link i {
-            font-size: 20px;
+            font-size: 17px;
+            width: 18px;
+            text-align: center;
         }
 
+        /* Sidebar system notice card */
         .sidebar-system-alerts {
-            background: #1e293b;
+            background: rgba(255, 255, 255, 0.05);
             border-radius: var(--radius-md);
-            padding: 16px;
-            margin-bottom: 24px;
-            border: 1px solid #334155;
+            padding: 14px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .system-alert-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            color: #38bdf8;
+            color: #ffffff;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
             margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+        }
+
+        .system-alert-title i {
+            color: var(--brand-color);
         }
 
         .system-alert-desc {
-            font-size: 12px;
-            color: #94a3b8;
-            line-height: 1.4;
+            font-size: 11px;
+            color: var(--sidebar-text);
+            line-height: 1.5;
         }
 
         .sidebar-footer {
-            border-top: 1px solid #1e293b;
-            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 16px;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
 
         .avatar-circle {
-            width: 44px;
-            height: 44px;
-            background: var(--brand-gradient);
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
+            background: rgba(255, 255, 255, 0.12);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 16px;
-            color: var(--text-white);
-            box-shadow: var(--shadow-sm);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            color: #ffffff;
         }
 
         .user-meta-data h5 {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
-            color: var(--text-white);
+            color: #ffffff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 160px;
+            max-width: 150px;
         }
 
         .user-meta-data p {
-            font-size: 12px;
-            color: #64748b;
-            font-weight: 500;
+            font-size: 11px;
+            color: var(--sidebar-text);
         }
 
-        /* --- MAIN HUB APPLICATION WORKSPACE LAYOUT --- */
+        /* --- MAIN APPLICATION WORKSPACE LAYOUT --- */
         .main-workspace {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            width: calc(100vw - 280px);
+            width: calc(100vw - 264px);
             overflow: hidden;
+            z-index: 10;
         }
 
         .top-navbar {
-            background-color: var(--bg-card);
-            height: 80px;
-            border-bottom: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            height: 64px;
+            min-height: 64px;
+            border-bottom: 1px solid var(--card-border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 40px;
-            box-shadow: var(--shadow-sm);
+            padding: 0 32px;
             z-index: 50;
         }
 
         .welcome-title-block h2 {
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--text-main);
-            letter-spacing: -0.5px;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--ink);
         }
 
         .welcome-title-block p {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 2px;
+            font-size: 12px;
+            color: var(--ink-muted);
+            margin-top: 1px;
         }
 
         .top-navbar-actions-area {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 14px;
         }
 
         .system-status-indicator {
@@ -250,148 +295,163 @@
             gap: 8px;
             background-color: var(--success-light);
             color: var(--success);
-            padding: 8px 14px;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
         .system-status-indicator .ping-dot {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background-color: var(--success);
             border-radius: 50%;
             display: inline-block;
-            position: relative;
+            animation: corePulse 1.2s infinite alternate;
         }
 
         .exit-session-link {
-            font-size: 14px;
-            color: var(--text-muted);
+            font-size: 12px;
+            color: var(--ink-muted);
             text-decoration: none;
             font-weight: 600;
             display: flex;
             align-items: center;
             gap: 6px;
             transition: var(--transition-fast);
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: var(--radius-sm);
+            border: 1px solid var(--card-border);
         }
 
         .exit-session-link:hover {
             color: var(--danger);
             background-color: var(--danger-light);
+            border-color: rgba(220, 38, 38, 0.2);
         }
 
-        /* --- DASHBOARD CANVAS SCROLL CONTAINER --- */
+        /* --- DASHBOARD CANVAS SCROLL AREA --- */
         .dashboard-grid-canvas {
             flex-grow: 1;
-            padding: 32px 40px;
+            padding: 28px 32px;
             overflow-y: auto;
             display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 32px;
+            grid-template-columns: 1fr 400px;
+            grid-auto-rows: min-content;
+            align-content: start;
+            gap: 24px;
         }
 
-        /* --- REAL-TIME DATA ADJUSTMENT SANDBOX PANEL --- */
+        /* --- GENERIC WIDGET ROW WRAPPERS --- */
+        .widget-row-3 {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .widget-row-2-even {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        /* --- SANDBOX CONTROL PANEL --- */
         .sandbox-panel-card {
             grid-column: 1 / -1;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
             padding: 24px;
             display: flex;
-            gap: 32px;
-            align-items: center;
+            flex-direction: column;
+            gap: 22px;
             box-shadow: var(--shadow-sm);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sandbox-panel-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--brand-gradient);
-        }
-
-        .sandbox-meta-title {
-            min-width: 180px;
         }
 
         .sandbox-meta-title h4 {
             font-size: 15px;
-            font-weight: 800;
-            color: #0f172a;
+            font-weight: 700;
+            color: var(--ink);
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
+        .sandbox-meta-title h4 i {
+            color: var(--brand-color);
+        }
+
         .sandbox-meta-title p {
             font-size: 12px;
-            color: var(--text-muted);
+            color: var(--ink-muted);
             margin-top: 4px;
             line-height: 1.4;
         }
 
+        .sandbox-controls-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+        }
+
         .sandbox-control-slider {
-            flex-grow: 1;
             display: flex;
             flex-direction: column;
             gap: 8px;
+            background: var(--bg-app);
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--card-border);
         }
 
         .sandbox-control-slider label {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
-            color: #475569;
+            color: var(--ink-soft);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .sandbox-control-slider label span {
-            font-family: monospace;
-            font-size: 15px;
-            color: var(--brand-color);
-            background: white;
-            padding: 2px 8px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-color);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--brand-color-dark);
+            background: var(--brand-light);
+            padding: 2px 10px;
+            border-radius: 4px;
         }
 
         .sandbox-control-slider input[type=range] {
             width: 100%;
             -webkit-appearance: none;
-            height: 8px;
+            height: 5px;
             border-radius: 4px;
-            background: #cbd5e1;
+            background: #d7dde6;
             outline: none;
         }
 
         .sandbox-control-slider input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             background: var(--brand-color);
             cursor: pointer;
             transition: var(--transition-fast);
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 0 0 4px rgba(8, 145, 178, 0.15);
+            border: 2px solid #ffffff;
         }
 
         .sandbox-control-slider input[type=range]::-webkit-slider-thumb:hover {
             transform: scale(1.15);
-            background: var(--brand-color-dark);
         }
 
-        /* --- EXECUTIVE SCORECARDS CONTAINER --- */
+        /* --- EXECUTIVE SCORECARDS --- */
         .metrics-summary-row {
             grid-column: 1 / -1;
             display: grid;
@@ -400,10 +460,10 @@
         }
 
         .metric-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
-            padding: 24px;
+            padding: 20px 22px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -412,42 +472,527 @@
         }
 
         .metric-card:hover {
-            transform: translateY(-2px);
             box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
         }
 
         .metric-info p {
-            font-size: 13px;
-            color: var(--text-muted);
+            font-size: 12px;
+            color: var(--ink-muted);
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             margin-bottom: 6px;
         }
 
         .metric-info h3 {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 800;
-            color: var(--text-main);
-            letter-spacing: -1px;
+            color: var(--ink);
+            letter-spacing: -0.5px;
         }
 
         .metric-icon-box {
-            width: 52px;
-            height: 52px;
+            width: 44px;
+            height: 44px;
             border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 19px;
         }
 
-        /* --- ONEPREP DESIGN ROADMAP PLANNER SECTION --- */
-        .planner-card-section {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
+        .indicator-green {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .indicator-red {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .indicator-blue {
+            background: var(--info-light);
+            color: var(--info);
+        }
+
+        .indicator-amber {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .info-card-grid {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+        }
+
+        /* --- GENERIC WIDGET CARD (Tasks / Shortcuts / Cash Flow / P&L / Reserves / Donut) --- */
+        .widget-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
-            padding: 28px;
+            padding: 22px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .widget-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .widget-card-header h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .widget-card-header h3 i {
+            color: var(--brand-color-dark);
+        }
+
+        .widget-header-action {
+            font-size: 12px;
+            color: var(--ink-muted);
+            font-weight: 500;
+        }
+
+        .ai-summary-card {
+            background: linear-gradient(135deg, var(--brand-light) 0%, var(--card-bg) 55%);
+            border-color: rgba(8, 145, 178, 0.25);
+        }
+
+        .ai-summary-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--ink-soft);
+        }
+
+        .widget-show-all {
+            margin-top: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--brand-color-dark);
+            text-decoration: none;
+        }
+
+        .widget-show-all:hover {
+            text-decoration: underline;
+        }
+
+        /* Tasks widget */
+        .tasks-list-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 10px;
+            margin-bottom: 4px;
+        }
+
+        .tasks-list-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .tasks-list-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .tasks-row-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .tasks-row-sub {
+            font-size: 12px;
+            color: var(--ink-muted);
+            margin-top: 2px;
+        }
+
+        .tasks-go-link {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--brand-color-dark);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .tasks-go-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Cash flow / big figure widgets */
+        .widget-stat-label {
+            font-size: 12px;
+            color: var(--ink-muted);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .widget-big-figure {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--ink);
+            letter-spacing: -0.5px;
+            margin-bottom: 16px;
+        }
+
+        .widget-big-figure.figure-positive { color: var(--success); }
+        .widget-big-figure.figure-negative { color: var(--danger); }
+
+        .widget-chart-canvas-wrap {
+            height: 190px;
+            width: 100%;
+        }
+
+        /* Profit & Loss bars */
+        .pl-bar-row {
+            margin-bottom: 16px;
+        }
+
+        .pl-bar-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .pl-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink-soft);
+            margin-bottom: 6px;
+        }
+
+        .pl-bar-track {
+            width: 100%;
+            height: 9px;
+            background: var(--bg-app);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .pl-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+        }
+
+        .pl-bar-fill.income-fill { background: var(--success); }
+        .pl-bar-fill.expense-fill { background: var(--brand-color); }
+
+        /* Bank / cash reserves widget */
+        .bank-account-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .bank-account-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .bank-account-icon {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 50%;
+            background: var(--brand-light);
+            color: var(--brand-color-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .bank-account-meta {
+            flex-grow: 1;
+        }
+
+        .bank-account-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .bank-account-sub {
+            font-size: 11px;
+            color: var(--ink-muted);
+            margin-top: 2px;
+        }
+
+        .bank-account-balance {
+            text-align: right;
+        }
+
+        .balance-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .balance-label {
+            font-size: 10px;
+            color: var(--ink-muted);
+            margin-top: 2px;
+        }
+
+        /* Donut legend */
+        .donut-legend {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .donut-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--ink-soft);
+        }
+
+        .donut-legend-item b {
+            margin-left: auto;
+            color: var(--ink);
+        }
+
+        .legend-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* --- COMPOSITE VITALITY GROWTH CHART --- */
+        .vitality-chart-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .vitality-chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .vitality-chart-header h2 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vitality-chart-header h2 i {
+            color: var(--brand-color);
+        }
+
+        .vitality-chart-header p {
+            font-size: 12px;
+            color: var(--ink-muted);
+            margin-top: 6px;
+            max-width: 440px;
+            line-height: 1.5;
+        }
+
+        .vitality-score-block {
+            text-align: right;
+        }
+
+        .vitality-score-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1;
+        }
+
+        .vitality-score-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 4px;
+        }
+
+        .vitality-direction-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .vitality-direction-pill.growth {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .vitality-direction-pill.decline {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .vitality-chart-canvas-wrap {
+            height: 230px;
+            width: 100%;
+        }
+
+        /* --- STANDARD MULTI-PANEL VIEW SECTIONS --- */
+        .view-section-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .view-section-card h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .view-section-card h2 i {
+            color: var(--brand-color);
+        }
+
+        .view-section-card > p {
+            font-size: 12px;
+            color: var(--ink-muted);
+            margin-bottom: 22px;
+        }
+
+        .settings-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-top: 4px;
+        }
+
+        .settings-form-grid label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--ink-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .settings-form-grid input,
+        .settings-form-grid select {
+            background: var(--bg-app);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-sm);
+            padding: 11px 12px;
+            color: var(--ink);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition-fast);
+        }
+
+        .settings-form-grid input:focus,
+        .settings-form-grid select:focus {
+            border-color: var(--brand-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.12);
+        }
+
+        .settings-save-btn {
+            margin-top: 22px;
+            background: var(--ink);
+            border: none;
+            color: #ffffff;
+            padding: 12px 26px;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .settings-save-btn:hover {
+            background: #111827;
+            transform: translateY(-1px);
+        }
+
+        .playbook-category-summary {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 4px;
+        }
+
+        .category-summary-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-left: 4px solid var(--brand-color);
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .category-summary-card h4 {
+            font-size: 12px;
+            color: var(--ink-muted);
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .category-summary-card .count {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--ink);
+        }
+
+        /* --- TIMELINE PLANNER --- */
+        .planner-card-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
             box-shadow: var(--shadow-sm);
             display: flex;
             flex-direction: column;
@@ -458,38 +1003,39 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
-            margin-bottom: 20px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 18px;
+            margin-bottom: 18px;
         }
 
         .planner-header-group h2 {
-            font-size: 18px;
-            font-weight: 800;
-            color: #0f172a;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink);
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
+        .planner-header-group h2 i {
+            color: var(--brand-color);
+        }
+
         .planner-header-group p {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 2px;
+            font-size: 12px;
+            color: var(--ink-muted);
+            margin-top: 3px;
         }
 
         .badge-interval {
             background: var(--brand-light);
-            color: var(--brand-color);
+            color: var(--brand-color-dark);
             padding: 6px 14px;
-            border-radius: 99px;
+            border-radius: 20px;
             font-weight: 700;
-            font-size: 12px;
-            text-transform: uppercase;
-            border: 1px solid rgba(37, 99, 235, 0.1);
+            font-size: 11px;
         }
 
-        /* NEW INTEGRATED DASHBOARD PROGRESS BAR */
         .progress-meta-details {
             display: flex;
             justify-content: space-between;
@@ -499,36 +1045,35 @@
 
         .progress-meta-details span {
             font-size: 11px;
-            font-weight: 800;
-            color: var(--text-muted);
+            font-weight: 700;
+            color: var(--ink-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
         }
 
         .progress-tracking-bar-container {
-            background: #e2e8f0;
-            border-radius: 10px;
+            background: var(--bg-app);
+            border: 1px solid var(--card-border);
+            border-radius: 4px;
             height: 10px;
             width: 100%;
-            margin-bottom: 24px;
+            margin-bottom: 22px;
             overflow: hidden;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
         }
 
         .progress-bar-fill {
-            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            background: var(--brand-gradient);
             height: 100%;
             width: 0%;
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.5s ease;
         }
 
-        /* Filtering controls row styles */
         .controls-wrapper {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 16px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .filter-buttons-row {
@@ -537,37 +1082,38 @@
         }
 
         .filter-btn {
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 13px;
+            background: var(--bg-app);
+            color: var(--ink-muted);
+            border: 1px solid var(--card-border);
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-family: inherit;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition-fast);
         }
 
         .filter-btn:hover {
-            background: #e2e8f0;
-            color: var(--text-main);
+            border-color: var(--brand-color);
+            color: var(--brand-color-dark);
         }
 
         .filter-btn.active {
-            background: var(--bg-sidebar);
-            color: var(--text-white);
-            border-color: var(--bg-sidebar);
+            background: var(--ink);
+            color: #ffffff;
+            border-color: var(--ink);
         }
 
         .filter-btn.overdue-btn {
             background: var(--danger-light);
             color: var(--danger);
-            border-color: rgba(239, 68, 68, 0.2);
+            border-color: rgba(220, 38, 38, 0.2);
         }
 
         .filter-btn.overdue-btn:hover {
             background: var(--danger);
-            color: var(--text-white);
+            color: #ffffff;
         }
 
         .search-box-input {
@@ -580,88 +1126,81 @@
             left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 16px;
+            color: var(--ink-muted);
+            font-size: 15px;
         }
 
         .search-box-input input {
             width: 100%;
-            padding: 10px 16px 10px 42px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            padding: 9px 16px 9px 40px;
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            font-family: inherit;
             font-size: 13px;
-            font-weight: 500;
             outline: none;
-            background-color: #f8fafc;
+            background-color: var(--bg-app);
+            color: var(--ink);
             transition: var(--transition-fast);
         }
 
         .search-box-input input:focus {
-            background-color: white;
-            border-color: var(--border-focus);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background-color: #ffffff;
+            border-color: var(--brand-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.12);
         }
 
-        /* Interactive Timeline View Axis */
         .timeline-scroll-axis {
             max-height: 480px;
             overflow-y: auto;
-            padding-right: 10px;
+            padding-right: 6px;
         }
 
         .timeline-scroll-axis::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .timeline-scroll-axis::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 10px;
+            width: 4px;
         }
 
         .timeline-scroll-axis::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
+            background: var(--card-border);
+            border-radius: 2px;
         }
 
         .timeline-row-item {
             display: flex;
-            background: #ffffff;
-            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: var(--radius-md);
-            padding: 18px;
-            margin-bottom: 12px;
+            padding: 16px;
+            margin-bottom: 10px;
             align-items: center;
             transition: var(--transition-normal);
         }
 
         .timeline-row-item:hover {
-            border-color: #cbd5e1;
+            border-color: var(--brand-color);
             box-shadow: var(--shadow-sm);
-            transform: translateX(2px);
         }
 
         .date-badge-column {
-            width: 85px;
-            min-width: 85px;
-            border-right: 1px dashed var(--border-color);
+            width: 80px;
+            min-width: 80px;
+            border-right: 1px solid var(--card-border);
             padding-right: 12px;
-            margin-right: 18px;
+            margin-right: 16px;
             display: flex;
             flex-direction: column;
         }
 
         .date-badge-column .day-lbl {
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--ink-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .date-badge-column .date-lbl {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
-            color: #334155;
+            color: var(--brand-color-dark);
             margin-top: 2px;
         }
 
@@ -674,102 +1213,117 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
 
         .meta-tags-row h4 {
-            margin: 0;
-            font-size: 15px;
-            color: #0f172a;
             font-weight: 700;
-            letter-spacing: -0.2px;
+            margin: 0;
+            font-size: 14px;
+            color: var(--ink);
         }
 
         .category-tag {
-            background: #f1f5f9;
-            color: #475569;
-            font-size: 11px;
+            background: var(--brand-light);
+            color: var(--brand-color-dark);
+            font-size: 10px;
             padding: 3px 8px;
-            border-radius: 4px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
+            border-radius: 10px;
+            font-weight: 700;
         }
 
         .overdue-pill {
             background: var(--danger-light);
             color: var(--danger);
-            font-size: 11px;
+            font-size: 10px;
             padding: 2px 8px;
-            border-radius: 4px;
+            border-radius: 10px;
             font-weight: 700;
-            text-transform: uppercase;
         }
 
         .content-middle p {
             margin: 0;
-            font-size: 13px;
-            color: var(--text-muted);
+            font-size: 12px;
+            color: var(--ink-muted);
             line-height: 1.5;
         }
 
         .action-right-side button {
             cursor: pointer;
-            background: var(--brand-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
+            background: #ffffff;
+            color: var(--brand-color-dark);
+            border: 1px solid var(--brand-color);
+            border-radius: 20px;
             padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 600;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 700;
             transition: var(--transition-fast);
             white-space: nowrap;
-            box-shadow: var(--shadow-sm);
         }
 
         .action-right-side button:hover {
-            background: var(--brand-color-dark);
+            background: var(--brand-color);
+            color: #ffffff;
         }
 
-        /* --- SPLIT CANVAS CO-PILOT CHAT DRAWER LAYOUT --- */
+        /* --- SPLIT CO-PILOT CHAT DRAWER LAYOUT --- */
         .co-pilot-sidebar-drawer {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
             display: flex;
             flex-direction: column;
             box-shadow: var(--shadow-sm);
             height: 645px;
-            position: relative;
         }
 
         .chat-drawer-header {
-            padding: 24px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 20px;
+            border-bottom: 1px solid var(--card-border);
             display: flex;
             align-items: center;
             gap: 14px;
-            background-color: var(--bg-card-header);
+            background-color: var(--bg-app);
             border-top-left-radius: var(--radius-lg);
             border-top-right-radius: var(--radius-lg);
         }
 
         .chat-drawer-header i {
-            font-size: 24px;
+            font-size: 22px;
             color: var(--brand-color);
         }
 
         .chat-drawer-header h3 {
-            font-size: 16px;
-            font-weight: 800;
-            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink);
         }
 
         .chat-drawer-header p {
             font-size: 11px;
-            color: var(--text-muted);
+            color: var(--ink-muted);
             margin-top: 1px;
         }
+
+        /* Ambient audio waves graphic inside Co-Pilot panel */
+        .audio-viz-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            margin-left: auto;
+            height: 20px;
+        }
+        .audio-bar {
+            width: 3px;
+            background: var(--brand-color);
+            border-radius: 1px;
+            height: 4px;
+            animation: audioVizPulse 0.8s ease-in-out infinite alternate;
+        }
+        .audio-bar:nth-child(2) { animation-delay: 0.2s; height: 16px; }
+        .audio-bar:nth-child(3) { animation-delay: 0.4s; height: 8px; }
+        .audio-bar:nth-child(4) { animation-delay: 0.1s; height: 12px; }
 
         .chat-messages-container {
             flex-grow: 1;
@@ -778,7 +1332,7 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
-            background-color: #fefefe;
+            background-color: #fbfcfe;
         }
 
         .chat-messages-container::-webkit-scrollbar {
@@ -786,7 +1340,7 @@
         }
 
         .chat-messages-container::-webkit-scrollbar-thumb {
-            background: #e2e8f0;
+            background: var(--card-border);
             border-radius: 2px;
         }
 
@@ -796,72 +1350,77 @@
             border-radius: var(--radius-md);
             font-size: 13px;
             line-height: 1.5;
-            box-shadow: var(--shadow-sm);
         }
 
         .chat-bubble.bot {
-            background-color: #f1f5f9;
-            color: var(--text-main);
+            background-color: #ffffff;
+            color: var(--ink);
             align-self: flex-start;
+            border: 1px solid var(--card-border);
             border-bottom-left-radius: 2px;
         }
 
         .chat-bubble.user {
             background: var(--brand-gradient);
-            color: var(--text-white);
+            color: #ffffff;
             align-self: flex-end;
             border-bottom-right-radius: 2px;
         }
 
         .chat-input-wrapper {
-            padding: 20px;
-            border-top: 1px solid var(--border-color);
+            padding: 16px 20px;
+            border-top: 1px solid var(--card-border);
             display: flex;
             gap: 10px;
-            background-color: var(--bg-card-header);
+            background-color: var(--bg-app);
             border-bottom-left-radius: var(--radius-lg);
             border-bottom-right-radius: var(--radius-lg);
         }
 
         .chat-input-wrapper input {
             flex-grow: 1;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            padding: 11px 16px;
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            color: var(--ink);
+            font-family: inherit;
             font-size: 13px;
-            font-weight: 500;
             outline: none;
             transition: var(--transition-fast);
-            background-color: white;
         }
 
         .chat-input-wrapper input:focus {
-            border-color: var(--border-focus);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: var(--brand-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.12);
         }
 
         .chat-input-wrapper button {
             background: var(--brand-gradient);
-            color: white;
             border: none;
-            border-radius: 8px;
-            padding: 0 16px;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             transition: var(--transition-fast);
-            box-shadow: var(--shadow-sm);
         }
 
         .chat-input-wrapper button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            transform: scale(1.06);
         }
 
-        /* --- ANIMATION KEYFRAMES HOOKS --- */
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.9; }
-            100% { transform: scale(1); opacity: 1; }
+        /* --- CORE ANIMATIONS --- */
+        @keyframes corePulse {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes audioVizPulse {
+            0% { height: 4px; }
+            100% { height: 18px; }
         }
     </style>
 </head>
@@ -870,36 +1429,40 @@
     <aside class="sidebar-nav">
         <div class="top-nav-block">
             <div class="brand-logo-area">
-                <i class="ri-pulse-line"></i>
+                <div class="brand-logo-mark">
+                    <i class="ri-pulse-line"></i>
+                </div>
                 <h1>PulseCheck Neo</h1>
             </div>
-            
+
+            <div class="nav-section-label">Menu</div>
             <nav class="nav-links-group">
-                <a href="#" class="nav-link active"><i class="ri-dashboard-2-line"></i> Dashboard Map</a>
-                <a href="/setup" class="nav-link"><i class="ri-equalizer-line"></i> Operational Inputs</a>
-                <a href="#" class="nav-link"><i class="ri-file-list-3-line"></i> Complete Playbook</a>
-                <a href="#" class="nav-link"><i class="ri-line-chart-line"></i> Risk Analytics</a>
-                <a href="#" class="nav-link"><i class="ri-settings-4-line"></i> Node Settings</a>
+                <a href="/dashboard" class="nav-link {% if current_view == 'dashboard' %}active{% endif %}" onclick="playInterfaceSound('navigation')"><i class="ri-dashboard-2-line"></i> Dashboard</a>
+                <a href="/operational-inputs" class="nav-link {% if current_view == 'operational_inputs' %}active{% endif %}" onclick="playInterfaceSound('navigation')"><i class="ri-equalizer-line"></i> Operational Inputs</a>
+                <a href="/sandbox" class="nav-link sandbox-special-link {% if current_view == 'sandbox' %}active{% endif %}" onclick="playInterfaceSound('experimental')"><i class="ri-flask-line"></i> Live Sandbox ⚡</a>
+                <a href="/complete-playbook" class="nav-link {% if current_view == 'complete_playbook' %}active{% endif %}" onclick="playInterfaceSound('navigation')"><i class="ri-file-list-3-line"></i> Complete Playbook</a>
+                <a href="/risk-analytics" class="nav-link {% if current_view == 'risk_analytics' %}active{% endif %}" onclick="playInterfaceSound('navigation')"><i class="ri-line-chart-line"></i> Risk Analytics</a>
+                <a href="/node-settings" class="nav-link {% if current_view == 'node_settings' %}active{% endif %}" onclick="playInterfaceSound('navigation')"><i class="ri-settings-4-line"></i> Node Settings</a>
             </nav>
         </div>
 
         <div class="bottom-nav-block">
             <div class="sidebar-system-alerts">
                 <div class="system-alert-title">
-                    <i class="ri-shield-check-line"></i> Protection Active
+                    <i class="ri-shield-check-line"></i> P.U.L.S.E. Uplink Active
                 </div>
                 <div class="system-alert-desc">
-                    Operational matrix telemetry is computing anomalies under continuous SDK optimization tracking parameters.
+                    Operational matrix telemetry is computing anomalies under continuous SDK optimization tracking parameters. Core matrix secure.
                 </div>
             </div>
 
             <div class="sidebar-footer">
                 <div class="avatar-circle">
-                    {{ matrix.username[0] | upper if matrix.username else 'F' }}
+                    {{ matrix.username[0] | upper if matrix.username else 'J' }}
                 </div>
                 <div class="user-meta-data" style="flex-grow: 1; overflow: hidden;">
-                    <h5>{{ matrix.username }}</h5>
-                    <p>System Administrator</p>
+                    <h5>{{ matrix.username if matrix.username else 'STARK' }}</h5>
+                    <p>Executive Operator</p>
                 </div>
             </div>
         </div>
@@ -909,33 +1472,115 @@
         <header class="top-navbar">
             <div class="welcome-title-block">
                 <h2>Executive Control Suite</h2>
-                <p>Welcome back, {{ matrix.username }}! Mapped analytics pipeline online.</p>
+                <p>Welcome back! Mapped analytics pipeline online under custom HUD layout v3.0.</p>
             </div>
             <div class="top-navbar-actions-area">
                 <div class="system-status-indicator">
-                    <span class="ping-dot"></span> Live Telemetry Connected
+                    <span class="ping-dot"></span> Matrix Network Connected
                 </div>
-                <a href="/login" class="exit-session-link"><i class="ri-logout-box-r-line"></i> Exit Session</a>
+                <a href="/login" class="exit-session-link" onclick="playInterfaceSound('shutdown')"><i class="ri-logout-box-r-line"></i> Decouple Core</a>
             </div>
         </header>
 
         <div class="dashboard-grid-canvas">
-            
+
+            {% if current_view == 'sandbox' %}
             <section class="sandbox-panel-card">
                 <div class="sandbox-meta-title">
-                    <h4><i class="ri-flask-line"></i> Live Sandbox</h4>
-                    <p>Slide metrics to model variable cash configurations instantly.</p>
+                    <h4><i class="ri-flask-line"></i> PulseCheck Live Sandbox</h4>
+                    <p>Configure internal variable values synchronously to plot enterprise financial delta curves instantly.</p>
                 </div>
-                <div class="sandbox-control-slider">
-                    <label>Inflow Variable (Revenue Target): <span id="lblRev">{{ matrix.revenue }}</span></label>
-                    <input type="range" id="sliderRev" min="2000" max="80000" step="500" value="{{ matrix.raw_revenue }}" oninput="executeLiveRecalculate()">
-                </div>
-                <div class="sandbox-control-slider">
-                    <label>Outflow Variable (Expense Control): <span id="lblExp">{{ matrix.expenses }}</span></label>
-                    <input type="range" id="sliderExp" min="2000" max="80000" step="500" value="{{ matrix.raw_expenses }}" oninput="executeLiveRecalculate()">
+                <div class="sandbox-controls-grid">
+                    <div class="sandbox-control-slider">
+                        <label>Inflow Variable (Revenue Target): <span id="lblRev">{{ matrix.revenue }}</span></label>
+                        <input type="range" id="sliderRev" min="0" max="100000" step="500" value="{{ matrix.raw_revenue }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
+                    </div>
+                    <div class="sandbox-control-slider">
+                        <label>Outflow Variable (Expense Control): <span id="lblExp">{{ matrix.expenses }}</span></label>
+                        <input type="range" id="sliderExp" min="0" max="100000" step="500" value="{{ matrix.raw_expenses }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
+                    </div>
+                    <div class="sandbox-control-slider">
+                        <label>Cash Reserves Capital Padding: <span id="lblReserves">$250,000</span></label>
+                        <input type="range" id="sliderReserves" min="0" max="1000000" step="10000" value="{{ matrix.raw_cash_reserves if matrix.raw_cash_reserves is defined else 250000 }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
+                    </div>
+                    <div class="sandbox-control-slider">
+                        <label>Estimated Growth Multiplier: <span id="lblGrowth">{{ matrix.growth_rate }}</span></label>
+                        <input type="range" id="sliderGrowth" min="0" max="20" step="0.5" value="{{ matrix.raw_growth_rate if matrix.raw_growth_rate is defined else 3.5 }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
+                    </div>
                 </div>
             </section>
 
+            <div class="widget-row-2-even">
+                <section class="widget-card">
+                    <div class="widget-card-header">
+                        <h3>Vitality Trajectory</h3>
+                        <span class="widget-header-action">Live sandbox projection <i class="ri-line-chart-line"></i></span>
+                    </div>
+                    <div class="widget-chart-canvas-wrap">
+                        <canvas id="sandboxVitalityChart"></canvas>
+                    </div>
+                    <script id="sandboxVitalityChartData" type="application/json">{{ {"labels": matrix.vitality_trend_labels, "values": matrix.vitality_trend_values, "direction": matrix.vitality_direction} | tojson }}</script>
+                </section>
+
+                <section class="widget-card">
+                    <div class="widget-card-header">
+                        <h3>Revenue vs. Expenses Projection</h3>
+                        <span class="widget-header-action">Next 12 months <i class="ri-arrow-down-s-line"></i></span>
+                    </div>
+                    <div class="widget-chart-canvas-wrap">
+                        <canvas id="sandboxFlowChart"></canvas>
+                    </div>
+                    <script id="sandboxFlowChartData" type="application/json">{{ {"labels": matrix.vitality_trend_labels, "revenue": matrix.vitality_trend_revenue, "expenses": matrix.vitality_trend_expenses} | tojson }}</script>
+                </section>
+            </div>
+            {% endif %}
+
+            {% if current_view == 'dashboard' %}
+            <section class="widget-card ai-summary-card" style="grid-column: 1 / -1;">
+                <div class="widget-card-header">
+                    <h3><i class="ri-robot-2-line"></i> P.U.L.S.E. Executive Summary</h3>
+                    <span class="widget-header-action">AI-generated <i class="ri-sparkling-2-line"></i></span>
+                </div>
+                <p class="ai-summary-text">{{ ai_summary }}</p>
+            </section>
+            {% endif %}
+
+            {% if current_view == 'dashboard' %}
+            <section class="widget-card" style="grid-column: 1 / -1;">
+                <div class="widget-card-header">
+                    <h3>Smart Checklist</h3>
+                    <span class="widget-header-action">Live-synced <i class="ri-checkbox-multiple-line"></i></span>
+                </div>
+                <div class="tasks-list-head">
+                    <span>Task</span>
+                    <span>Actions</span>
+                </div>
+                {% for task in matrix.playbook_tasks[:4] %}
+                <div class="tasks-list-row" id="checklist_row_{{ task.id }}">
+                    <div class="flex items-start gap-3">
+                        <input
+                            type="checkbox"
+                            id="checklist_{{ task.id }}"
+                            class="mt-1 w-4 h-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer shrink-0"
+                            {% if task.status == 'Completed' %}checked{% endif %}
+                            onchange="toggleChecklistItem('{{ task.id }}', this)"
+                        >
+                        <div class="tasks-list-row-main">
+                            <p class="tasks-row-title {{ 'line-through text-slate-400' if task.status == 'Completed' else '' }}">{{ task.title }}</p>
+                            <p class="tasks-row-sub">
+                                {{ task.category }} &middot; {{ task.date_string }}
+                                <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold {{ 'bg-red-50 text-red-600' if task.status == 'Overdue' else 'bg-slate-100 text-slate-500' }}">{{ task.badge_text }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <a href="/complete-playbook" class="tasks-go-link">Go</a>
+                </div>
+                {% endfor %}
+                <a href="/complete-playbook" class="widget-show-all">Show all</a>
+            </section>
+            {% endif %}
+
+            {% if current_view in ['dashboard', 'operational_inputs', 'risk_analytics', 'sandbox'] %}
             <section class="metrics-summary-row" id="metricsSummaryRow">
                 <div class="metric-card">
                     <div class="metric-info">
@@ -970,7 +1615,270 @@
                     </div>
                 </div>
             </section>
+            {% endif %}
 
+            {% if current_view == 'dashboard' %}
+            {% set pl_max = matrix.raw_revenue if matrix.raw_revenue > matrix.raw_expenses else matrix.raw_expenses %}
+            <div class="widget-row-3">
+                <section class="widget-card">
+                    <div class="widget-card-header">
+                        <h3>Cash Flow Trend</h3>
+                        <span class="widget-header-action">Next 6 months <i class="ri-arrow-down-s-line"></i></span>
+                    </div>
+                    <div class="widget-stat-label">Current cash balance</div>
+                    <div class="widget-big-figure">{{ '${:,.2f}'.format(matrix.raw_cash_reserves) }}</div>
+                    <div class="widget-chart-canvas-wrap">
+                        <canvas id="cashFlowBarChart"></canvas>
+                    </div>
+                    <script id="cashFlowChartData" type="application/json">{{ {"labels": matrix.vitality_trend_labels, "revenue": matrix.vitality_trend_revenue, "expenses": matrix.vitality_trend_expenses} | tojson }}</script>
+                </section>
+
+                <section class="widget-card">
+                    <div class="widget-card-header">
+                        <h3>Profit &amp; Loss</h3>
+                        <span class="widget-header-action">This month <i class="ri-arrow-down-s-line"></i></span>
+                    </div>
+                    <div class="widget-stat-label">Net profit</div>
+                    <div class="widget-big-figure {{ 'figure-positive' if matrix.raw_revenue >= matrix.raw_expenses else 'figure-negative' }}">
+                        {{ '${:,.2f}'.format(matrix.raw_revenue - matrix.raw_expenses) }}
+                    </div>
+                    <div class="pl-bar-row">
+                        <div class="pl-bar-label"><span>Income</span><span>{{ matrix.revenue }}</span></div>
+                        <div class="pl-bar-track"><div class="pl-bar-fill income-fill" style="width: {{ ((matrix.raw_revenue / pl_max * 100) if pl_max > 0 else 0) }}%;"></div></div>
+                    </div>
+                    <div class="pl-bar-row">
+                        <div class="pl-bar-label"><span>Expenses</span><span>{{ matrix.expenses }}</span></div>
+                        <div class="pl-bar-track"><div class="pl-bar-fill expense-fill" style="width: {{ ((matrix.raw_expenses / pl_max * 100) if pl_max > 0 else 0) }}%;"></div></div>
+                    </div>
+                </section>
+
+                <section class="widget-card">
+                    <div class="widget-card-header">
+                        <h3>Cash Reserves</h3>
+                        <span class="widget-header-action">As of today</span>
+                    </div>
+                    <div class="bank-account-row">
+                        <span class="bank-account-icon"><i class="ri-bank-line"></i></span>
+                        <div class="bank-account-meta">
+                            <p class="bank-account-name">Operating Reserves</p>
+                            <p class="bank-account-sub">Runway: {{ matrix.cash_runway }}</p>
+                        </div>
+                        <div class="bank-account-balance">
+                            <p class="balance-value">{{ '${:,.2f}'.format(matrix.raw_cash_reserves) }}</p>
+                            <p class="balance-label">Bank balance</p>
+                        </div>
+                    </div>
+                    <div class="bank-account-row">
+                        <span class="bank-account-icon {{ 'indicator-green' if matrix.status_indicators.risk == 'green' else 'indicator-red' }}"><i class="ri-shield-flash-line"></i></span>
+                        <div class="bank-account-meta">
+                            <p class="bank-account-name">Mortality / Risk Index</p>
+                            <p class="bank-account-sub">Updated live</p>
+                        </div>
+                        <div class="bank-account-balance">
+                            <p class="balance-value">{{ matrix.risk_score }}</p>
+                            <p class="balance-label">Risk score</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            {% endif %}
+
+            {% if current_view == 'dashboard' %}
+            <div class="widget-row-2-even">
+                <section class="widget-card">
+                    <div class="widget-card-header">
+                        <h3>Vitality Composition</h3>
+                        <span class="widget-header-action">Weighted breakdown</span>
+                    </div>
+                    <div class="widget-chart-canvas-wrap">
+                        <canvas id="vitalityDonutChart"></canvas>
+                    </div>
+                    <div class="donut-legend">
+                        <div class="donut-legend-item"><span class="legend-dot" style="background:#0891b2;"></span>Profit margin <b>{{ matrix.vitality_components.margin_score }}</b></div>
+                        <div class="donut-legend-item"><span class="legend-dot" style="background:#6366f1;"></span>Cash runway <b>{{ matrix.vitality_components.runway_score }}</b></div>
+                        <div class="donut-legend-item"><span class="legend-dot" style="background:#16a34a;"></span>Growth rate <b>{{ matrix.vitality_components.growth_score }}</b></div>
+                        <div class="donut-legend-item"><span class="legend-dot" style="background:#d97706;"></span>Risk (inverted) <b>{{ matrix.vitality_components.risk_component }}</b></div>
+                    </div>
+                    <script id="vitalityDonutData" type="application/json">{{ matrix.vitality_components | tojson }}</script>
+                </section>
+
+                <section class="vitality-chart-card">
+                    <div class="vitality-chart-header">
+                        <div>
+                            <h2><i class="ri-line-chart-line"></i> Growth Trajectory</h2>
+                            <p>Revenue, expenses, cash reserves, growth rate, and risk score are combined into a single weighted index, then projected forward 12 months to reveal whether the company is trending toward growth or decline.</p>
+                        </div>
+                        <div class="vitality-score-block">
+                            <div class="vitality-score-label">Current Index</div>
+                            <div class="vitality-score-value">{{ matrix.vitality_index }}</div>
+                            <div class="vitality-direction-pill {{ 'growth' if matrix.vitality_direction == 'Growth' else 'decline' }}">
+                                <i class="ri-{{ 'arrow-up-circle-line' if matrix.vitality_direction == 'Growth' else 'arrow-down-circle-line' }}"></i>
+                                {{ matrix.vitality_direction }} ({{ '+' if matrix.vitality_delta >= 0 else '' }}{{ matrix.vitality_delta }})
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vitality-chart-canvas-wrap">
+                        <canvas id="vitalityIndexChart"></canvas>
+                    </div>
+                    <script id="vitalityChartData" type="application/json">{{ {"labels": matrix.vitality_trend_labels, "values": matrix.vitality_trend_values, "direction": matrix.vitality_direction} | tojson }}</script>
+                </section>
+            </div>
+            {% endif %}
+
+            {% if current_view == 'dashboard' %}
+            <section class="col-span-full bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+                        <i class="ri-truck-line text-cyan-600"></i> Operational &amp; Supply Chain Optimization
+                    </h3>
+                    <span class="text-xs text-slate-400 font-medium">{{ matrix.supply_chain_optimization | length }} recommendations</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                    {% for tip in matrix.supply_chain_optimization %}
+                    <div class="flex flex-col gap-2 p-4 rounded-xl border border-amber-200 bg-amber-50/60">
+                        <div class="flex items-center gap-2 text-amber-700">
+                            <i class="ri-error-warning-line text-lg"></i>
+                            <span class="text-xs font-bold uppercase tracking-wide">{{ tip.type }}</span>
+                        </div>
+                        <p class="text-sm text-slate-600 leading-relaxed">{{ tip.tip }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="col-span-full bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+                        <i class="ri-radar-line text-cyan-600"></i> Emergency Funding Radar
+                    </h3>
+                    <span class="text-xs font-bold px-3 py-1 rounded-full {{ 'bg-red-50 text-red-600' if matrix.alternative_financing.options else 'bg-emerald-50 text-emerald-600' }}">
+                        {{ matrix.alternative_financing.status }}
+                    </span>
+                </div>
+                {% if matrix.alternative_financing.options %}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {% for option in matrix.alternative_financing.options %}
+                    <div class="flex flex-col gap-3 p-5 rounded-xl border border-slate-200 hover:border-cyan-400 hover:shadow-md transition">
+                        <p class="text-sm font-bold text-slate-800">{{ option.provider }}</p>
+                        <div class="flex items-center gap-2 text-xs text-slate-500">
+                            <i class="ri-exchange-funds-line"></i> {{ option.mechanism }}
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-500">
+                            <i class="ri-time-line"></i> Turnaround: {{ option.turnaround }}
+                        </div>
+                        <button type="button" class="mt-2 w-full py-2 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition">Pre-Apply Now</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-sm text-slate-500">Your current cash position doesn't require emergency financing matchmaking. We'll surface funding options automatically if your runway or vitality index drops below the safety threshold.</p>
+                {% endif %}
+            </section>
+            {% endif %}
+
+            {% if current_view == 'operational_inputs' %}
+            <div class="info-card-grid">
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <p>AI Suggested Revenue Target</p>
+                        <h3 style="font-size: 20px;">{{ ai_suggestions.suggested_revenue_target }}</h3>
+                    </div>
+                    <div class="metric-icon-box indicator-green"><i class="ri-line-chart-line"></i></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <p>AI Suggested Expense Ceiling</p>
+                        <h3 style="font-size: 20px;">{{ ai_suggestions.suggested_expense_ceiling }}</h3>
+                    </div>
+                    <div class="metric-icon-box indicator-red"><i class="ri-scales-3-line"></i></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <p>Efficiency Index</p>
+                        <h3>{{ ai_suggestions.efficiency_index }}</h3>
+                    </div>
+                    <div class="metric-icon-box indicator-blue"><i class="ri-speed-up-line"></i></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <p>Confidence Score</p>
+                        <h3>{{ ai_suggestions.confidence_score }}</h3>
+                    </div>
+                    <div class="metric-icon-box indicator-blue"><i class="ri-shield-star-line"></i></div>
+                </div>
+            </div>
+
+            <section class="view-section-card">
+                <h2><i class="ri-equalizer-line"></i> Baseline Configuration</h2>
+                <p>Update the core financial inputs used to compute your operational warning matrix.</p>
+                <form method="POST" action="/operational-inputs" onsubmit="playInterfaceSound('save')">
+                    <div class="settings-form-grid">
+                        <label>Company / Administrator Name
+                            <input type="text" name="username" value="{{ matrix.username }}" placeholder="Enter name" required>
+                        </label>
+                        <label>Tracking Cadence
+                            <select name="plan_type">
+                                <option value="daily" {% if matrix.plan_type == 'daily' %}selected{% endif %}>Daily</option>
+                                <option value="monthly" {% if matrix.plan_type == 'monthly' %}selected{% endif %}>Monthly</option>
+                            </select>
+                        </label>
+                    </div>
+                    <input type="hidden" id="hiddenRevenue" name="revenue" value="{{ matrix.raw_revenue }}">
+                    <input type="hidden" id="hiddenExpenses" name="expenses" value="{{ matrix.raw_expenses }}">
+                    <input type="hidden" id="hiddenCashReserves" name="cash_reserves" value="{{ matrix.raw_cash_reserves }}">
+                    <input type="hidden" id="hiddenGrowthRate" name="growth_rate" value="{{ matrix.raw_growth_rate }}">
+                    <button type="submit" class="settings-save-btn">Save Configuration</button>
+                </form>
+            </section>
+
+            <section class="sandbox-panel-card">
+                <div class="sandbox-meta-title">
+                    <h4><i class="ri-flask-line"></i> Live Sandbox 💡</h4>
+                    <p>Configure internal variable values synchronously to plot enterprise financial delta curves instantly. Adjust the sliders, then hit Save Configuration to commit them.</p>
+                </div>
+                <div class="sandbox-controls-grid">
+                    <div class="sandbox-control-slider">
+                        <label>Inflow Variable (Revenue Target): <span id="lblRev">{{ matrix.revenue }}</span></label>
+                        <input type="range" id="sliderRev" min="0" max="100000" step="500" value="{{ matrix.raw_revenue }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
+                    </div>
+                    <div class="sandbox-control-slider">
+                        <label>Outflow Variable (Expense Control): <span id="lblExp">{{ matrix.expenses }}</span></label>
+                        <input type="range" id="sliderExp" min="0" max="100000" step="500" value="{{ matrix.raw_expenses }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
+                    </div>
+                    <div class="sandbox-control-slider">
+                        <label>Cash Reserves Capital Padding: <span id="lblReserves">$250,000</span></label>
+                        <input type="range" id="sliderReserves" min="0" max="1000000" step="10000" value="{{ matrix.raw_cash_reserves if matrix.raw_cash_reserves is defined else 250000 }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
+                    </div>
+                    <div class="sandbox-control-slider">
+                        <label>Estimated Growth Multiplier: <span id="lblGrowth">{{ matrix.growth_rate }}</span></label>
+                        <input type="range" id="sliderGrowth" min="0" max="20" step="0.5" value="{{ matrix.raw_growth_rate if matrix.raw_growth_rate is defined else 3.5 }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            {% if current_view == 'complete_playbook' %}
+            <div class="playbook-category-summary">
+                <div class="category-summary-card">
+                    <h4><i class="ri-scissors-cut-line"></i> Immediate Mitigation</h4>
+                    <div class="count">{{ playbook.immediate_mitigation | length }}</div>
+                </div>
+                <div class="category-summary-card">
+                    <h4><i class="ri-exchange-dollar-line"></i> Cash Flow Acceleration</h4>
+                    <div class="count">{{ playbook.cash_flow_acceleration | length }}</div>
+                </div>
+                <div class="category-summary-card">
+                    <h4><i class="ri-rocket-2-line"></i> Growth Directives</h4>
+                    <div class="count">{{ playbook.growth_directives | length }}</div>
+                </div>
+                <div class="category-summary-card">
+                    <h4><i class="ri-robot-2-line"></i> Automation &amp; Scale</h4>
+                    <div class="count">{{ playbook.automation_scale | length }}</div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if current_view in ['dashboard', 'complete_playbook'] %}
             <section class="planner-card-section">
                 <div class="planner-header-group">
                     <div>
@@ -978,8 +1886,8 @@
                         <p>Yearly schedule matrix generated automatically under corporate blueprint guidance parameters</p>
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <button class="filter-btn" onclick="triggerPlaybookCSVExport()" style="background: #f0fdf4; color: #16a34a; border-color: rgba(22, 163, 74, 0.2); display: flex; align-items: center; gap: 6px;">
-                            <i class="ri-download-cloud-2-line"></i> Export CSV
+                        <button class="filter-btn" onclick="triggerPlaybookCSVExport(); playInterfaceSound('download');" style="background: var(--success-light); color: var(--success); border-color: rgba(22, 163, 74, 0.25); display: flex; align-items: center; gap: 6px;">
+                            <i class="ri-download-cloud-2-line"></i> Export CSV Matrix
                         </button>
                         <span class="badge-interval">{{ matrix.plan_type }} Tracking</span>
                     </div>
@@ -987,7 +1895,7 @@
 
                 <div class="progress-meta-details">
                     <span>Task Milestones Tracking Bar</span>
-                    <span id="txtProgressPct">0% Completed</span>
+                    <span id="txtProgressPct" style="color: var(--brand-color-dark); font-weight: 700;">0% Completed</span>
                 </div>
                 <div class="progress-tracking-bar-container">
                     <div class="progress-bar-fill" id="plannerProgressFill"></div>
@@ -995,13 +1903,13 @@
 
                 <div class="controls-wrapper">
                     <div class="filter-buttons-row">
-                        <button onclick="filterPlanner('all', this)" class="filter-btn active">All Items</button>
-                        <button onclick="filterPlanner('Overdue', this)" class="filter-btn overdue-btn">⚠️ Overdue</button>
-                        <button onclick="filterPlanner('Expense Mitigation', this)" class="filter-btn">Expenses Only</button>
+                        <button onclick="filterPlanner('all', this); playInterfaceSound('click');" class="filter-btn active">All Items</button>
+                        <button onclick="filterPlanner('Overdue', this); playInterfaceSound('click');" class="filter-btn overdue-btn">⚠️ Overdue</button>
+                        <button onclick="filterPlanner('Expense Mitigation', this); playInterfaceSound('click');" class="filter-btn">Expenses Only</button>
                     </div>
                     <div class="search-box-input">
                         <i class="ri-search-line"></i>
-                        <input type="text" id="plannerSearch" onkeyup="searchPlanner()" placeholder="Filter through complete yearly targets...">
+                        <input type="text" id="plannerSearch" onkeyup="searchPlanner()" placeholder="Query through yearly P.U.L.S.E. modules...">
                     </div>
                 </div>
 
@@ -1023,7 +1931,7 @@
                             <p class="task-desc-text">{{ task.description }}</p>
                         </div>
                         <div class="action-right-side">
-                            <button onclick="toggleTaskCompletion('{{ task.id }}', this)">
+                            <button onclick="toggleTaskCompletion('{{ task.id }}', this); playInterfaceSound('complete');">
                                 Mark Complete
                             </button>
                         </div>
@@ -1031,37 +1939,231 @@
                     {% endfor %}
                 </div>
             </section>
+            {% endif %}
 
+            {% if current_view == 'risk_analytics' %}
+            <section class="view-section-card">
+                <h2><i class="ri-radar-line"></i> P.U.L.S.E. Risk Assessment</h2>
+                <p>Automated breakdown of your current burn profile and recommended posture.</p>
+                <div class="info-card-grid">
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>Primary Threat Vector</p>
+                            <h3 style="font-size: 15px; color: var(--warning);">{{ risk_analysis.primary_threat_vector }}</h3>
+                        </div>
+                        <div class="metric-icon-box indicator-amber"><i class="ri-alert-line"></i></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>Vulnerability Rating</p>
+                            <h3 style="color: var(--danger);">{{ risk_analysis.system_vulnerability_rating }}</h3>
+                        </div>
+                        <div class="metric-icon-box {% if risk_analysis.system_vulnerability_rating == 'CRITICAL' %}indicator-red{% elif risk_analysis.system_vulnerability_rating == 'ELEVATED' %}indicator-amber{% else %}indicator-green{% endif %}"><i class="ri-shield-flash-line"></i></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>Defense Protocol</p>
+                            <h3 style="font-size: 15px; color: var(--brand-color-dark);">{{ risk_analysis.automated_defense_protocol }}</h3>
+                        </div>
+                        <div class="metric-icon-box indicator-blue"><i class="ri-shield-keyhole-line"></i></div>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            {% if current_view == 'node_settings' %}
+            <section class="view-section-card">
+                <h2><i class="ri-settings-4-line"></i> Core Node Settings</h2>
+                <p>Read-only system telemetry for this operational node.</p>
+                <div class="info-card-grid">
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>Node Status</p>
+                            <h3 style="color: var(--success);">{{ node_info.node_status }}</h3>
+                        </div>
+                        <div class="metric-icon-box indicator-green"><i class="ri-checkbox-circle-line"></i></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>AI Engine Model</p>
+                            <h3 style="font-size: 15px; color: var(--brand-color-dark);">{{ node_info.ai_engine_model }}</h3>
+                        </div>
+                        <div class="metric-icon-box indicator-blue"><i class="ri-cpu-line"></i></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>Telemetry Sync</p>
+                            <h3 style="font-size: 15px;">{{ node_info.telemetry_sync_interval }}</h3>
+                        </div>
+                        <div class="metric-icon-box indicator-blue"><i class="ri-refresh-line"></i></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>Security Clearance</p>
+                            <h3 style="font-size: 15px; color: var(--warning);">{{ node_info.security_clearance }}</h3>
+                        </div>
+                        <div class="metric-icon-box indicator-amber"><i class="ri-shield-user-line"></i></div>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            {% if current_view != 'sandbox' %}
             <section class="co-pilot-sidebar-drawer">
                 <div class="chat-drawer-header">
                     <i class="ri-customer-service-2-line"></i>
                     <div>
-                        <h3>AI Operations Advisor</h3>
-                        <p>Linked Directly Into Calculated Active Matrix Matrix Variables</p>
+                        <h3>P.U.L.S.E. Co-Pilot 🤖</h3>
+                        <p>Directly synchronized with calculated mainframe matrices</p>
+                    </div>
+                    <div class="audio-viz-group">
+                        <div class="audio-bar"></div>
+                        <div class="audio-bar"></div>
+                        <div class="audio-bar"></div>
+                        <div class="audio-bar"></div>
                     </div>
                 </div>
                 <div class="chat-messages-container" id="chatContainer">
                     <div class="chat-bubble bot">
-                        Data handshake confirmed. Initializing interactive telemetry workspace layout. How can I help fine-tune your operational structure today?
+                        Mainframe interface established, Operator. Telemetry array has loaded perfectly. Direct commands or parameter insights may be evaluated below. ✨
                     </div>
                 </div>
                 <div class="chat-input-wrapper">
-                    <input type="text" id="chatInput" placeholder="Inquire regarding risk metrics indices...">
-                    <button onclick="sendChatMessage()"><i class="ri-send-plane-2-line"></i></button>
+                    <input type="text" id="chatInput" placeholder="Enter query profile for risk vectors...">
+                    <button onclick="sendChatMessage(); playInterfaceSound('send');"><i class="ri-send-plane-2-line"></i></button>
                 </div>
             </section>
+            {% endif %}
 
         </div>
     </main>
 
     <script>
-        // Real-time slider interface interpolation layer
+        /* --- DYNAMIC COGNITIVE SYNTHESIZER AUDIO ENGINE --- */
+        let audioCtxInstance = null;
+
+        function getAudioContext() {
+            if (!audioCtxInstance) {
+                audioCtxInstance = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioCtxInstance;
+        }
+
+        // Programmatic cybernetic interface sound generators (No assets required!)
+        function playInterfaceSound(soundProfile) {
+            try {
+                const context = getAudioContext();
+                if (context.state === 'suspended') {
+                    context.resume();
+                }
+
+                const timeNow = context.currentTime;
+
+                if (soundProfile === 'click' || soundProfile === 'navigation') {
+                    const osc = context.createOscillator();
+                    const gain = context.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, timeNow);
+                    osc.frequency.exponentialRampToValueAtTime(1400, timeNow + 0.08);
+                    gain.gain.setValueAtTime(0.05, timeNow);
+                    gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.08);
+                    osc.connect(gain);
+                    gain.connect(context.destination);
+                    osc.start(timeNow);
+                    osc.stop(timeNow + 0.08);
+                } else if (soundProfile === 'experimental') {
+                    const osc = context.createOscillator();
+                    const gain = context.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(520, timeNow);
+                    osc.frequency.setValueAtTime(1040, timeNow + 0.06);
+                    gain.gain.setValueAtTime(0.08, timeNow);
+                    gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.15);
+                    osc.connect(gain);
+                    gain.connect(context.destination);
+                    osc.start(timeNow);
+                    osc.stop(timeNow + 0.15);
+                } else if (soundProfile === 'slider') {
+                    const osc = context.createOscillator();
+                    const gain = context.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300 + (Math.random() * 200), timeNow);
+                    gain.gain.setValueAtTime(0.02, timeNow);
+                    gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.05);
+                    osc.connect(gain);
+                    gain.connect(context.destination);
+                    osc.start(timeNow);
+                    osc.stop(timeNow + 0.05);
+                } else if (soundProfile === 'complete') {
+                    const osc1 = context.createOscillator();
+                    const osc2 = context.createOscillator();
+                    const gain = context.createGain();
+                    osc1.type = 'sine';
+                    osc2.type = 'sine';
+                    osc1.frequency.setValueAtTime(523.25, timeNow); // C5
+                    osc1.frequency.setValueAtTime(659.25, timeNow + 0.1); // E5
+                    osc2.frequency.setValueAtTime(783.99, timeNow + 0.2); // G5
+                    gain.gain.setValueAtTime(0.05, timeNow);
+                    gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.4);
+                    osc1.connect(gain);
+                    osc2.connect(gain);
+                    gain.connect(context.destination);
+                    osc1.start(timeNow);
+                    osc2.start(timeNow);
+                    osc1.stop(timeNow + 0.4);
+                    osc2.stop(timeNow + 0.4);
+                } else if (soundProfile === 'send') {
+                    const osc = context.createOscillator();
+                    const gain = context.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, timeNow);
+                    osc.frequency.exponentialRampToValueAtTime(1800, timeNow + 0.12);
+                    gain.gain.setValueAtTime(0.04, timeNow);
+                    gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.12);
+                    osc.connect(gain);
+                    gain.connect(context.destination);
+                    osc.start(timeNow);
+                    osc.stop(timeNow + 0.12);
+                } else if (soundProfile === 'shutdown') {
+                    const osc = context.createOscillator();
+                    const gain = context.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(600, timeNow);
+                    osc.frequency.exponentialRampToValueAtTime(80, timeNow + 0.3);
+                    gain.gain.setValueAtTime(0.05, timeNow);
+                    gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.3);
+                    osc.connect(gain);
+                    gain.connect(context.destination);
+                    osc.start(timeNow);
+                    osc.stop(timeNow + 0.3);
+                }
+            } catch (err) {
+                // Fail-silent if browser rules prevent audio init
+            }
+        }
+
+        /* --- STARK CORE DATA PROCESSING ENGINE --- */
         function executeLiveRecalculate() {
             const revVal = document.getElementById('sliderRev').value;
             const expVal = document.getElementById('sliderExp').value;
-            
+            const sliderReserves = document.getElementById('sliderReserves');
+            const sliderGrowth = document.getElementById('sliderGrowth');
+
+            const reservesVal = sliderReserves ? sliderReserves.value : 0;
+            const growthVal = sliderGrowth ? sliderGrowth.value : 0;
+
             document.getElementById('lblRev').innerText = "$" + parseFloat(revVal).toLocaleString();
             document.getElementById('lblExp').innerText = "$" + parseFloat(expVal).toLocaleString();
+            if(sliderReserves) document.getElementById('lblReserves').innerText = "$" + parseFloat(reservesVal).toLocaleString();
+            if(sliderGrowth) document.getElementById('lblGrowth').innerText = growthVal + "%";
+
+            const hiddenRevenue = document.getElementById('hiddenRevenue');
+            if (hiddenRevenue) {
+                hiddenRevenue.value = revVal;
+                document.getElementById('hiddenExpenses').value = expVal;
+                document.getElementById('hiddenCashReserves').value = reservesVal;
+                document.getElementById('hiddenGrowthRate').value = growthVal;
+            }
 
             fetch('/api/v1/telemetry/recalculate', {
                 method: 'POST',
@@ -1069,6 +2171,8 @@
                 body: JSON.stringify({
                     revenue: revVal,
                     expenses: expVal,
+                    cash_reserves: reservesVal,
+                    growth_rate: growthVal,
                     plan_type: '{{ matrix.plan_type }}'
                 })
             })
@@ -1079,10 +2183,9 @@
                 document.getElementById('cellRunway').innerText = data.cash_runway;
                 document.getElementById('cellRisk').innerText = data.risk_score;
 
-                // Adjust state visualization colors parameters instantly on UI
                 const boxRun = document.getElementById('boxRunway');
                 const boxRsk = document.getElementById('boxRisk');
-                
+
                 if(data.status_indicators.runway === 'green') {
                     boxRun.className = 'metric-icon-box indicator-green';
                 } else {
@@ -1094,10 +2197,12 @@
                 } else {
                     boxRsk.className = 'metric-icon-box indicator-red';
                 }
+
+                updateSandboxVitalityChart(data.vitality_trend_labels, data.vitality_trend_values, data.vitality_direction);
+                updateSandboxFlowChart(data.vitality_trend_labels, data.vitality_trend_revenue, data.vitality_trend_expenses);
             });
         }
 
-        // Checklist data filter controller functions
         function filterPlanner(criterion, buttonElement) {
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             buttonElement.classList.add('active');
@@ -1114,11 +2219,10 @@
             });
         }
 
-        // Live inline incremental search string pattern matching
         function searchPlanner() {
             const query = document.getElementById('plannerSearch').value.toLowerCase();
             const items = document.querySelectorAll('.timeline-row-item');
-            
+
             items.forEach(item => {
                 const textContent = item.querySelector('.task-desc-text').innerText.toLowerCase();
                 const titleContent = item.querySelector('h4').innerText.toLowerCase();
@@ -1130,7 +2234,6 @@
             });
         }
 
-        // State machine action trigger pipeline loops
         function toggleTaskCompletion(taskId, buttonElement) {
             fetch('/api/v1/tasks/toggle', {
                 method: 'POST',
@@ -1141,64 +2244,130 @@
             .then(data => {
                 if (data.success) {
                     const targetRow = document.getElementById('item_' + taskId);
-                    if (data.new_status === 'Completed') {
-                        buttonElement.style.background = '#10b981';
-                        buttonElement.innerHTML = '<i class="ri-checkbox-circle-line"></i> Done';
-                        targetRow.style.opacity = '0.5';
+                    const isCompleted = data.new_status === 'Completed';
+                    if (isCompleted) {
+                        buttonElement.style.background = '#16a34a';
+                        buttonElement.style.color = '#ffffff';
+                        buttonElement.style.borderColor = '#16a34a';
+                        buttonElement.innerHTML = '<i class="ri-checkbox-circle-line"></i> Active Done';
+                        targetRow.style.opacity = '0.4';
                         targetRow.setAttribute('data-status', 'Completed');
                     } else {
-                        buttonElement.style.background = 'var(--brand-color)';
+                        buttonElement.style.background = '#ffffff';
+                        buttonElement.style.color = 'var(--brand-color-dark)';
+                        buttonElement.style.borderColor = 'var(--brand-color)';
                         buttonElement.innerText = 'Mark Complete';
                         targetRow.style.opacity = '1';
                         targetRow.setAttribute('data-status', 'Pending');
                     }
+
+                    // Keep the Smart Checklist widget's checkbox in sync, if present on this page
+                    syncChecklistWidget(taskId, isCompleted);
                     recalculateProgressIndex();
                 }
             });
         }
 
-        // Client-side execution percentage indexing calculator
+        /* --- SMART CHECKLIST (PHASE 4) CHECKBOX TOGGLE --- */
+        function syncChecklistWidget(taskId, isCompleted) {
+            const checkboxEl = document.getElementById('checklist_' + taskId);
+            if (!checkboxEl) return;
+            checkboxEl.checked = isCompleted;
+            const titleEl = checkboxEl.closest('.tasks-list-row')?.querySelector('.tasks-row-title');
+            if (titleEl) {
+                titleEl.classList.toggle('line-through', isCompleted);
+                titleEl.classList.toggle('text-slate-400', isCompleted);
+            }
+        }
+
+        function toggleChecklistItem(taskId, checkboxElement) {
+            fetch('/api/v1/tasks/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task_id: taskId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    checkboxElement.checked = !checkboxElement.checked;
+                    return;
+                }
+
+                const isCompleted = data.new_status === 'Completed';
+                syncChecklistWidget(taskId, isCompleted);
+
+                // Keep the full Action Agenda Timeline (if present on this page) in sync too
+                const timelineRow = document.getElementById('item_' + taskId);
+                if (timelineRow) {
+                    timelineRow.setAttribute('data-status', isCompleted ? 'Completed' : 'Pending');
+                    timelineRow.style.opacity = isCompleted ? '0.4' : '1';
+                    const timelineBtn = timelineRow.querySelector('.action-right-side button');
+                    if (timelineBtn) {
+                        if (isCompleted) {
+                            timelineBtn.style.background = '#16a34a';
+                            timelineBtn.style.color = '#ffffff';
+                            timelineBtn.style.borderColor = '#16a34a';
+                            timelineBtn.innerHTML = '<i class="ri-checkbox-circle-line"></i> Active Done';
+                        } else {
+                            timelineBtn.style.background = '#ffffff';
+                            timelineBtn.style.color = 'var(--brand-color-dark)';
+                            timelineBtn.style.borderColor = 'var(--brand-color)';
+                            timelineBtn.innerText = 'Mark Complete';
+                        }
+                    }
+                }
+
+                recalculateProgressIndex();
+            });
+        }
+
         function recalculateProgressIndex() {
             const totalElements = document.querySelectorAll('.timeline-row-item').length;
             const completedElements = document.querySelectorAll('.timeline-row-item[data-status="Completed"]').length;
-            
+
             const dynamicPercentage = totalElements > 0 ? Math.round((completedElements / totalElements) * 100) : 0;
-            
-            document.getElementById('plannerProgressFill').style.width = dynamicPercentage + "%";
-            document.getElementById('txtProgressPct').innerText = dynamicPercentage + "% Completed";
+
+            const fillEl = document.getElementById('plannerProgressFill');
+            const pctEl = document.getElementById('txtProgressPct');
+            if (fillEl) fillEl.style.width = dynamicPercentage + "%";
+            if (pctEl) {
+                if (dynamicPercentage === 100) {
+                     pctEl.innerText = "100% MATRIX TARGET RESOLVED 🎉";
+                } else {
+                     pctEl.innerText = dynamicPercentage + "% COMPLETED";
+                }
+            }
         }
 
-        // Structured table agenda extraction engine system
         function triggerPlaybookCSVExport() {
             let csvRowsData = "data:text/csv;charset=utf-8,Scheduled Date,Weekday,Target Task Directive,Core Focus Category,Operational Description\n";
-            
+
             document.querySelectorAll('.timeline-row-item').forEach(rowElement => {
                 const dateVal = rowElement.querySelector('.date-lbl').innerText;
                 const dayVal = rowElement.querySelector('.day-lbl').innerText;
                 const titleVal = rowElement.querySelector('h4').innerText;
                 const categoryVal = rowElement.querySelector('.category-tag').innerText;
                 const descriptiveText = rowElement.querySelector('.task-desc-text').innerText.replace(/,/g, ' ');
-                
+
                 csvRowsData += `"${dateVal}","${dayVal}","${titleVal}","${categoryVal}","${descriptiveText}"\n`;
             });
-            
+
             const encodedDataUri = encodeURI(csvRowsData);
             const downloadAnchorElement = document.createElement("a");
             downloadAnchorElement.setAttribute("href", encodedDataUri);
-            downloadAnchorElement.setAttribute("download", "PulseCheck_Neo_Yearly_Turnaround_Plan.csv");
+            downloadAnchorElement.setAttribute("download", "PulseCheck_Neo_Turnaround_Plan.csv");
             document.body.appendChild(downloadAnchorElement);
             downloadAnchorElement.click();
             document.body.removeChild(downloadAnchorElement);
         }
 
-        // Chat stream text dispatcher connection link
         function sendChatMessage() {
             const entryField = document.getElementById('chatInput');
             const userPromptText = entryField.value.trim();
             if (!userPromptText) return;
 
             const chatScrollContainer = document.getElementById('chatContainer');
-            
+
             const dynamicUserBubble = document.createElement('div');
             dynamicUserBubble.className = 'chat-bubble user';
             dynamicUserBubble.innerText = userPromptText;
@@ -1227,12 +2396,352 @@
                 dynamicBotBubble.innerHTML = responseData.reply;
                 chatScrollContainer.appendChild(dynamicBotBubble);
                 chatScrollContainer.scrollTop = chatScrollContainer.scrollHeight;
+                playInterfaceSound('experimental');
             });
         }
 
-        // Window startup cycle triggers initialization hook parameters
+        /* --- CHART.JS GLOBAL DEFAULTS FOR THE LIGHT EXECUTIVE THEME --- */
+        if (typeof Chart !== 'undefined') {
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#6b7280';
+        }
+
+        /* --- GROWTH TRAJECTORY LINE CHART RENDERER --- */
+        function renderVitalityChart() {
+            const canvas = document.getElementById('vitalityIndexChart');
+            const dataEl = document.getElementById('vitalityChartData');
+            if (!canvas || !dataEl || typeof Chart === 'undefined') return;
+
+            const chartData = JSON.parse(dataEl.textContent);
+            const trendLabels = chartData.labels || [];
+            const trendValues = chartData.values || [];
+            const isGrowth = chartData.direction === 'Growth';
+            const lineColor = isGrowth ? '#16a34a' : '#dc2626';
+
+            const gradient = canvas.getContext('2d').createLinearGradient(0, 0, 0, 230);
+            gradient.addColorStop(0, isGrowth ? 'rgba(22, 163, 74, 0.18)' : 'rgba(220, 38, 38, 0.18)');
+            gradient.addColorStop(1, isGrowth ? 'rgba(22, 163, 74, 0.0)' : 'rgba(220, 38, 38, 0.0)');
+
+            new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: trendLabels,
+                    datasets: [{
+                        label: 'Business Vitality Index',
+                        data: trendValues,
+                        borderColor: lineColor,
+                        borderWidth: 2.5,
+                        pointBackgroundColor: lineColor,
+                        pointBorderColor: '#ffffff',
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: gradient
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1f2937',
+                            titleFont: { size: 11 },
+                            bodyFont: { size: 12 },
+                            displayColors: false,
+                            padding: 10,
+                            cornerRadius: 6,
+                            callbacks: {
+                                label: (ctx) => `Vitality Index: ${ctx.parsed.y}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#9ca3af', font: { size: 10 } }
+                        },
+                        y: {
+                            min: 0,
+                            max: 100,
+                            grid: { color: '#eef1f5' },
+                            ticks: { color: '#9ca3af', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        /* --- CASH FLOW TREND GROUPED BAR CHART RENDERER --- */
+        function renderCashFlowBarChart() {
+            const canvas = document.getElementById('cashFlowBarChart');
+            const dataEl = document.getElementById('cashFlowChartData');
+            if (!canvas || !dataEl || typeof Chart === 'undefined') return;
+
+            const chartData = JSON.parse(dataEl.textContent);
+            const sliceCount = 7;
+            const labels = (chartData.labels || []).slice(0, sliceCount);
+            const revenueSeries = (chartData.revenue || []).slice(0, sliceCount);
+            const expenseSeries = (chartData.expenses || []).slice(0, sliceCount);
+
+            new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Money in',
+                            data: revenueSeries,
+                            backgroundColor: '#16a34a',
+                            borderRadius: 4,
+                            barPercentage: 0.6
+                        },
+                        {
+                            label: 'Money out',
+                            data: expenseSeries,
+                            backgroundColor: '#0891b2',
+                            borderRadius: 4,
+                            barPercentage: 0.6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { boxWidth: 8, boxHeight: 8, usePointStyle: true, font: { size: 11 } }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1f2937',
+                            padding: 10,
+                            cornerRadius: 6,
+                            callbacks: {
+                                label: (ctx) => `${ctx.dataset.label}: $${Math.round(ctx.parsed.y).toLocaleString()}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+                        y: {
+                            grid: { color: '#eef1f5' },
+                            ticks: {
+                                color: '#9ca3af',
+                                font: { size: 10 },
+                                callback: (val) => '$' + (val / 1000) + 'k'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        /* --- VITALITY COMPOSITION DONUT CHART RENDERER --- */
+        function renderVitalityDonutChart() {
+            const canvas = document.getElementById('vitalityDonutChart');
+            const dataEl = document.getElementById('vitalityDonutData');
+            if (!canvas || !dataEl || typeof Chart === 'undefined') return;
+
+            const components = JSON.parse(dataEl.textContent);
+
+            new Chart(canvas, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Profit margin', 'Cash runway', 'Growth rate', 'Risk (inverted)'],
+                    datasets: [{
+                        data: [
+                            components.margin_score,
+                            components.runway_score,
+                            components.growth_score,
+                            components.risk_component
+                        ],
+                        backgroundColor: ['#0891b2', '#6366f1', '#16a34a', '#d97706'],
+                        borderColor: '#ffffff',
+                        borderWidth: 3,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '68%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1f2937',
+                            padding: 10,
+                            cornerRadius: 6
+                        }
+                    }
+                }
+            });
+        }
+
+        /* --- SANDBOX: LIVE-UPDATING CHARTS DRIVEN BY THE SLIDER INPUTS --- */
+        let sandboxVitalityChartInstance = null;
+        let sandboxFlowChartInstance = null;
+
+        function renderSandboxVitalityChart() {
+            const canvas = document.getElementById('sandboxVitalityChart');
+            const dataEl = document.getElementById('sandboxVitalityChartData');
+            if (!canvas || !dataEl || typeof Chart === 'undefined') return;
+
+            const chartData = JSON.parse(dataEl.textContent);
+            const isGrowth = chartData.direction === 'Growth';
+            const lineColor = isGrowth ? '#16a34a' : '#dc2626';
+
+            const gradient = canvas.getContext('2d').createLinearGradient(0, 0, 0, 230);
+            gradient.addColorStop(0, isGrowth ? 'rgba(22, 163, 74, 0.18)' : 'rgba(220, 38, 38, 0.18)');
+            gradient.addColorStop(1, isGrowth ? 'rgba(22, 163, 74, 0.0)' : 'rgba(220, 38, 38, 0.0)');
+
+            sandboxVitalityChartInstance = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels || [],
+                    datasets: [{
+                        label: 'Business Vitality Index',
+                        data: chartData.values || [],
+                        borderColor: lineColor,
+                        borderWidth: 2.5,
+                        pointBackgroundColor: lineColor,
+                        pointBorderColor: '#ffffff',
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: gradient
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1f2937',
+                            titleFont: { size: 11 },
+                            bodyFont: { size: 12 },
+                            displayColors: false,
+                            padding: 10,
+                            cornerRadius: 6,
+                            callbacks: {
+                                label: (ctx) => `Vitality Index: ${ctx.parsed.y}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#9ca3af', font: { size: 10 } }
+                        },
+                        y: {
+                            min: 0,
+                            max: 100,
+                            grid: { color: '#eef1f5' },
+                            ticks: { color: '#9ca3af', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateSandboxVitalityChart(labels, values, direction) {
+            if (!sandboxVitalityChartInstance) return;
+            const isGrowth = direction === 'Growth';
+            const lineColor = isGrowth ? '#16a34a' : '#dc2626';
+
+            const gradient = sandboxVitalityChartInstance.ctx.createLinearGradient(0, 0, 0, 230);
+            gradient.addColorStop(0, isGrowth ? 'rgba(22, 163, 74, 0.18)' : 'rgba(220, 38, 38, 0.18)');
+            gradient.addColorStop(1, isGrowth ? 'rgba(22, 163, 74, 0.0)' : 'rgba(220, 38, 38, 0.0)');
+
+            const dataset = sandboxVitalityChartInstance.data.datasets[0];
+            sandboxVitalityChartInstance.data.labels = labels || [];
+            dataset.data = values || [];
+            dataset.borderColor = lineColor;
+            dataset.pointBackgroundColor = lineColor;
+            dataset.backgroundColor = gradient;
+            sandboxVitalityChartInstance.update();
+        }
+
+        function renderSandboxFlowChart() {
+            const canvas = document.getElementById('sandboxFlowChart');
+            const dataEl = document.getElementById('sandboxFlowChartData');
+            if (!canvas || !dataEl || typeof Chart === 'undefined') return;
+
+            const chartData = JSON.parse(dataEl.textContent);
+            const sliceCount = 7;
+
+            sandboxFlowChartInstance = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: (chartData.labels || []).slice(0, sliceCount),
+                    datasets: [
+                        {
+                            label: 'Money in',
+                            data: (chartData.revenue || []).slice(0, sliceCount),
+                            backgroundColor: '#16a34a',
+                            borderRadius: 4,
+                            barPercentage: 0.6
+                        },
+                        {
+                            label: 'Money out',
+                            data: (chartData.expenses || []).slice(0, sliceCount),
+                            backgroundColor: '#0891b2',
+                            borderRadius: 4,
+                            barPercentage: 0.6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { boxWidth: 8, boxHeight: 8, usePointStyle: true, font: { size: 11 } }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1f2937',
+                            padding: 10,
+                            cornerRadius: 6,
+                            callbacks: {
+                                label: (ctx) => `${ctx.dataset.label}: $${Math.round(ctx.parsed.y).toLocaleString()}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+                        y: {
+                            grid: { color: '#eef1f5' },
+                            ticks: {
+                                color: '#9ca3af',
+                                font: { size: 10 },
+                                callback: (val) => '$' + (val / 1000) + 'k'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateSandboxFlowChart(labels, revenueSeries, expenseSeries) {
+            if (!sandboxFlowChartInstance) return;
+            const sliceCount = 7;
+            sandboxFlowChartInstance.data.labels = (labels || []).slice(0, sliceCount);
+            sandboxFlowChartInstance.data.datasets[0].data = (revenueSeries || []).slice(0, sliceCount);
+            sandboxFlowChartInstance.data.datasets[1].data = (expenseSeries || []).slice(0, sliceCount);
+            sandboxFlowChartInstance.update();
+        }
+
         window.onload = function() {
             recalculateProgressIndex();
+            renderVitalityChart();
+            renderCashFlowBarChart();
+            renderVitalityDonutChart();
+            renderSandboxVitalityChart();
+            renderSandboxFlowChart();
         };
     </script>
 </body>
