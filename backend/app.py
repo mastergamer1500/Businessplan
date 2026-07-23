@@ -682,15 +682,43 @@ def sandbox_run():
 @app.route('/api/v1/chat', methods=['POST'])
 def chatbot_api():
     payload = request.get_json() or {}
-    user_msg = payload.get('message', '')
-    if not gemini_client: return jsonify({"reply": "• Operating under local simulation configuration parameters."}), 200
+    user_msg = (payload.get('message') or '').strip()
+    if not user_msg:
+        return jsonify({"reply": "Ask me anything about your revenue, expenses, runway, or risk profile."}), 200
+
+    if not gemini_client:
+        return jsonify({"reply": "The AI engine isn't configured yet (no Gemini API key set), so I'm running in local simulation mode for now."}), 200
+
+    matrix_data = build_session_matrix()
+    context_block = "No business telemetry has been configured yet."
+    if matrix_data:
+        context_block = (
+            f"Revenue: {matrix_data['revenue']}/mo. Expenses: {matrix_data['expenses']}/mo. "
+            f"Cash runway: {matrix_data['cash_runway']}. Growth rate: {matrix_data['growth_rate']}. "
+            f"Risk score: {matrix_data['risk_score']}. Vitality index: {matrix_data['vitality_index']}/100 "
+            f"trending {matrix_data['vitality_direction'].lower()}."
+        )
+
     try:
         response = gemini_client.models.generate_content(
-            model='gemini-2.5-flash', contents=user_msg,
-            config=types.GenerateContentConfig(system_instruction="Be an encouraging short business advisor.", temperature=0.3)
+            model='gemini-2.5-flash',
+            contents=user_msg,
+            config=types.GenerateContentConfig(
+                system_instruction=(
+                    "You are P.U.L.S.E., a warm, sharp AI co-pilot embedded in a small-business financial "
+                    "dashboard called PulseCheck Neo. Reply the way a knowledgeable advisor would in a real "
+                    "conversation — natural sentences, not a rigid report, and never invent numbers beyond "
+                    "what's given. Keep it to 2-4 sentences unless the user explicitly asks for more detail. "
+                    f"Here is the operator's current business snapshot: {context_block}"
+                ),
+                temperature=0.6,
+            )
         )
-        return jsonify({"reply": format_chat_reply(response.text or "Acknowledged.")}), 200
-    except: return jsonify({"reply": "API link timeout."}), 500
+        reply_text = (response.text or "").strip() or "I'm not sure how to answer that yet — could you rephrase?"
+        return jsonify({"reply": reply_text}), 200
+    except Exception as err:
+        logging.error(f"Chat API failure: {err}")
+        return jsonify({"reply": "I couldn't reach the AI engine just now — please try again in a moment."}), 500
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=PORT, debug=True, allow_unsafe_werkzeug=True)

@@ -1623,6 +1623,38 @@
             border-bottom-right-radius: 2px;
         }
 
+        .chat-bubble-typing {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--ink-muted);
+            opacity: 0.4;
+            animation: typingBounce 1s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.15s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-4px); opacity: 1; }
+        }
+
+        .spin-icon {
+            display: inline-block;
+            animation: spinLoader 0.8s linear infinite;
+        }
+
+        @keyframes spinLoader {
+            to { transform: rotate(360deg); }
+        }
+
         .chat-input-wrapper {
             padding: 16px 20px;
             border-top: 1px solid var(--card-border);
@@ -1912,7 +1944,7 @@
                     <div class="metric-card">
                         <div class="metric-info">
                             <p>1. Annual Revenue (ARR)</p>
-                            <h3>$1.20M</h3>
+                            <h3 id="metricARR">$1.20M</h3>
                             <span style="font-size: 11px; color: var(--ink-muted);">How big is the business today?</span>
                         </div>
                         <div class="metric-icon-box indicator-blue">
@@ -1956,7 +1988,7 @@
                     <div class="metric-card">
                         <div class="metric-info">
                             <p>5. Net Cash & Runway</p>
-                            <h3>$450K / 22 mo</h3>
+                            <h3 id="metricRunway">$450K / 22 mo</h3>
                             <span style="font-size: 11px; color: var(--success);">Safety buffer before cash runs out</span>
                         </div>
                         <div class="metric-icon-box indicator-amber">
@@ -1967,7 +1999,7 @@
                     <div class="metric-card">
                         <div class="metric-info">
                             <p>6. YoY Growth Rate</p>
-                            <h3>+34.2%</h3>
+                            <h3 id="metricGrowth">+34.2%</h3>
                             <span style="font-size: 11px; color: var(--success);">Speed of sales expansion</span>
                         </div>
                         <div class="metric-icon-box indicator-green">
@@ -2007,8 +2039,8 @@
                         </div>
                         <div class="vitality-score-block">
                             <div class="vitality-score-label">Health Grade</div>
-                            <div class="vitality-score-value">A+</div>
-                            <div class="vitality-direction-pill growth">
+                            <div class="vitality-score-value" id="healthGradeValue">A+</div>
+                            <div class="vitality-direction-pill growth" id="healthTrendPill">
                                 <i class="ri-arrow-up-s-line"></i> +14.8% vs Last Cycle
                             </div>
                         </div>
@@ -2056,7 +2088,7 @@
                             <span class="widget-header-action">30-Day Window</span>
                         </div>
                         <div class="widget-stat-label">Net Operational Surplus</div>
-                        <div class="widget-big-figure figure-positive">+$46,300</div>
+                        <div class="widget-big-figure figure-positive" id="netSurplusFigure">+$46,300</div>
                         <div class="widget-chart-canvas-wrap">
                             <canvas id="cashFlowBarCanvas"></canvas>
                         </div>
@@ -2064,17 +2096,17 @@
 
                     <div class="widget-card">
                         <div class="widget-card-header">
-                            <h3><i class="ri-pie-chart-2-line"></i> Revenue Channels</h3>
-                            <span class="widget-header-action">Current Cycle</span>
+                            <h3><i class="ri-pie-chart-2-line"></i> Vitality Composition</h3>
+                            <span class="widget-header-action">Weighted breakdown</span>
                         </div>
                         <div class="widget-chart-canvas-wrap" style="height: 150px;">
                             <canvas id="vitalityDonutCanvas"></canvas>
                         </div>
-                        <div class="donut-legend">
-                            <div class="donut-legend-item"><span class="legend-dot" style="background:#0891b2;"></span> Enterprise <b>55%</b></div>
-                            <div class="donut-legend-item"><span class="legend-dot" style="background:#6366f1;"></span> SaaS Subscriptions <b>25%</b></div>
-                            <div class="donut-legend-item"><span class="legend-dot" style="background:#16a34a;"></span> Services <b>15%</b></div>
-                            <div class="donut-legend-item"><span class="legend-dot" style="background:#d97706;"></span> Licensing <b>5%</b></div>
+                        <div class="donut-legend" id="vitalityDonutLegend">
+                            <div class="donut-legend-item"><span class="legend-dot" style="background:#0891b2;"></span> Profit Margin <b>55</b></div>
+                            <div class="donut-legend-item"><span class="legend-dot" style="background:#6366f1;"></span> Cash Runway <b>25</b></div>
+                            <div class="donut-legend-item"><span class="legend-dot" style="background:#16a34a;"></span> Growth Rate <b>15</b></div>
+                            <div class="donut-legend-item"><span class="legend-dot" style="background:#d97706;"></span> Risk (inverted) <b>5</b></div>
                         </div>
                     </div>
 
@@ -2169,32 +2201,27 @@
             <div id="view-operational_inputs" class="view-panel-group full-width-column hidden">
                 <div class="view-section-card">
                     <h2><i class="ri-equalizer-line"></i> Operational Input Engine</h2>
-                    <p>Adjust core business inputs to recalculate real-time dashboard telemetry and risk profiles.</p>
-                    <form onsubmit="event.preventDefault(); showToast('Operational inputs updated!');">
+                    <p>These four numbers drive every score on the Dashboard — vitality index, health grade, runway, and growth trajectory recalculate live from what you enter here.</p>
+                    <form onsubmit="event.preventDefault(); commitOperationalInputs();">
                         <div class="settings-form-grid">
                             <label>
-                                Primary Revenue Source
-                                <select id="inputRevSource">
-                                    <option value="saas">SaaS Subscriptions</option>
-                                    <option value="enterprise" selected>Enterprise Contracts</option>
-                                    <option value="services">Professional Services</option>
-                                    <option value="licensing">Technology Licensing</option>
-                                </select>
+                                Monthly Revenue ($)
+                                <input type="number" id="inputRevenue" value="{{ matrix.raw_revenue }}" min="0" step="500">
                             </label>
                             <label>
-                                Monthly Fixed Overhead ($)
-                                <input type="number" value="28000" id="inputOverhead">
+                                Monthly Expenses ($)
+                                <input type="number" id="inputExpenses" value="{{ matrix.raw_expenses }}" min="0" step="500">
                             </label>
                             <label>
-                                Variable Acquisition Cost ($)
-                                <input type="number" value="4500" id="inputAcquisition">
+                                Cash Reserves ($)
+                                <input type="number" id="inputCashReserves" value="{{ matrix.raw_cash_reserves }}" min="0" step="1000">
                             </label>
                             <label>
-                                Target Headcount
-                                <input type="number" value="42" id="inputHeadcount">
+                                Monthly Growth Rate (%)
+                                <input type="number" id="inputGrowthRate" value="{{ matrix.raw_growth_rate }}" step="0.1">
                             </label>
                         </div>
-                        <button type="submit" class="settings-save-btn"><i class="ri-save-line"></i> Commit Inputs</button>
+                        <button type="submit" class="settings-save-btn" id="opInputsSubmitBtn"><i class="ri-refresh-line"></i> Recalculate Dashboard</button>
                     </form>
                 </div>
             </div>
@@ -2533,6 +2560,21 @@
 
     <div class="toast-notifications-container" id="toastContainer"></div>
 
+    <script id="initialMatrixData" type="application/json">{{ {
+        "raw_revenue": matrix.raw_revenue,
+        "raw_expenses": matrix.raw_expenses,
+        "raw_cash_reserves": matrix.raw_cash_reserves,
+        "raw_growth_rate": matrix.raw_growth_rate,
+        "cash_runway": matrix.cash_runway,
+        "vitality_index": matrix.vitality_index,
+        "vitality_direction": matrix.vitality_direction,
+        "vitality_delta": matrix.vitality_delta,
+        "vitality_trend_labels": matrix.vitality_trend_labels,
+        "vitality_trend_revenue": matrix.vitality_trend_revenue,
+        "vitality_trend_expenses": matrix.vitality_trend_expenses,
+        "vitality_components": matrix.vitality_components
+    } | tojson }}</script>
+
     <script>
         /* --- GLOBAL APPLICATION STATE --- */
         const appState = {
@@ -2705,7 +2747,7 @@
         }
 
         /* Co-Pilot Chat Messaging Engine */
-        function sendChatMessage() {
+        async function sendChatMessage() {
             const input = document.getElementById('chatInput');
             const text = input.value.trim();
             if (!text) return;
@@ -2721,23 +2763,34 @@
             input.value = '';
             container.scrollTop = container.scrollHeight;
 
-            // Generate Automated Bot Response
-            setTimeout(() => {
-                const botMsg = document.createElement('div');
-                botMsg.className = 'chat-bubble bot';
-                
-                if (text.toLowerCase().includes('revenue') || text.toLowerCase().includes('cash')) {
-                    botMsg.innerText = `Current MRR is $${appState.revenue.toLocaleString()} with monthly burn at $${appState.expenses.toLocaleString()}. Reserve ratio remains highly secure.`;
-                } else if (text.toLowerCase().includes('risk')) {
-                    botMsg.innerText = "Risk index is low. Vendor API lock-in is the only active high-severity flag.";
-                } else {
-                    botMsg.innerText = `Telemetry query logged. Matrix telemetry parameters indicate steady growth curves under current configuration.`;
-                }
-                
-                container.appendChild(botMsg);
-                container.scrollTop = container.scrollHeight;
-                playInterfaceSound('navigation');
-            }, 600);
+            // Typing indicator while the real AI engine responds
+            const typingMsg = document.createElement('div');
+            typingMsg.className = 'chat-bubble bot chat-bubble-typing';
+            typingMsg.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+            container.appendChild(typingMsg);
+            container.scrollTop = container.scrollHeight;
+
+            let replyText;
+            try {
+                const response = await fetch('/api/v1/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await response.json();
+                replyText = data.reply || "I'm not sure how to answer that yet — could you rephrase?";
+            } catch (err) {
+                console.error('Chat request failed:', err);
+                replyText = "I couldn't reach the AI engine just now. Please try again in a moment.";
+            }
+
+            typingMsg.remove();
+            const botMsg = document.createElement('div');
+            botMsg.className = 'chat-bubble bot';
+            botMsg.innerText = replyText;
+            container.appendChild(botMsg);
+            container.scrollTop = container.scrollHeight;
+            playInterfaceSound('navigation');
         }
 
         /* Sandbox Calculation Controller */
@@ -2872,12 +2925,12 @@
                 }
             });
 
-            // 3. Revenue Donut Chart
+            // 3. Vitality Composition Donut Chart
             const ctxDonut = document.getElementById('vitalityDonutCanvas').getContext('2d');
             vitalityDonutChartInstance = new Chart(ctxDonut, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Enterprise', 'SaaS Subscriptions', 'Services', 'Licensing'],
+                    labels: ['Profit Margin', 'Cash Runway', 'Growth Rate', 'Risk (inverted)'],
                     datasets: [{
                         data: [55, 25, 15, 5],
                         backgroundColor: ['#0891b2', '#6366f1', '#16a34a', '#d97706'],
@@ -2968,9 +3021,130 @@
             sandboxFlowChartInstance.update();
         }
 
+        /* ==========================================================================
+           OPERATIONAL INPUTS -> REAL DASHBOARD RECALCULATION ENGINE
+           ========================================================================== */
+        function vitalityToGrade(index) {
+            if (index >= 90) return 'A+';
+            if (index >= 80) return 'A';
+            if (index >= 70) return 'B+';
+            if (index >= 60) return 'B';
+            if (index >= 50) return 'C';
+            return 'D';
+        }
+
+        function formatRunwayShort(cashRunway) {
+            if (!cashRunway) return '—';
+            if (cashRunway.startsWith('Infinite')) return '∞';
+            const num = parseFloat(cashRunway);
+            return isNaN(num) ? cashRunway : num + ' mo';
+        }
+
+        /* Applies a computed matrix object (from the Flask /api/v1/telemetry/recalculate
+           engine) onto every real score & health element on the Dashboard view. */
+        function applyMatrixToDashboard(matrix) {
+            if (!matrix || matrix.error) return;
+
+            appState.revenue = matrix.raw_revenue;
+            appState.expenses = matrix.raw_expenses;
+            appState.reserves = matrix.raw_cash_reserves;
+            appState.growthFactor = matrix.raw_growth_rate;
+
+            const gradeEl = document.getElementById('healthGradeValue');
+            if (gradeEl) gradeEl.innerText = vitalityToGrade(matrix.vitality_index);
+
+            const pillEl = document.getElementById('healthTrendPill');
+            if (pillEl) {
+                const isGrowth = matrix.vitality_direction === 'Growth';
+                pillEl.className = 'vitality-direction-pill ' + (isGrowth ? 'growth' : 'decline');
+                pillEl.innerHTML = `<i class="ri-arrow-${isGrowth ? 'up' : 'down'}-s-line"></i> ${matrix.vitality_delta >= 0 ? '+' : ''}${matrix.vitality_delta} pts vs Start of Trend`;
+            }
+
+            const arrEl = document.getElementById('metricARR');
+            if (arrEl) arrEl.innerText = '$' + (matrix.raw_revenue * 12 / 1000000).toFixed(2) + 'M';
+
+            const runwayEl = document.getElementById('metricRunway');
+            if (runwayEl) runwayEl.innerText = '$' + Math.round(matrix.raw_cash_reserves / 1000) + 'K / ' + formatRunwayShort(matrix.cash_runway);
+
+            const growthEl = document.getElementById('metricGrowth');
+            if (growthEl) growthEl.innerText = (matrix.raw_growth_rate >= 0 ? '+' : '') + matrix.raw_growth_rate.toFixed(1) + '%';
+
+            const surplusEl = document.getElementById('netSurplusFigure');
+            if (surplusEl) {
+                const surplus = matrix.raw_revenue - matrix.raw_expenses;
+                surplusEl.innerText = (surplus >= 0 ? '+$' : '-$') + Math.abs(Math.round(surplus)).toLocaleString();
+                surplusEl.className = 'widget-big-figure ' + (surplus >= 0 ? 'figure-positive' : 'figure-negative');
+            }
+
+            if (vitalityChartInstance && matrix.vitality_trend_labels) {
+                vitalityChartInstance.data.labels = matrix.vitality_trend_labels;
+                vitalityChartInstance.data.datasets[0].data = matrix.vitality_trend_revenue;
+                vitalityChartInstance.data.datasets[1].data = matrix.vitality_trend_expenses;
+                vitalityChartInstance.update();
+            }
+
+            if (vitalityDonutChartInstance && matrix.vitality_components) {
+                const c = matrix.vitality_components;
+                vitalityDonutChartInstance.data.labels = ['Profit Margin', 'Cash Runway', 'Growth Rate', 'Risk (inverted)'];
+                vitalityDonutChartInstance.data.datasets[0].data = [c.margin_score, c.runway_score, c.growth_score, c.risk_component];
+                vitalityDonutChartInstance.update();
+
+                const legend = document.getElementById('vitalityDonutLegend');
+                if (legend) {
+                    legend.innerHTML = `
+                        <div class="donut-legend-item"><span class="legend-dot" style="background:#0891b2;"></span> Profit Margin <b>${c.margin_score}</b></div>
+                        <div class="donut-legend-item"><span class="legend-dot" style="background:#6366f1;"></span> Cash Runway <b>${c.runway_score}</b></div>
+                        <div class="donut-legend-item"><span class="legend-dot" style="background:#16a34a;"></span> Growth Rate <b>${c.growth_score}</b></div>
+                        <div class="donut-legend-item"><span class="legend-dot" style="background:#d97706;"></span> Risk (inverted) <b>${c.risk_component}</b></div>
+                    `;
+                }
+            }
+        }
+
+        async function commitOperationalInputs() {
+            const btn = document.getElementById('opInputsSubmitBtn');
+            const originalLabel = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ri-loader-4-line spin-icon"></i> Recalculating...';
+
+            try {
+                const response = await fetch('/api/v1/telemetry/recalculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        revenue: parseFloat(document.getElementById('inputRevenue').value) || 0,
+                        expenses: parseFloat(document.getElementById('inputExpenses').value) || 0,
+                        cash_reserves: parseFloat(document.getElementById('inputCashReserves').value) || 0,
+                        growth_rate: parseFloat(document.getElementById('inputGrowthRate').value) || 0,
+                        plan_type: 'daily'
+                    })
+                });
+                if (!response.ok) throw new Error('Recalculation request failed');
+                const matrix = await response.json();
+                applyMatrixToDashboard(matrix);
+                showToast('Operational inputs committed — dashboard recalculated!');
+            } catch (err) {
+                console.error('Recalculate failed:', err);
+                showToast('Could not reach the server to recalculate. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalLabel;
+            }
+        }
+
         /* --- APPLICATION INITIALIZATION --- */
         window.onload = function() {
             initMainCharts();
+
+            const initialDataEl = document.getElementById('initialMatrixData');
+            if (initialDataEl && initialDataEl.textContent.trim()) {
+                try {
+                    applyMatrixToDashboard(JSON.parse(initialDataEl.textContent));
+                } catch (e) {
+                    console.error('Failed to parse initial matrix data:', e);
+                }
+            }
+
             console.log("PulseCheck Neo Control Suite Initialized Successfully.");
         };
     </script>
