@@ -262,6 +262,19 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition-fast);
+            margin: 0 -8px;
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        .sidebar-footer:hover {
+            background: var(--bg-sidebar-hover);
+        }
+
+        .brand-logo-area:hover .brand-logo-mark {
+            filter: brightness(1.15);
         }
 
         .avatar-circle {
@@ -1033,6 +1046,159 @@
             gap: 8px;
         }
 
+        .settings-profile-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .settings-avatar-lg {
+            width: 64px;
+            height: 64px;
+            min-width: 64px;
+            border-radius: 50%;
+            background: var(--brand-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: #ffffff;
+            box-shadow: var(--shadow-md);
+        }
+
+        .settings-profile-header h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .settings-profile-header p {
+            font-size: 12px;
+            color: var(--ink-muted);
+            margin-top: 2px;
+        }
+
+        .pref-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .pref-toggle-row:last-child {
+            border-bottom: none;
+        }
+
+        .pref-toggle-row h6 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .pref-toggle-row p {
+            font-size: 11px;
+            color: var(--ink-muted);
+            margin-top: 2px;
+        }
+
+        .pref-switch {
+            position: relative;
+            width: 42px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .pref-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .pref-switch-track {
+            position: absolute;
+            inset: 0;
+            background: var(--card-border);
+            border-radius: 999px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .pref-switch-track::before {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            top: 3px;
+            background: #ffffff;
+            border-radius: 50%;
+            transition: var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pref-switch input:checked + .pref-switch-track {
+            background: var(--brand-color);
+        }
+
+        .pref-switch input:checked + .pref-switch-track::before {
+            transform: translateX(18px);
+        }
+
+        .danger-zone-card {
+            border: 1px solid var(--danger-light);
+        }
+
+        .danger-zone-card h2 i {
+            color: var(--danger);
+        }
+
+        .danger-action-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--card-border);
+            gap: 16px;
+        }
+
+        .danger-action-row:last-child {
+            border-bottom: none;
+        }
+
+        .danger-action-row h6 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .danger-action-row p {
+            font-size: 11px;
+            color: var(--ink-muted);
+            margin-top: 2px;
+        }
+
+        .btn-danger-outline {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 9px 16px;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition-fast);
+        }
+
+        .btn-danger-outline:hover {
+            background: var(--danger);
+            color: #ffffff;
+        }
+
         .settings-save-btn:hover {
             background: #111827;
             transform: translateY(-1px);
@@ -1664,7 +1830,7 @@
 
     <aside class="sidebar-nav">
         <div class="top-nav-block">
-            <div class="brand-logo-area">
+            <div class="brand-logo-area" style="cursor: pointer;" onclick="switchView('dashboard'); playInterfaceSound('navigation');" title="Back to Dashboard">
                 <div class="brand-logo-mark">
                     <i class="ri-pulse-line"></i>
                 </div>
@@ -1704,14 +1870,15 @@
                 </div>
             </div>
 
-            <div class="sidebar-footer">
-                <div class="avatar-circle">
+            <div class="sidebar-footer" style="cursor: pointer;" onclick="switchView('account_settings'); playInterfaceSound('navigation');" title="Account Settings">
+                <div class="avatar-circle" id="sidebarAvatarInitial">
                     S
                 </div>
                 <div class="user-meta-data" style="flex-grow: 1; overflow: hidden;">
-                    <h5>STARK OPERATOR</h5>
+                    <h5 id="sidebarUserName">STARK OPERATOR</h5>
                     <p>Executive Operator</p>
                 </div>
+                <i class="ri-arrow-right-s-line" style="color: var(--sidebar-text); font-size: 16px;"></i>
             </div>
         </div>
     </aside>
@@ -2223,6 +2390,128 @@
                 </div>
             </div>
 
+            <div id="view-account_settings" class="view-panel-group full-width-column hidden" style="display: flex; flex-direction: column; gap: 20px;">
+
+                <div class="view-section-card">
+                    <div class="settings-profile-header">
+                        <div class="settings-avatar-lg" id="settingsAvatarInitial">S</div>
+                        <div>
+                            <h4 id="settingsProfileName">Stark Operator</h4>
+                            <p>Executive Operator &middot; Stark Enterprises</p>
+                        </div>
+                    </div>
+                    <h2><i class="ri-user-settings-line"></i> Profile Details</h2>
+                    <p>Update how your name and handle appear across the dashboard.</p>
+
+                    <form onsubmit="event.preventDefault(); saveProfileSettings();">
+                        <div class="settings-form-grid">
+                            <label>
+                                Display Name
+                                <input type="text" id="profileDisplayName" value="Stark Operator">
+                            </label>
+                            <label>
+                                Username
+                                <input type="text" id="profileUsername" value="stark_operator">
+                            </label>
+                            <label>
+                                Email Address
+                                <input type="email" id="profileEmail" value="stark.operator@pulsecheck.io">
+                            </label>
+                            <label>
+                                Role
+                                <select id="profileRole">
+                                    <option value="Executive Operator" selected>Executive Operator</option>
+                                    <option value="Finance Lead">Finance Lead</option>
+                                    <option value="Operations Manager">Operations Manager</option>
+                                    <option value="Read-Only Analyst">Read-Only Analyst</option>
+                                </select>
+                            </label>
+                        </div>
+                        <button type="submit" class="settings-save-btn"><i class="ri-save-line"></i> Save Profile</button>
+                    </form>
+                </div>
+
+                <div class="view-section-card">
+                    <h2><i class="ri-lock-password-line"></i> Password &amp; Security</h2>
+                    <p>Change your password. Use at least 8 characters, mixing letters and numbers.</p>
+
+                    <form onsubmit="event.preventDefault(); updatePassword();">
+                        <div class="settings-form-grid">
+                            <label>
+                                Current Password
+                                <input type="password" id="currentPassword" placeholder="••••••••" autocomplete="current-password">
+                            </label>
+                            <label>
+                                New Password
+                                <input type="password" id="newPassword" placeholder="••••••••" autocomplete="new-password">
+                            </label>
+                            <label>
+                                Confirm New Password
+                                <input type="password" id="confirmPassword" placeholder="••••••••" autocomplete="new-password">
+                            </label>
+                        </div>
+                        <button type="submit" class="settings-save-btn"><i class="ri-shield-check-line"></i> Update Password</button>
+                    </form>
+                </div>
+
+                <div class="view-section-card">
+                    <h2><i class="ri-sliders-line"></i> Preferences</h2>
+                    <p>Personalize how PulseCheck Neo looks and notifies you.</p>
+
+                    <div class="pref-toggle-row">
+                        <div>
+                            <h6>Dark Mode</h6>
+                            <p>Switch the entire dashboard to a low-light theme.</p>
+                        </div>
+                        <label class="pref-switch">
+                            <input type="checkbox" id="prefDarkModeToggle" onchange="toggleDarkMode();">
+                            <span class="pref-switch-track"></span>
+                        </label>
+                    </div>
+                    <div class="pref-toggle-row">
+                        <div>
+                            <h6>Email Notifications</h6>
+                            <p>Get weekly summaries and anomaly alerts by email.</p>
+                        </div>
+                        <label class="pref-switch">
+                            <input type="checkbox" checked onchange="showToast(this.checked ? 'Email notifications enabled' : 'Email notifications disabled');">
+                            <span class="pref-switch-track"></span>
+                        </label>
+                    </div>
+                    <div class="pref-toggle-row">
+                        <div>
+                            <h6>Two-Factor Authentication</h6>
+                            <p>Require a one-time code from your authenticator app at login.</p>
+                        </div>
+                        <label class="pref-switch">
+                            <input type="checkbox" onchange="showToast(this.checked ? 'Two-factor authentication enabled' : 'Two-factor authentication disabled');">
+                            <span class="pref-switch-track"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="view-section-card danger-zone-card">
+                    <h2><i class="ri-alert-line"></i> Danger Zone</h2>
+                    <p>These actions are sensitive — read carefully before continuing.</p>
+
+                    <div class="danger-action-row">
+                        <div>
+                            <h6>Log Out of All Devices</h6>
+                            <p>Ends every active session, including this one.</p>
+                        </div>
+                        <button class="btn-danger-outline" onclick="triggerModal('Log Out of All Devices', 'This will immediately end every active session across all devices signed in to this account, including this one.');">Log Out Everywhere</button>
+                    </div>
+                    <div class="danger-action-row">
+                        <div>
+                            <h6>Deactivate Account</h6>
+                            <p>Disables dashboard access until reactivated by support.</p>
+                        </div>
+                        <button class="btn-danger-outline" onclick="triggerModal('Deactivate Account', 'This will disable your PulseCheck Neo account and revoke dashboard access. You can reactivate it later by contacting support.');">Deactivate Account</button>
+                    </div>
+                </div>
+
+            </div>
+
         </div>
     </main>
 
@@ -2292,7 +2581,8 @@
                 'operational_inputs': ['Operational Input Engine', 'Manage primary financial variables, headcount estimates, and overhead calculations.'],
                 'complete_playbook': ['Strategic Milestone Playbook', 'Track roadmap initiatives, milestone execution, and team completion rates.'],
                 'risk_analytics': ['Risk Analytics Telemetry', 'Real-time monitoring of operational, market, and infrastructure safety bounds.'],
-                'node_settings': ['Node Settings & Preferences', 'Configure matrix telemetry endpoints, retention policies, and UI themes.']
+                'node_settings': ['Node Settings & Preferences', 'Configure matrix telemetry endpoints, retention policies, and UI themes.'],
+                'account_settings': ['Account Settings', 'Manage your profile, login credentials, and personal preferences.']
             };
 
             if (titleMap[viewName]) {
@@ -2346,7 +2636,46 @@
             } else {
                 icon.className = 'ri-moon-line';
             }
+            const prefToggle = document.getElementById('prefDarkModeToggle');
+            if (prefToggle) prefToggle.checked = appState.darkMode;
             showToast('System theme updated');
+        }
+
+        /* Account Settings Controller */
+        function saveProfileSettings() {
+            const displayName = document.getElementById('profileDisplayName').value.trim() || 'Stark Operator';
+            const initial = displayName.trim().charAt(0).toUpperCase() || 'S';
+
+            document.getElementById('sidebarUserName').innerText = displayName.toUpperCase();
+            document.getElementById('sidebarAvatarInitial').innerText = initial;
+            document.getElementById('settingsProfileName').innerText = displayName;
+            document.getElementById('settingsAvatarInitial').innerText = initial;
+
+            showToast('Profile updated successfully!');
+        }
+
+        function updatePassword() {
+            const current = document.getElementById('currentPassword');
+            const next = document.getElementById('newPassword');
+            const confirm = document.getElementById('confirmPassword');
+
+            if (!current.value) {
+                showToast('Enter your current password.');
+                return;
+            }
+            if (next.value.length < 8) {
+                showToast('New password must be at least 8 characters.');
+                return;
+            }
+            if (next.value !== confirm.value) {
+                showToast('New password and confirmation do not match.');
+                return;
+            }
+
+            current.value = '';
+            next.value = '';
+            confirm.value = '';
+            showToast('Password updated successfully!');
         }
 
         /* Modal Dialog Controller */
