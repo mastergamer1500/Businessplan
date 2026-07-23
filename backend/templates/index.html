@@ -2516,14 +2516,6 @@
             appState.reserves = resVal;
             appState.growthFactor = growthVal;
 
-            // Sync Scorecards
-            document.getElementById('mrrDisplay').innerText = '$' + revVal.toLocaleString();
-            document.getElementById('burnDisplay').innerText = '$' + expVal.toLocaleString();
-            document.getElementById('reservesDisplay').innerText = '$' + resVal.toLocaleString();
-
-            const vitalityScore = Math.min(99.9, Math.max(10, ((revVal - expVal) / 1000) * growthVal + 50));
-            document.getElementById('vitalityDisplay').innerText = vitalityScore.toFixed(1);
-
             // Re-render Sandbox Charts
             updateSandboxCharts(revVal, expVal, resVal, growthVal);
         }
