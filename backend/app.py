@@ -218,18 +218,28 @@ class EnterpriseWarningMatrix:
 
     def compute_matrix(self, payload):
         try:
-            # --- PHASE 2 FEATURES: MATHEMATICAL RUNWAY & SANDBOX ENGINE INTEGRATION ---
-            raw_revenue = float(payload.get('revenue', 18000) or 0)
-            raw_expenses = float(payload.get('expenses', 21000) or 0)
-            cash = float(payload.get('cash_reserves', 35000) or 0)
-            growth = float(payload.get('growth_rate', 3.2) or 0)
+            # --- 8 REAL OPERATIONAL INPUT VARIABLES (all annual, last 12 months) ---
+            total_sales = float(payload.get('total_sales', 1200000) or 0)
+            cogs = float(payload.get('cogs', 250000) or 0)
+            opex = float(payload.get('opex', 600000) or 0)
+            fcf = float(payload.get('fcf', 200000) or 0)
+            cash_balance = float(payload.get('cash_balance', 450000) or 0)
+            prior_year_sales = float(payload.get('prior_year_sales', 900000) or 0)
+            ltv = float(payload.get('ltv', 4500) or 0)
+            cac = float(payload.get('cac', 1200) or 0)
             plan_type = payload.get('plan_type', 'daily')
 
             # Feature 10 (Sandbox Slider): Read incoming real-world economic supply-chain shock adjustments
             material_price_hike = float(payload.get('material_price_hike', 0) or 0)
-            
-            # Apply shock mathematically to current expenses instantly
-            expenses = raw_expenses * (1.0 + (material_price_hike / 100.0))
+
+            # Apply shock mathematically to combined annual cost base
+            annual_costs = (cogs + opex) * (1.0 + (material_price_hike / 100.0))
+
+            # Normalize annual figures to monthly for the runway / vitality engine below
+            raw_revenue = total_sales / 12.0
+            expenses = annual_costs / 12.0
+            cash = cash_balance
+            growth = ((total_sales - prior_year_sales) / prior_year_sales * 100.0) if prior_year_sales > 0 else 0.0
 
             # Feature 3: Mathematical Net Burn & Cash Runway Equations
             net_burn = expenses - raw_revenue
@@ -259,6 +269,14 @@ class EnterpriseWarningMatrix:
             # Phase 4: Supply chain tips & alternative financing eligibility
             supply_chain_optimization = self.generate_supply_chain_tips(raw_revenue, expenses, final_risk)
             alternative_financing = self.generate_alternative_financing(runway_status, vitality_index)
+
+            # --- Real KPI scorecard, derived directly from the 8 operational inputs ---
+            gross_margin_pct = ((total_sales - cogs) / total_sales * 100.0) if total_sales > 0 else 0.0
+            ebitda = total_sales - annual_costs
+            ebitda_margin_pct = (ebitda / total_sales * 100.0) if total_sales > 0 else 0.0
+            fcf_conversion_pct = (fcf / ebitda * 100.0) if ebitda > 0 else 0.0
+            ltv_cac_ratio = (ltv / cac) if cac > 0 else 0.0
+            roic_pct = (ebitda / cash_balance * 100.0) if cash_balance > 0 else 0.0
 
             base_matrix = {
                 "username": session.get('username', 'Founder'),
@@ -290,7 +308,23 @@ class EnterpriseWarningMatrix:
                     "growth": "green" if growth >= 0 else "red",
                     "risk": "red" if final_risk >= 50.0 else "green",
                     "vitality": "green" if vitality_direction == "Growth" else "red"
-                }
+                },
+                # Raw operational inputs (annual), echoed back to pre-fill the input form
+                "total_sales": total_sales,
+                "cogs": cogs,
+                "opex": opex,
+                "fcf": fcf,
+                "cash_balance": cash_balance,
+                "prior_year_sales": prior_year_sales,
+                "ltv": ltv,
+                "cac": cac,
+                # Derived KPI scorecard
+                "arr": total_sales,
+                "gross_margin_pct": round(gross_margin_pct, 1),
+                "ebitda_margin_pct": round(ebitda_margin_pct, 1),
+                "fcf_conversion_pct": round(fcf_conversion_pct, 1),
+                "ltv_cac_ratio": round(ltv_cac_ratio, 2),
+                "roic_pct": round(roic_pct, 1)
             }
             base_matrix["playbook_tasks"] = self.generate_year_schedule(plan_type, base_matrix)
             return base_matrix
@@ -505,10 +539,14 @@ def setup_telemetry():
         session['username'] = username
         
         payload = {
-            'revenue': 19500,
-            'expenses': 22000,
-            'cash_reserves': 45000,
-            'growth_rate': 4.5,
+            'total_sales': 1200000,
+            'cogs': 250000,
+            'opex': 600000,
+            'fcf': 200000,
+            'cash_balance': 450000,
+            'prior_year_sales': 900000,
+            'ltv': 4500,
+            'cac': 1200,
             'plan_type': 'daily',
             'material_price_hike': 0  # Initialize sandbox variables safely
         }
@@ -532,10 +570,14 @@ def dashboard():
 def operational_inputs():
     if request.method == 'POST':
         payload = {
-            'revenue': request.form.get('revenue', type=float) or 0,
-            'expenses': request.form.get('expenses', type=float) or 0,
-            'cash_reserves': request.form.get('cash_reserves', type=float) or 0,
-            'growth_rate': request.form.get('growth_rate', type=float) or 0,
+            'total_sales': request.form.get('total_sales', type=float) or 0,
+            'cogs': request.form.get('cogs', type=float) or 0,
+            'opex': request.form.get('opex', type=float) or 0,
+            'fcf': request.form.get('fcf', type=float) or 0,
+            'cash_balance': request.form.get('cash_balance', type=float) or 0,
+            'prior_year_sales': request.form.get('prior_year_sales', type=float) or 0,
+            'ltv': request.form.get('ltv', type=float) or 0,
+            'cac': request.form.get('cac', type=float) or 0,
             'plan_type': request.form.get('plan_type', 'daily'),
             'material_price_hike': session.get('matrix_inputs', {}).get('material_price_hike', 0)
         }

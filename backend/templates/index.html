@@ -1955,7 +1955,7 @@
                     <div class="metric-card">
                         <div class="metric-info">
                             <p>2. Gross Profit Margin</p>
-                            <h3>78.5%</h3>
+                            <h3 id="metricGrossMargin">78.5%</h3>
                             <span style="font-size: 11px; color: var(--success);">Keepable profit per sale</span>
                         </div>
                         <div class="metric-icon-box indicator-green">
@@ -1966,7 +1966,7 @@
                     <div class="metric-card">
                         <div class="metric-info">
                             <p>3. Core EBITDA Margin</p>
-                            <h3>22.4%</h3>
+                            <h3 id="metricEbitdaMargin">22.4%</h3>
                             <span style="font-size: 11px; color: var(--success);">Daily operational profit</span>
                         </div>
                         <div class="metric-icon-box indicator-green">
@@ -1977,7 +1977,7 @@
                     <div class="metric-card">
                         <div class="metric-info">
                             <p>4. Free Cash Flow Conv.</p>
-                            <h3>82.0%</h3>
+                            <h3 id="metricFcfConversion">82.0%</h3>
                             <span style="font-size: 11px; color: var(--ink-muted);">Paper profit turned to real cash</span>
                         </div>
                         <div class="metric-icon-box indicator-blue">
@@ -2010,7 +2010,7 @@
                     <div class="metric-card">
                         <div class="metric-info">
                             <p>7. Customer LTV : CAC</p>
-                            <h3>3.8 : 1</h3>
+                            <h3 id="metricLtvCac">3.8 : 1</h3>
                             <span style="font-size: 11px; color: var(--success);">$3.80 earned per $1 spent</span>
                         </div>
                         <div class="metric-icon-box indicator-blue">
@@ -2021,7 +2021,7 @@
                     <div class="metric-card">
                         <div class="metric-info">
                             <p>8. Return on Capital (ROIC)</p>
-                            <h3>16.8%</h3>
+                            <h3 id="metricROIC">16.8%</h3>
                             <span style="font-size: 11px; color: var(--success);">Management money-making score</span>
                         </div>
                         <div class="metric-icon-box indicator-green">
@@ -2200,25 +2200,39 @@
 
             <div id="view-operational_inputs" class="view-panel-group full-width-column hidden">
                 <div class="view-section-card">
-                    <h2><i class="ri-equalizer-line"></i> Operational Input Engine</h2>
-                    <p>These four numbers drive every score on the Dashboard — vitality index, health grade, runway, and growth trajectory recalculate live from what you enter here.</p>
                     <form onsubmit="event.preventDefault(); commitOperationalInputs();">
                         <div class="settings-form-grid">
                             <label>
-                                Monthly Revenue ($)
-                                <input type="number" id="inputRevenue" value="{{ matrix.raw_revenue }}" min="0" step="500">
+                                Total Money Earned Last 12 Months
+                                <input type="number" id="inputTotalSales" value="{{ matrix.total_sales }}" min="0" step="1000">
                             </label>
                             <label>
-                                Monthly Expenses ($)
-                                <input type="number" id="inputExpenses" value="{{ matrix.raw_expenses }}" min="0" step="500">
+                                Direct Costs to Make/Deliver Your Product
+                                <input type="number" id="inputCogs" value="{{ matrix.cogs }}" min="0" step="1000">
                             </label>
                             <label>
-                                Cash Reserves ($)
-                                <input type="number" id="inputCashReserves" value="{{ matrix.raw_cash_reserves }}" min="0" step="1000">
+                                General Business Bills &amp; Overhead
+                                <input type="number" id="inputOpex" value="{{ matrix.opex }}" min="0" step="1000">
                             </label>
                             <label>
-                                Monthly Growth Rate (%)
-                                <input type="number" id="inputGrowthRate" value="{{ matrix.raw_growth_rate }}" step="0.1">
+                                Actual Cash Kept at End of Year
+                                <input type="number" id="inputFcf" value="{{ matrix.fcf }}" step="1000">
+                            </label>
+                            <label>
+                                Current Money in the Bank
+                                <input type="number" id="inputCashBalance" value="{{ matrix.cash_balance }}" min="0" step="1000">
+                            </label>
+                            <label>
+                                Total Money Earned in Prior Year
+                                <input type="number" id="inputPriorYearSales" value="{{ matrix.prior_year_sales }}" min="0" step="1000">
+                            </label>
+                            <label>
+                                Average Total Spent Per Customer
+                                <input type="number" id="inputLtv" value="{{ matrix.ltv }}" min="0" step="50">
+                            </label>
+                            <label>
+                                Marketing Cost to Win One Customer
+                                <input type="number" id="inputCac" value="{{ matrix.cac }}" min="0" step="50">
                             </label>
                         </div>
                         <button type="submit" class="settings-save-btn" id="opInputsSubmitBtn"><i class="ri-refresh-line"></i> Recalculate Dashboard</button>
@@ -2572,7 +2586,13 @@
         "vitality_trend_labels": matrix.vitality_trend_labels,
         "vitality_trend_revenue": matrix.vitality_trend_revenue,
         "vitality_trend_expenses": matrix.vitality_trend_expenses,
-        "vitality_components": matrix.vitality_components
+        "vitality_components": matrix.vitality_components,
+        "arr": matrix.arr,
+        "gross_margin_pct": matrix.gross_margin_pct,
+        "ebitda_margin_pct": matrix.ebitda_margin_pct,
+        "fcf_conversion_pct": matrix.fcf_conversion_pct,
+        "ltv_cac_ratio": matrix.ltv_cac_ratio,
+        "roic_pct": matrix.roic_pct
     } | tojson }}</script>
 
     <script>
@@ -3061,13 +3081,28 @@
             }
 
             const arrEl = document.getElementById('metricARR');
-            if (arrEl) arrEl.innerText = '$' + (matrix.raw_revenue * 12 / 1000000).toFixed(2) + 'M';
+            if (arrEl && matrix.arr !== undefined) arrEl.innerText = '$' + (matrix.arr / 1000000).toFixed(2) + 'M';
+
+            const grossMarginEl = document.getElementById('metricGrossMargin');
+            if (grossMarginEl && matrix.gross_margin_pct !== undefined) grossMarginEl.innerText = matrix.gross_margin_pct.toFixed(1) + '%';
+
+            const ebitdaMarginEl = document.getElementById('metricEbitdaMargin');
+            if (ebitdaMarginEl && matrix.ebitda_margin_pct !== undefined) ebitdaMarginEl.innerText = matrix.ebitda_margin_pct.toFixed(1) + '%';
+
+            const fcfConvEl = document.getElementById('metricFcfConversion');
+            if (fcfConvEl && matrix.fcf_conversion_pct !== undefined) fcfConvEl.innerText = matrix.fcf_conversion_pct.toFixed(1) + '%';
 
             const runwayEl = document.getElementById('metricRunway');
             if (runwayEl) runwayEl.innerText = '$' + Math.round(matrix.raw_cash_reserves / 1000) + 'K / ' + formatRunwayShort(matrix.cash_runway);
 
             const growthEl = document.getElementById('metricGrowth');
             if (growthEl) growthEl.innerText = (matrix.raw_growth_rate >= 0 ? '+' : '') + matrix.raw_growth_rate.toFixed(1) + '%';
+
+            const ltvCacEl = document.getElementById('metricLtvCac');
+            if (ltvCacEl && matrix.ltv_cac_ratio !== undefined) ltvCacEl.innerText = matrix.ltv_cac_ratio.toFixed(1) + ' : 1';
+
+            const roicEl = document.getElementById('metricROIC');
+            if (roicEl && matrix.roic_pct !== undefined) roicEl.innerText = matrix.roic_pct.toFixed(1) + '%';
 
             const surplusEl = document.getElementById('netSurplusFigure');
             if (surplusEl) {
@@ -3112,10 +3147,14 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        revenue: parseFloat(document.getElementById('inputRevenue').value) || 0,
-                        expenses: parseFloat(document.getElementById('inputExpenses').value) || 0,
-                        cash_reserves: parseFloat(document.getElementById('inputCashReserves').value) || 0,
-                        growth_rate: parseFloat(document.getElementById('inputGrowthRate').value) || 0,
+                        total_sales: parseFloat(document.getElementById('inputTotalSales').value) || 0,
+                        cogs: parseFloat(document.getElementById('inputCogs').value) || 0,
+                        opex: parseFloat(document.getElementById('inputOpex').value) || 0,
+                        fcf: parseFloat(document.getElementById('inputFcf').value) || 0,
+                        cash_balance: parseFloat(document.getElementById('inputCashBalance').value) || 0,
+                        prior_year_sales: parseFloat(document.getElementById('inputPriorYearSales').value) || 0,
+                        ltv: parseFloat(document.getElementById('inputLtv').value) || 0,
+                        cac: parseFloat(document.getElementById('inputCac').value) || 0,
                         plan_type: 'daily'
                     })
                 });
