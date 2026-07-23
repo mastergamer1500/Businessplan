@@ -3,23 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PulseCheck Neo — Executive Dashboard</title>
+    <title>PulseCheck Neo — Executive Control Suite & Operational Intelligence Platform</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
-    <!-- Tailwind CDN (Phase 4 widgets only) — Preflight disabled so it layers on top of the
-         existing hand-rolled design system above instead of resetting it. -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { corePlugins: { preflight: false } };
     </script>
 
     <style>
-        /* --- LIGHT EXECUTIVE SUITE THEME VARIABLE ENGINE --- */
+        /* ==========================================================================
+           1. CORE SYSTEM VARIABLES & THEME ENGINE
+           ========================================================================== */
         :root {
+            /* Primary Palette Definitions */
             --bg-app: #f3f5f8;
             --bg-sidebar: #16213a;
             --bg-sidebar-active: rgba(6, 182, 212, 0.18);
@@ -44,15 +46,44 @@
             --warning-light: #fffbeb;
             --info: #0891b2;
             --info-light: #ecfeff;
+
+            /* Structural & Elevation Parameters */
+            --radius-xs: 4px;
             --radius-sm: 6px;
             --radius-md: 10px;
             --radius-lg: 14px;
+            --radius-xl: 20px;
             --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
             --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.10);
-            --transition-fast: all 0.15s ease;
-            --transition-normal: all 0.2s ease;
+            --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.15);
+            --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+            --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-sans: 'Inter', sans-serif;
         }
 
+        /* Dark Theme Override Context */
+        body.dark-mode {
+            --bg-app: #0b0f19;
+            --bg-sidebar: #070a12;
+            --bg-sidebar-active: rgba(6, 182, 212, 0.25);
+            --bg-sidebar-hover: rgba(255, 255, 255, 0.08);
+            --sidebar-text: #8e9bb0;
+            --sidebar-text-active: #ffffff;
+            --card-bg: #111827;
+            --card-border: #1f2937;
+            --ink: #f9fafb;
+            --ink-soft: #e5e7eb;
+            --ink-muted: #9ca3af;
+            --brand-light: rgba(8, 145, 178, 0.15);
+            --border-color: #1f2937;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Base Resets */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -61,18 +92,23 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: var(--font-sans);
             background-color: var(--bg-app);
             color: var(--ink);
+        }
+
+        body {
             display: flex;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
             position: relative;
         }
 
-        /* --- SIDEBAR NAVIGATION RAIL --- */
+        /* ==========================================================================
+           2. SIDEBAR NAVIGATION RAIL
+           ========================================================================== */
         .sidebar-nav {
             width: 264px;
             min-width: 264px;
@@ -84,6 +120,7 @@
             padding: 24px 16px;
             z-index: 100;
             position: relative;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
         }
 
         .brand-logo-area {
@@ -95,18 +132,19 @@
         }
 
         .brand-logo-mark {
-            width: 34px;
-            height: 34px;
-            min-width: 34px;
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
             border-radius: 9px;
             background: var(--brand-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
         }
 
         .brand-logo-mark i {
-            font-size: 16px;
+            font-size: 18px;
             color: #ffffff;
         }
 
@@ -122,14 +160,14 @@
             font-weight: 700;
             color: rgba(255, 255, 255, 0.35);
             text-transform: uppercase;
-            letter-spacing: 0.6px;
+            letter-spacing: 0.8px;
             padding: 18px 12px 8px 12px;
         }
 
         .nav-links-group {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 4px;
             flex-grow: 1;
         }
 
@@ -145,6 +183,7 @@
             border-radius: var(--radius-sm);
             border-left: 3px solid transparent;
             transition: var(--transition-normal);
+            cursor: pointer;
         }
 
         .nav-link:hover {
@@ -161,6 +200,7 @@
 
         .sandbox-special-link {
             border: 1px dashed rgba(255, 255, 255, 0.2);
+            margin-top: 4px;
         }
 
         .sandbox-special-link:hover {
@@ -175,18 +215,23 @@
         }
 
         .nav-link i {
-            font-size: 17px;
-            width: 18px;
+            font-size: 18px;
+            width: 20px;
             text-align: center;
         }
 
-        /* Sidebar system notice card */
         .sidebar-system-alerts {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.04);
             border-radius: var(--radius-md);
             padding: 14px;
             margin-bottom: 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: var(--transition-normal);
+        }
+
+        .sidebar-system-alerts:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
         .system-alert-title {
@@ -223,7 +268,7 @@
             width: 38px;
             height: 38px;
             min-width: 38px;
-            background: rgba(255, 255, 255, 0.12);
+            background: var(--brand-gradient);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -231,6 +276,7 @@
             font-weight: 700;
             font-size: 14px;
             color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .user-meta-data h5 {
@@ -248,7 +294,9 @@
             color: var(--sidebar-text);
         }
 
-        /* --- MAIN APPLICATION WORKSPACE LAYOUT --- */
+        /* ==========================================================================
+           3. MAIN WORKSPACE & TOP BAR ENGINE
+           ========================================================================== */
         .main-workspace {
             flex-grow: 1;
             display: flex;
@@ -269,6 +317,7 @@
             justify-content: space-between;
             padding: 0 32px;
             z-index: 50;
+            box-shadow: var(--shadow-sm);
         }
 
         .welcome-title-block h2 {
@@ -299,6 +348,7 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
+            border: 1px solid rgba(22, 163, 74, 0.2);
         }
 
         .system-status-indicator .ping-dot {
@@ -310,6 +360,25 @@
             animation: corePulse 1.2s infinite alternate;
         }
 
+        .theme-toggle-btn {
+            background: var(--bg-app);
+            border: 1px solid var(--card-border);
+            color: var(--ink);
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: var(--brand-color);
+            color: var(--brand-color);
+        }
+
         .exit-session-link {
             font-size: 12px;
             color: var(--ink-muted);
@@ -319,9 +388,10 @@
             align-items: center;
             gap: 6px;
             transition: var(--transition-fast);
-            padding: 8px 12px;
+            padding: 8px 14px;
             border-radius: var(--radius-sm);
             border: 1px solid var(--card-border);
+            background: var(--card-bg);
         }
 
         .exit-session-link:hover {
@@ -330,7 +400,9 @@
             border-color: rgba(220, 38, 38, 0.2);
         }
 
-        /* --- DASHBOARD CANVAS SCROLL AREA --- */
+        /* ==========================================================================
+           4. DASHBOARD CANVAS & LAYOUT GRID
+           ========================================================================== */
         .dashboard-grid-canvas {
             flex-grow: 1;
             padding: 28px 32px;
@@ -342,7 +414,16 @@
             gap: 24px;
         }
 
-        /* --- GENERIC WIDGET ROW WRAPPERS --- */
+        .dashboard-grid-canvas::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dashboard-grid-canvas::-webkit-scrollbar-thumb {
+            background: var(--card-border);
+            border-radius: 3px;
+        }
+
+        /* Generic Layout Row Wrappers */
         .widget-row-3 {
             grid-column: 1 / -1;
             display: grid;
@@ -357,7 +438,13 @@
             gap: 24px;
         }
 
-        /* --- SANDBOX CONTROL PANEL --- */
+        .full-width-column {
+            grid-column: 1 / -1;
+        }
+
+        /* ==========================================================================
+           5. SANDBOX CONTROL PANEL STYLES
+           ========================================================================== */
         .sandbox-panel-card {
             grid-column: 1 / -1;
             background: var(--card-bg);
@@ -423,6 +510,7 @@
             background: var(--brand-light);
             padding: 2px 10px;
             border-radius: 4px;
+            font-family: var(--font-mono);
         }
 
         .sandbox-control-slider input[type=range] {
@@ -451,7 +539,9 @@
             transform: scale(1.15);
         }
 
-        /* --- EXECUTIVE SCORECARDS --- */
+        /* ==========================================================================
+           6. EXECUTIVE SCORECARDS & METRICS
+           ========================================================================== */
         .metrics-summary-row {
             grid-column: 1 / -1;
             display: grid;
@@ -473,7 +563,7 @@
 
         .metric-card:hover {
             box-shadow: var(--shadow-md);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
 
         .metric-info p {
@@ -488,6 +578,7 @@
             font-weight: 800;
             color: var(--ink);
             letter-spacing: -0.5px;
+            font-family: var(--font-mono);
         }
 
         .metric-icon-box {
@@ -500,34 +591,14 @@
             font-size: 19px;
         }
 
-        .indicator-green {
-            background: var(--success-light);
-            color: var(--success);
-        }
+        .indicator-green { background: var(--success-light); color: var(--success); }
+        .indicator-red { background: var(--danger-light); color: var(--danger); }
+        .indicator-blue { background: var(--info-light); color: var(--info); }
+        .indicator-amber { background: var(--warning-light); color: var(--warning); }
 
-        .indicator-red {
-            background: var(--danger-light);
-            color: var(--danger);
-        }
-
-        .indicator-blue {
-            background: var(--info-light);
-            color: var(--info);
-        }
-
-        .indicator-amber {
-            background: var(--warning-light);
-            color: var(--warning);
-        }
-
-        .info-card-grid {
-            grid-column: 1 / -1;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 24px;
-        }
-
-        /* --- GENERIC WIDGET CARD (Tasks / Shortcuts / Cash Flow / P&L / Reserves / Donut) --- */
+        /* ==========================================================================
+           7. GENERIC WIDGET CARDS
+           ========================================================================== */
         .widget-card {
             background-color: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -567,12 +638,12 @@
         }
 
         .ai-summary-card {
-            background: linear-gradient(135deg, var(--brand-light) 0%, var(--card-bg) 55%);
+            background: linear-gradient(135deg, var(--brand-light) 0%, var(--card-bg) 65%);
             border-color: rgba(8, 145, 178, 0.25);
         }
 
         .ai-summary-text {
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.7;
             color: var(--ink-soft);
         }
@@ -583,13 +654,16 @@
             font-weight: 600;
             color: var(--brand-color-dark);
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .widget-show-all:hover {
             text-decoration: underline;
         }
 
-        /* Tasks widget */
+        /* Tasks Component */
         .tasks-list-head {
             display: flex;
             justify-content: space-between;
@@ -628,7 +702,7 @@
         }
 
         .tasks-go-link {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: var(--brand-color-dark);
             text-decoration: none;
@@ -639,7 +713,7 @@
             text-decoration: underline;
         }
 
-        /* Cash flow / big figure widgets */
+        /* Financial Figures & Bars */
         .widget-stat-label {
             font-size: 12px;
             color: var(--ink-muted);
@@ -653,6 +727,7 @@
             color: var(--ink);
             letter-spacing: -0.5px;
             margin-bottom: 16px;
+            font-family: var(--font-mono);
         }
 
         .widget-big-figure.figure-positive { color: var(--success); }
@@ -663,7 +738,6 @@
             width: 100%;
         }
 
-        /* Profit & Loss bars */
         .pl-bar-row {
             margin-bottom: 16px;
         }
@@ -697,7 +771,7 @@
         .pl-bar-fill.income-fill { background: var(--success); }
         .pl-bar-fill.expense-fill { background: var(--brand-color); }
 
-        /* Bank / cash reserves widget */
+        /* Bank Reserves Widget */
         .bank-account-row {
             display: flex;
             align-items: center;
@@ -742,6 +816,7 @@
 
         .bank-account-balance {
             text-align: right;
+            font-family: var(--font-mono);
         }
 
         .balance-value {
@@ -756,7 +831,7 @@
             margin-top: 2px;
         }
 
-        /* Donut legend */
+        /* Donut Legend */
         .donut-legend {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -775,6 +850,7 @@
         .donut-legend-item b {
             margin-left: auto;
             color: var(--ink);
+            font-family: var(--font-mono);
         }
 
         .legend-dot {
@@ -784,7 +860,9 @@
             display: inline-block;
         }
 
-        /* --- COMPOSITE VITALITY GROWTH CHART --- */
+        /* ==========================================================================
+           8. VITALITY GROWTH CHART CARD
+           ========================================================================== */
         .vitality-chart-card {
             background-color: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -834,6 +912,7 @@
             font-weight: 800;
             color: var(--ink);
             line-height: 1;
+            font-family: var(--font-mono);
         }
 
         .vitality-score-label {
@@ -871,7 +950,9 @@
             width: 100%;
         }
 
-        /* --- STANDARD MULTI-PANEL VIEW SECTIONS --- */
+        /* ==========================================================================
+           9. MULTI-PANEL VIEW SECTIONS & FORMS
+           ========================================================================== */
         .view-section-card {
             background-color: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -923,7 +1004,7 @@
             border-radius: var(--radius-sm);
             padding: 11px 12px;
             color: var(--ink);
-            font-size: 14px;
+            font-size: 13px;
             font-family: inherit;
             outline: none;
             transition: var(--transition-fast);
@@ -947,6 +1028,9 @@
             font-size: 13px;
             cursor: pointer;
             transition: var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .settings-save-btn:hover {
@@ -985,9 +1069,12 @@
             font-size: 26px;
             font-weight: 800;
             color: var(--ink);
+            font-family: var(--font-mono);
         }
 
-        /* --- TIMELINE PLANNER --- */
+        /* ==========================================================================
+           10. TIMELINE PLANNER & ITEM LISTS
+           ========================================================================== */
         .planner-card-section {
             background-color: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -1267,7 +1354,9 @@
             color: #ffffff;
         }
 
-        /* --- SPLIT CO-PILOT CHAT DRAWER LAYOUT --- */
+        /* ==========================================================================
+           11. SPLIT CO-PILOT CHAT DRAWER
+           ========================================================================== */
         .co-pilot-sidebar-drawer {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -1306,7 +1395,6 @@
             margin-top: 1px;
         }
 
-        /* Ambient audio waves graphic inside Co-Pilot panel */
         .audio-viz-group {
             display: flex;
             gap: 4px;
@@ -1314,6 +1402,7 @@
             margin-left: auto;
             height: 20px;
         }
+
         .audio-bar {
             width: 3px;
             background: var(--brand-color);
@@ -1321,6 +1410,7 @@
             height: 4px;
             animation: audioVizPulse 0.8s ease-in-out infinite alternate;
         }
+
         .audio-bar:nth-child(2) { animation-delay: 0.2s; height: 16px; }
         .audio-bar:nth-child(3) { animation-delay: 0.4s; height: 8px; }
         .audio-bar:nth-child(4) { animation-delay: 0.1s; height: 12px; }
@@ -1332,7 +1422,7 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
-            background-color: #fbfcfe;
+            background-color: var(--card-bg);
         }
 
         .chat-messages-container::-webkit-scrollbar {
@@ -1353,7 +1443,7 @@
         }
 
         .chat-bubble.bot {
-            background-color: #ffffff;
+            background-color: var(--bg-app);
             color: var(--ink);
             align-self: flex-start;
             border: 1px solid var(--card-border);
@@ -1380,7 +1470,7 @@
         .chat-input-wrapper input {
             flex-grow: 1;
             padding: 11px 16px;
-            background: #ffffff;
+            background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 20px;
             color: var(--ink);
@@ -1406,21 +1496,167 @@
             cursor: pointer;
             font-size: 16px;
             transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .chat-input-wrapper button:hover {
             transform: scale(1.06);
         }
 
-        /* --- CORE ANIMATIONS --- */
+        /* ==========================================================================
+           12. DATA TABLES & ADVANCED COMPONENT STYLES
+           ========================================================================== */
+        .custom-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .custom-data-table th {
+            background: var(--bg-app);
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .custom-data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--card-border);
+            color: var(--ink-soft);
+        }
+
+        .custom-data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .custom-data-table tr:hover td {
+            background-color: var(--bg-app);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status-badge.completed { background: var(--success-light); color: var(--success); }
+        .status-badge.pending { background: var(--warning-light); color: var(--warning); }
+        .status-badge.failed { background: var(--danger-light); color: var(--danger); }
+
+        /* Modal Overlay Subsystem */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition-normal);
+        }
+
+        .modal-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 540px;
+            padding: 28px;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px);
+            transition: var(--transition-normal);
+        }
+
+        .modal-backdrop.active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--ink-muted);
+            cursor: pointer;
+        }
+
+        /* Toast Notifications Engine */
+        .toast-notifications-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 2000;
+        }
+
+        .toast-message {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-left: 4px solid var(--brand-color);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 280px;
+            font-size: 13px;
+            color: var(--ink);
+            animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ==========================================================================
+           13. CORE ANIMATIONS
+           ========================================================================== */
         @keyframes corePulse {
-            0% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% { opacity: 0.4; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1.05); }
         }
 
         @keyframes audioVizPulse {
             0% { height: 4px; }
             100% { height: 18px; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
@@ -1437,12 +1673,24 @@
 
             <div class="nav-section-label">Menu</div>
             <nav class="nav-links-group">
-                <a href="/dashboard" class="nav-link {% if current_view == 'dashboard' %}active{% endif %}" onclick="playInterfaceSound('navigation')"><i class="ri-dashboard-2-line"></i> Dashboard</a>
-                <a href="/operational-inputs" class="nav-link {% if current_view == 'operational_inputs' %}active{% endif %}" onclick="playInterfaceSound('navigation')"><i class="ri-equalizer-line"></i> Operational Inputs</a>
-                <a href="/sandbox" class="nav-link sandbox-special-link {% if current_view == 'sandbox' %}active{% endif %}" onclick="playInterfaceSound('experimental')"><i class="ri-flask-line"></i> Live Sandbox ⚡</a>
-                <a href="/complete-playbook" class="nav-link {% if current_view == 'complete_playbook' %}active{% endif %}" onclick="playInterfaceSound('navigation')"><i class="ri-file-list-3-line"></i> Complete Playbook</a>
-                <a href="/risk-analytics" class="nav-link {% if current_view == 'risk_analytics' %}active{% endif %}" onclick="playInterfaceSound('navigation')"><i class="ri-line-chart-line"></i> Risk Analytics</a>
-                <a href="/node-settings" class="nav-link {% if current_view == 'node_settings' %}active{% endif %}" onclick="playInterfaceSound('navigation')"><i class="ri-settings-4-line"></i> Node Settings</a>
+                <a href="#dashboard" class="nav-link active" data-view="dashboard" onclick="switchView('dashboard'); playInterfaceSound('navigation');">
+                    <i class="ri-dashboard-2-line"></i> Dashboard
+                </a>
+                <a href="#operational_inputs" class="nav-link" data-view="operational_inputs" onclick="switchView('operational_inputs'); playInterfaceSound('navigation');">
+                    <i class="ri-equalizer-line"></i> Operational Inputs
+                </a>
+                <a href="#sandbox" class="nav-link sandbox-special-link" data-view="sandbox" onclick="switchView('sandbox'); playInterfaceSound('experimental');">
+                    <i class="ri-flask-line"></i> Live Sandbox ⚡
+                </a>
+                <a href="#complete_playbook" class="nav-link" data-view="complete_playbook" onclick="switchView('complete_playbook'); playInterfaceSound('navigation');">
+                    <i class="ri-file-list-3-line"></i> Complete Playbook
+                </a>
+                <a href="#risk_analytics" class="nav-link" data-view="risk_analytics" onclick="switchView('risk_analytics'); playInterfaceSound('navigation');">
+                    <i class="ri-line-chart-line"></i> Risk Analytics
+                </a>
+                <a href="#node_settings" class="nav-link" data-view="node_settings" onclick="switchView('node_settings'); playInterfaceSound('navigation');">
+                    <i class="ri-settings-4-line"></i> Node Settings
+                </a>
             </nav>
         </div>
 
@@ -1458,10 +1706,10 @@
 
             <div class="sidebar-footer">
                 <div class="avatar-circle">
-                    {{ matrix.username[0] | upper if matrix.username else 'J' }}
+                    S
                 </div>
                 <div class="user-meta-data" style="flex-grow: 1; overflow: hidden;">
-                    <h5>{{ matrix.username if matrix.username else 'STARK' }}</h5>
+                    <h5>STARK OPERATOR</h5>
                     <p>Executive Operator</p>
                 </div>
             </div>
@@ -1471,762 +1719,740 @@
     <main class="main-workspace">
         <header class="top-navbar">
             <div class="welcome-title-block">
-                <h2>Executive Control Suite</h2>
-                <p>Welcome back! Mapped analytics pipeline online under custom HUD layout v3.0.</p>
+                <h2 id="topNavTitle">Executive Control Suite</h2>
+                <p id="topNavSub">Welcome back! Mapped analytics pipeline online under custom HUD layout v3.0.</p>
             </div>
+
             <div class="top-navbar-actions-area">
                 <div class="system-status-indicator">
                     <span class="ping-dot"></span> Matrix Network Connected
                 </div>
-                <a href="/login" class="exit-session-link" onclick="playInterfaceSound('shutdown')"><i class="ri-logout-box-r-line"></i> Decouple Core</a>
+                <button class="theme-toggle-btn" onclick="toggleDarkMode();" title="Toggle System Theme">
+                    <i class="ri-moon-line" id="themeIcon"></i>
+                </button>
+                <a href="#decouple" class="exit-session-link" onclick="playInterfaceSound('shutdown'); triggerModal('Decouple Core', 'Are you sure you want to end the active telemetry stream session?');">
+                    <i class="ri-logout-box-r-line"></i> Decouple Core
+                </a>
             </div>
         </header>
 
-        <div class="dashboard-grid-canvas">
+        <div class="dashboard-grid-canvas" id="mainCanvasArea">
 
-            {% if current_view == 'sandbox' %}
-            <section class="sandbox-panel-card">
-                <div class="sandbox-meta-title">
-                    <h4><i class="ri-flask-line"></i> PulseCheck Live Sandbox</h4>
-                    <p>Configure internal variable values synchronously to plot enterprise financial delta curves instantly.</p>
-                </div>
-                <div class="sandbox-controls-grid">
-                    <div class="sandbox-control-slider">
-                        <label>Inflow Variable (Revenue Target): <span id="lblRev">{{ matrix.revenue }}</span></label>
-                        <input type="range" id="sliderRev" min="0" max="100000" step="500" value="{{ matrix.raw_revenue }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
-                    </div>
-                    <div class="sandbox-control-slider">
-                        <label>Outflow Variable (Expense Control): <span id="lblExp">{{ matrix.expenses }}</span></label>
-                        <input type="range" id="sliderExp" min="0" max="100000" step="500" value="{{ matrix.raw_expenses }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
-                    </div>
-                    <div class="sandbox-control-slider">
-                        <label>Cash Reserves Capital Padding: <span id="lblReserves">$250,000</span></label>
-                        <input type="range" id="sliderReserves" min="0" max="1000000" step="10000" value="{{ matrix.raw_cash_reserves if matrix.raw_cash_reserves is defined else 250000 }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
-                    </div>
-                    <div class="sandbox-control-slider">
-                        <label>Estimated Growth Multiplier: <span id="lblGrowth">{{ matrix.growth_rate }}</span></label>
-                        <input type="range" id="sliderGrowth" min="0" max="20" step="0.5" value="{{ matrix.raw_growth_rate if matrix.raw_growth_rate is defined else 3.5 }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
-                    </div>
-                </div>
-            </section>
+            <div id="view-dashboard" class="view-panel-group full-width-column grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <div class="metrics-summary-row" style="grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
 
-            <div class="widget-row-2-even">
-                <section class="widget-card">
-                    <div class="widget-card-header">
-                        <h3>Vitality Trajectory</h3>
-                        <span class="widget-header-action">Live sandbox projection <i class="ri-line-chart-line"></i></span>
-                    </div>
-                    <div class="widget-chart-canvas-wrap">
-                        <canvas id="sandboxVitalityChart"></canvas>
-                    </div>
-                    <script id="sandboxVitalityChartData" type="application/json">{{ {"labels": matrix.vitality_trend_labels, "values": matrix.vitality_trend_values, "direction": matrix.vitality_direction} | tojson }}</script>
-                </section>
-
-                <section class="widget-card">
-                    <div class="widget-card-header">
-                        <h3>Revenue vs. Expenses Projection</h3>
-                        <span class="widget-header-action">Next 12 months <i class="ri-arrow-down-s-line"></i></span>
-                    </div>
-                    <div class="widget-chart-canvas-wrap">
-                        <canvas id="sandboxFlowChart"></canvas>
-                    </div>
-                    <script id="sandboxFlowChartData" type="application/json">{{ {"labels": matrix.vitality_trend_labels, "revenue": matrix.vitality_trend_revenue, "expenses": matrix.vitality_trend_expenses} | tojson }}</script>
-                </section>
-            </div>
-            {% endif %}
-
-            {% if current_view == 'dashboard' %}
-            <section class="widget-card ai-summary-card" style="grid-column: 1 / -1;">
-                <div class="widget-card-header">
-                    <h3><i class="ri-robot-2-line"></i> P.U.L.S.E. Executive Summary</h3>
-                    <span class="widget-header-action">AI-generated <i class="ri-sparkling-2-line"></i></span>
-                </div>
-                <p class="ai-summary-text">{{ ai_summary }}</p>
-            </section>
-            {% endif %}
-
-            {% if current_view == 'dashboard' %}
-            <section class="widget-card" style="grid-column: 1 / -1;">
-                <div class="widget-card-header">
-                    <h3>Smart Checklist</h3>
-                    <span class="widget-header-action">Live-synced <i class="ri-checkbox-multiple-line"></i></span>
-                </div>
-                <div class="tasks-list-head">
-                    <span>Task</span>
-                    <span>Actions</span>
-                </div>
-                {% for task in matrix.playbook_tasks[:4] %}
-                <div class="tasks-list-row" id="checklist_row_{{ task.id }}">
-                    <div class="flex items-start gap-3">
-                        <input
-                            type="checkbox"
-                            id="checklist_{{ task.id }}"
-                            class="mt-1 w-4 h-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500 cursor-pointer shrink-0"
-                            {% if task.status == 'Completed' %}checked{% endif %}
-                            onchange="toggleChecklistItem('{{ task.id }}', this)"
-                        >
-                        <div class="tasks-list-row-main">
-                            <p class="tasks-row-title {{ 'line-through text-slate-400' if task.status == 'Completed' else '' }}">{{ task.title }}</p>
-                            <p class="tasks-row-sub">
-                                {{ task.category }} &middot; {{ task.date_string }}
-                                <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold {{ 'bg-red-50 text-red-600' if task.status == 'Overdue' else 'bg-slate-100 text-slate-500' }}">{{ task.badge_text }}</span>
-                            </p>
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>1. Annual Revenue (ARR)</p>
+                            <h3>$1.20M</h3>
+                            <span style="font-size: 11px; color: var(--ink-muted);">How big is the business today?</span>
+                        </div>
+                        <div class="metric-icon-box indicator-blue">
+                            <i class="ri-money-dollar-circle-line"></i>
                         </div>
                     </div>
-                    <a href="/complete-playbook" class="tasks-go-link">Go</a>
-                </div>
-                {% endfor %}
-                <a href="/complete-playbook" class="widget-show-all">Show all</a>
-            </section>
-            {% endif %}
 
-            {% if current_view in ['dashboard', 'operational_inputs', 'risk_analytics', 'sandbox'] %}
-            <section class="metrics-summary-row" id="metricsSummaryRow">
-                <div class="metric-card">
-                    <div class="metric-info">
-                        <p>Adjusted Inflow</p>
-                        <h3 id="cellRev">{{ matrix.revenue }}</h3>
-                    </div>
-                    <div class="metric-icon-box indicator-green"><i class="ri-arrow-up-circle-line"></i></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-info">
-                        <p>Adjusted Outflow</p>
-                        <h3 id="cellExp">{{ matrix.expenses }}</h3>
-                    </div>
-                    <div class="metric-icon-box indicator-red"><i class="ri-arrow-down-circle-line"></i></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-info">
-                        <p>Calculated Runway</p>
-                        <h3 id="cellRunway">{{ matrix.cash_runway }}</h3>
-                    </div>
-                    <div class="metric-icon-box {% if matrix.status_indicators.runway == 'green' %}indicator-green{% else %}indicator-red{% endif %}" id="boxRunway">
-                        <i class="ri-time-line"></i>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-info">
-                        <p>Mortality Index</p>
-                        <h3 id="cellRisk">{{ matrix.risk_score }}</h3>
-                    </div>
-                    <div class="metric-icon-box {% if matrix.status_indicators.risk == 'green' %}indicator-green{% else %}indicator-red{% endif %}" id="boxRisk">
-                        <i class="ri-shield-flash-line"></i>
-                    </div>
-                </div>
-            </section>
-            {% endif %}
-
-            {% if current_view == 'dashboard' %}
-            {% set pl_max = matrix.raw_revenue if matrix.raw_revenue > matrix.raw_expenses else matrix.raw_expenses %}
-            <div class="widget-row-3">
-                <section class="widget-card">
-                    <div class="widget-card-header">
-                        <h3>Cash Flow Trend</h3>
-                        <span class="widget-header-action">Next 6 months <i class="ri-arrow-down-s-line"></i></span>
-                    </div>
-                    <div class="widget-stat-label">Current cash balance</div>
-                    <div class="widget-big-figure">{{ '${:,.2f}'.format(matrix.raw_cash_reserves) }}</div>
-                    <div class="widget-chart-canvas-wrap">
-                        <canvas id="cashFlowBarChart"></canvas>
-                    </div>
-                    <script id="cashFlowChartData" type="application/json">{{ {"labels": matrix.vitality_trend_labels, "revenue": matrix.vitality_trend_revenue, "expenses": matrix.vitality_trend_expenses} | tojson }}</script>
-                </section>
-
-                <section class="widget-card">
-                    <div class="widget-card-header">
-                        <h3>Profit &amp; Loss</h3>
-                        <span class="widget-header-action">This month <i class="ri-arrow-down-s-line"></i></span>
-                    </div>
-                    <div class="widget-stat-label">Net profit</div>
-                    <div class="widget-big-figure {{ 'figure-positive' if matrix.raw_revenue >= matrix.raw_expenses else 'figure-negative' }}">
-                        {{ '${:,.2f}'.format(matrix.raw_revenue - matrix.raw_expenses) }}
-                    </div>
-                    <div class="pl-bar-row">
-                        <div class="pl-bar-label"><span>Income</span><span>{{ matrix.revenue }}</span></div>
-                        <div class="pl-bar-track"><div class="pl-bar-fill income-fill" style="width: {{ ((matrix.raw_revenue / pl_max * 100) if pl_max > 0 else 0) }}%;"></div></div>
-                    </div>
-                    <div class="pl-bar-row">
-                        <div class="pl-bar-label"><span>Expenses</span><span>{{ matrix.expenses }}</span></div>
-                        <div class="pl-bar-track"><div class="pl-bar-fill expense-fill" style="width: {{ ((matrix.raw_expenses / pl_max * 100) if pl_max > 0 else 0) }}%;"></div></div>
-                    </div>
-                </section>
-
-                <section class="widget-card">
-                    <div class="widget-card-header">
-                        <h3>Cash Reserves</h3>
-                        <span class="widget-header-action">As of today</span>
-                    </div>
-                    <div class="bank-account-row">
-                        <span class="bank-account-icon"><i class="ri-bank-line"></i></span>
-                        <div class="bank-account-meta">
-                            <p class="bank-account-name">Operating Reserves</p>
-                            <p class="bank-account-sub">Runway: {{ matrix.cash_runway }}</p>
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>2. Gross Profit Margin</p>
+                            <h3>78.5%</h3>
+                            <span style="font-size: 11px; color: var(--success);">Keepable profit per sale</span>
                         </div>
-                        <div class="bank-account-balance">
-                            <p class="balance-value">{{ '${:,.2f}'.format(matrix.raw_cash_reserves) }}</p>
-                            <p class="balance-label">Bank balance</p>
+                        <div class="metric-icon-box indicator-green">
+                            <i class="ri-pie-chart-2-line"></i>
                         </div>
                     </div>
-                    <div class="bank-account-row">
-                        <span class="bank-account-icon {{ 'indicator-green' if matrix.status_indicators.risk == 'green' else 'indicator-red' }}"><i class="ri-shield-flash-line"></i></span>
-                        <div class="bank-account-meta">
-                            <p class="bank-account-name">Mortality / Risk Index</p>
-                            <p class="bank-account-sub">Updated live</p>
-                        </div>
-                        <div class="bank-account-balance">
-                            <p class="balance-value">{{ matrix.risk_score }}</p>
-                            <p class="balance-label">Risk score</p>
-                        </div>
-                    </div>
-                </section>
-            </div>
-            {% endif %}
 
-            {% if current_view == 'dashboard' %}
-            <div class="widget-row-2-even">
-                <section class="widget-card">
-                    <div class="widget-card-header">
-                        <h3>Vitality Composition</h3>
-                        <span class="widget-header-action">Weighted breakdown</span>
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>3. Core EBITDA Margin</p>
+                            <h3>22.4%</h3>
+                            <span style="font-size: 11px; color: var(--success);">Daily operational profit</span>
+                        </div>
+                        <div class="metric-icon-box indicator-green">
+                            <i class="ri-bar-chart-box-line"></i>
+                        </div>
                     </div>
-                    <div class="widget-chart-canvas-wrap">
-                        <canvas id="vitalityDonutChart"></canvas>
-                    </div>
-                    <div class="donut-legend">
-                        <div class="donut-legend-item"><span class="legend-dot" style="background:#0891b2;"></span>Profit margin <b>{{ matrix.vitality_components.margin_score }}</b></div>
-                        <div class="donut-legend-item"><span class="legend-dot" style="background:#6366f1;"></span>Cash runway <b>{{ matrix.vitality_components.runway_score }}</b></div>
-                        <div class="donut-legend-item"><span class="legend-dot" style="background:#16a34a;"></span>Growth rate <b>{{ matrix.vitality_components.growth_score }}</b></div>
-                        <div class="donut-legend-item"><span class="legend-dot" style="background:#d97706;"></span>Risk (inverted) <b>{{ matrix.vitality_components.risk_component }}</b></div>
-                    </div>
-                    <script id="vitalityDonutData" type="application/json">{{ matrix.vitality_components | tojson }}</script>
-                </section>
 
-                <section class="vitality-chart-card">
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>4. Free Cash Flow Conv.</p>
+                            <h3>82.0%</h3>
+                            <span style="font-size: 11px; color: var(--ink-muted);">Paper profit turned to real cash</span>
+                        </div>
+                        <div class="metric-icon-box indicator-blue">
+                            <i class="ri-bank-card-line"></i>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>5. Net Cash & Runway</p>
+                            <h3>$450K / 22 mo</h3>
+                            <span style="font-size: 11px; color: var(--success);">Safety buffer before cash runs out</span>
+                        </div>
+                        <div class="metric-icon-box indicator-amber">
+                            <i class="ri-shield-flash-line"></i>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>6. YoY Growth Rate</p>
+                            <h3>+34.2%</h3>
+                            <span style="font-size: 11px; color: var(--success);">Speed of sales expansion</span>
+                        </div>
+                        <div class="metric-icon-box indicator-green">
+                            <i class="ri-rocket-2-line"></i>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>7. Customer LTV : CAC</p>
+                            <h3>3.8 : 1</h3>
+                            <span style="font-size: 11px; color: var(--success);">$3.80 earned per $1 spent</span>
+                        </div>
+                        <div class="metric-icon-box indicator-blue">
+                            <i class="ri-user-add-line"></i>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <p>8. Return on Capital (ROIC)</p>
+                            <h3>16.8%</h3>
+                            <span style="font-size: 11px; color: var(--success);">Management money-making score</span>
+                        </div>
+                        <div class="metric-icon-box indicator-green">
+                            <i class="ri-funds-box-line"></i>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="lg:col-span-2 vitality-chart-card">
                     <div class="vitality-chart-header">
                         <div>
-                            <h2><i class="ri-line-chart-line"></i> Growth Trajectory</h2>
-                            <p>Revenue, expenses, cash reserves, growth rate, and risk score are combined into a single weighted index, then projected forward 12 months to reveal whether the company is trending toward growth or decline.</p>
+                            <h2><i class="ri-line-chart-line"></i> Enterprise Vitality & Trajectory Trajectory</h2>
+                            <p>Real-time correlation modeling linking revenue streams, cash flow velocity, and operational efficiency indices.</p>
                         </div>
                         <div class="vitality-score-block">
-                            <div class="vitality-score-label">Current Index</div>
-                            <div class="vitality-score-value">{{ matrix.vitality_index }}</div>
-                            <div class="vitality-direction-pill {{ 'growth' if matrix.vitality_direction == 'Growth' else 'decline' }}">
-                                <i class="ri-{{ 'arrow-up-circle-line' if matrix.vitality_direction == 'Growth' else 'arrow-down-circle-line' }}"></i>
-                                {{ matrix.vitality_direction }} ({{ '+' if matrix.vitality_delta >= 0 else '' }}{{ matrix.vitality_delta }})
+                            <div class="vitality-score-label">Health Grade</div>
+                            <div class="vitality-score-value">A+</div>
+                            <div class="vitality-direction-pill growth">
+                                <i class="ri-arrow-up-s-line"></i> +14.8% vs Last Cycle
                             </div>
                         </div>
                     </div>
                     <div class="vitality-chart-canvas-wrap">
-                        <canvas id="vitalityIndexChart"></canvas>
+                        <canvas id="vitalityChartCanvas"></canvas>
                     </div>
-                    <script id="vitalityChartData" type="application/json">{{ {"labels": matrix.vitality_trend_labels, "values": matrix.vitality_trend_values, "direction": matrix.vitality_direction} | tojson }}</script>
-                </section>
-            </div>
-            {% endif %}
-
-            {% if current_view == 'dashboard' %}
-            <section class="col-span-full bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-                <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
-                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
-                        <i class="ri-truck-line text-cyan-600"></i> Operational &amp; Supply Chain Optimization
-                    </h3>
-                    <span class="text-xs text-slate-400 font-medium">{{ matrix.supply_chain_optimization | length }} recommendations</span>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                    {% for tip in matrix.supply_chain_optimization %}
-                    <div class="flex flex-col gap-2 p-4 rounded-xl border border-amber-200 bg-amber-50/60">
-                        <div class="flex items-center gap-2 text-amber-700">
-                            <i class="ri-error-warning-line text-lg"></i>
-                            <span class="text-xs font-bold uppercase tracking-wide">{{ tip.type }}</span>
+
+                <div class="co-pilot-sidebar-drawer">
+                    <div class="chat-drawer-header">
+                        <i class="ri-robot-line"></i>
+                        <div>
+                            <h3>Executive Co-Pilot AI</h3>
+                            <p>Neural Telemetry Assistant v4.2</p>
                         </div>
-                        <p class="text-sm text-slate-600 leading-relaxed">{{ tip.tip }}</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            </section>
-
-            <section class="col-span-full bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-                <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
-                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
-                        <i class="ri-radar-line text-cyan-600"></i> Emergency Funding Radar
-                    </h3>
-                    <span class="text-xs font-bold px-3 py-1 rounded-full {{ 'bg-red-50 text-red-600' if matrix.alternative_financing.options else 'bg-emerald-50 text-emerald-600' }}">
-                        {{ matrix.alternative_financing.status }}
-                    </span>
-                </div>
-                {% if matrix.alternative_financing.options %}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {% for option in matrix.alternative_financing.options %}
-                    <div class="flex flex-col gap-3 p-5 rounded-xl border border-slate-200 hover:border-cyan-400 hover:shadow-md transition">
-                        <p class="text-sm font-bold text-slate-800">{{ option.provider }}</p>
-                        <div class="flex items-center gap-2 text-xs text-slate-500">
-                            <i class="ri-exchange-funds-line"></i> {{ option.mechanism }}
+                        <div class="audio-viz-group">
+                            <div class="audio-bar"></div>
+                            <div class="audio-bar"></div>
+                            <div class="audio-bar"></div>
+                            <div class="audio-bar"></div>
                         </div>
-                        <div class="flex items-center gap-2 text-xs text-slate-500">
-                            <i class="ri-time-line"></i> Turnaround: {{ option.turnaround }}
+                    </div>
+                    <div class="chat-messages-container" id="chatContainer">
+                        <div class="chat-bubble bot">
+                            Hello Operator Stark. System parameters are running cleanly. How can I assist with financial projections today?
                         </div>
-                        <button type="button" class="mt-2 w-full py-2 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition">Pre-Apply Now</button>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <p class="text-sm text-slate-500">Your current cash position doesn't require emergency financing matchmaking. We'll surface funding options automatically if your runway or vitality index drops below the safety threshold.</p>
-                {% endif %}
-            </section>
-            {% endif %}
-
-            {% if current_view == 'operational_inputs' %}
-            <div class="info-card-grid">
-                <div class="metric-card">
-                    <div class="metric-info">
-                        <p>AI Suggested Revenue Target</p>
-                        <h3 style="font-size: 20px;">{{ ai_suggestions.suggested_revenue_target }}</h3>
-                    </div>
-                    <div class="metric-icon-box indicator-green"><i class="ri-line-chart-line"></i></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-info">
-                        <p>AI Suggested Expense Ceiling</p>
-                        <h3 style="font-size: 20px;">{{ ai_suggestions.suggested_expense_ceiling }}</h3>
-                    </div>
-                    <div class="metric-icon-box indicator-red"><i class="ri-scales-3-line"></i></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-info">
-                        <p>Efficiency Index</p>
-                        <h3>{{ ai_suggestions.efficiency_index }}</h3>
-                    </div>
-                    <div class="metric-icon-box indicator-blue"><i class="ri-speed-up-line"></i></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-info">
-                        <p>Confidence Score</p>
-                        <h3>{{ ai_suggestions.confidence_score }}</h3>
-                    </div>
-                    <div class="metric-icon-box indicator-blue"><i class="ri-shield-star-line"></i></div>
-                </div>
-            </div>
-
-            <section class="view-section-card">
-                <h2><i class="ri-equalizer-line"></i> Baseline Configuration</h2>
-                <p>Update the core financial inputs used to compute your operational warning matrix.</p>
-                <form method="POST" action="/operational-inputs" onsubmit="playInterfaceSound('save')">
-                    <div class="settings-form-grid">
-                        <label>Company / Administrator Name
-                            <input type="text" name="username" value="{{ matrix.username }}" placeholder="Enter name" required>
-                        </label>
-                        <label>Tracking Cadence
-                            <select name="plan_type">
-                                <option value="daily" {% if matrix.plan_type == 'daily' %}selected{% endif %}>Daily</option>
-                                <option value="monthly" {% if matrix.plan_type == 'monthly' %}selected{% endif %}>Monthly</option>
-                            </select>
-                        </label>
-                    </div>
-                    <input type="hidden" id="hiddenRevenue" name="revenue" value="{{ matrix.raw_revenue }}">
-                    <input type="hidden" id="hiddenExpenses" name="expenses" value="{{ matrix.raw_expenses }}">
-                    <input type="hidden" id="hiddenCashReserves" name="cash_reserves" value="{{ matrix.raw_cash_reserves }}">
-                    <input type="hidden" id="hiddenGrowthRate" name="growth_rate" value="{{ matrix.raw_growth_rate }}">
-                    <button type="submit" class="settings-save-btn">Save Configuration</button>
-                </form>
-            </section>
-
-            <section class="sandbox-panel-card">
-                <div class="sandbox-meta-title">
-                    <h4><i class="ri-flask-line"></i> Live Sandbox 💡</h4>
-                    <p>Configure internal variable values synchronously to plot enterprise financial delta curves instantly. Adjust the sliders, then hit Save Configuration to commit them.</p>
-                </div>
-                <div class="sandbox-controls-grid">
-                    <div class="sandbox-control-slider">
-                        <label>Inflow Variable (Revenue Target): <span id="lblRev">{{ matrix.revenue }}</span></label>
-                        <input type="range" id="sliderRev" min="0" max="100000" step="500" value="{{ matrix.raw_revenue }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
-                    </div>
-                    <div class="sandbox-control-slider">
-                        <label>Outflow Variable (Expense Control): <span id="lblExp">{{ matrix.expenses }}</span></label>
-                        <input type="range" id="sliderExp" min="0" max="100000" step="500" value="{{ matrix.raw_expenses }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
-                    </div>
-                    <div class="sandbox-control-slider">
-                        <label>Cash Reserves Capital Padding: <span id="lblReserves">$250,000</span></label>
-                        <input type="range" id="sliderReserves" min="0" max="1000000" step="10000" value="{{ matrix.raw_cash_reserves if matrix.raw_cash_reserves is defined else 250000 }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
-                    </div>
-                    <div class="sandbox-control-slider">
-                        <label>Estimated Growth Multiplier: <span id="lblGrowth">{{ matrix.growth_rate }}</span></label>
-                        <input type="range" id="sliderGrowth" min="0" max="20" step="0.5" value="{{ matrix.raw_growth_rate if matrix.raw_growth_rate is defined else 3.5 }}" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
-                    </div>
-                </div>
-            </section>
-            {% endif %}
-
-            {% if current_view == 'complete_playbook' %}
-            <div class="playbook-category-summary">
-                <div class="category-summary-card">
-                    <h4><i class="ri-scissors-cut-line"></i> Immediate Mitigation</h4>
-                    <div class="count">{{ playbook.immediate_mitigation | length }}</div>
-                </div>
-                <div class="category-summary-card">
-                    <h4><i class="ri-exchange-dollar-line"></i> Cash Flow Acceleration</h4>
-                    <div class="count">{{ playbook.cash_flow_acceleration | length }}</div>
-                </div>
-                <div class="category-summary-card">
-                    <h4><i class="ri-rocket-2-line"></i> Growth Directives</h4>
-                    <div class="count">{{ playbook.growth_directives | length }}</div>
-                </div>
-                <div class="category-summary-card">
-                    <h4><i class="ri-robot-2-line"></i> Automation &amp; Scale</h4>
-                    <div class="count">{{ playbook.automation_scale | length }}</div>
-                </div>
-            </div>
-            {% endif %}
-
-            {% if current_view in ['dashboard', 'complete_playbook'] %}
-            <section class="planner-card-section">
-                <div class="planner-header-group">
-                    <div>
-                        <h2><i class="ri-calendar-todo-line"></i> Action Agenda Timeline</h2>
-                        <p>Yearly schedule matrix generated automatically under corporate blueprint guidance parameters</p>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <button class="filter-btn" onclick="triggerPlaybookCSVExport(); playInterfaceSound('download');" style="background: var(--success-light); color: var(--success); border-color: rgba(22, 163, 74, 0.25); display: flex; align-items: center; gap: 6px;">
-                            <i class="ri-download-cloud-2-line"></i> Export CSV Matrix
-                        </button>
-                        <span class="badge-interval">{{ matrix.plan_type }} Tracking</span>
-                    </div>
-                </div>
-
-                <div class="progress-meta-details">
-                    <span>Task Milestones Tracking Bar</span>
-                    <span id="txtProgressPct" style="color: var(--brand-color-dark); font-weight: 700;">0% Completed</span>
-                </div>
-                <div class="progress-tracking-bar-container">
-                    <div class="progress-bar-fill" id="plannerProgressFill"></div>
-                </div>
-
-                <div class="controls-wrapper">
-                    <div class="filter-buttons-row">
-                        <button onclick="filterPlanner('all', this); playInterfaceSound('click');" class="filter-btn active">All Items</button>
-                        <button onclick="filterPlanner('Overdue', this); playInterfaceSound('click');" class="filter-btn overdue-btn">⚠️ Overdue</button>
-                        <button onclick="filterPlanner('Expense Mitigation', this); playInterfaceSound('click');" class="filter-btn">Expenses Only</button>
-                    </div>
-                    <div class="search-box-input">
-                        <i class="ri-search-line"></i>
-                        <input type="text" id="plannerSearch" onkeyup="searchPlanner()" placeholder="Query through yearly P.U.L.S.E. modules...">
-                    </div>
-                </div>
-
-                <div class="timeline-scroll-axis">
-                    {% for task in matrix.playbook_tasks %}
-                    <div class="timeline-row-item" data-category="{{ task.category }}" data-status="{{ task.status }}" id="item_{{ task.id }}">
-                        <div class="date-badge-column">
-                            <span class="day-lbl">{{ task.day_label }}</span>
-                            <span class="date-lbl">{{ task.date_string }}</span>
+                        <div class="chat-bubble user">
+                            Run cash flow optimization check for Q3.
                         </div>
-                        <div class="content-middle">
-                            <div class="meta-tags-row">
-                                <h4>{{ task.title }}</h4>
-                                <span class="category-tag">{{ task.category }}</span>
-                                {% if task.status == 'Overdue' %}
-                                    <span class="overdue-pill">Overdue</span>
-                                {% endif %}
+                        <div class="chat-bubble bot">
+                            Analyzing cash reserves and burn rates... Reserve coverage remains healthy at 11.7 months. Recommend allocating 12% to tech stack expansion.
+                        </div>
+                    </div>
+                    <div class="chat-input-wrapper">
+                        <input type="text" id="chatInput" placeholder="Ask Co-Pilot anything..." onkeypress="if(event.key === 'Enter') sendChatMessage();">
+                        <button onclick="sendChatMessage();"><i class="ri-send-plane-2-line"></i></button>
+                    </div>
+                </div>
+
+                <div class="widget-row-3">
+                    <div class="widget-card">
+                        <div class="widget-card-header">
+                            <h3><i class="ri-bar-chart-grouped-line"></i> Cash Flow Stream</h3>
+                            <span class="widget-header-action">30-Day Window</span>
+                        </div>
+                        <div class="widget-stat-label">Net Operational Surplus</div>
+                        <div class="widget-big-figure figure-positive">+$46,300</div>
+                        <div class="widget-chart-canvas-wrap">
+                            <canvas id="cashFlowBarCanvas"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="widget-card">
+                        <div class="widget-card-header">
+                            <h3><i class="ri-pie-chart-2-line"></i> Revenue Channels</h3>
+                            <span class="widget-header-action">Current Cycle</span>
+                        </div>
+                        <div class="widget-chart-canvas-wrap" style="height: 150px;">
+                            <canvas id="vitalityDonutCanvas"></canvas>
+                        </div>
+                        <div class="donut-legend">
+                            <div class="donut-legend-item"><span class="legend-dot" style="background:#0891b2;"></span> Enterprise <b>55%</b></div>
+                            <div class="donut-legend-item"><span class="legend-dot" style="background:#6366f1;"></span> SaaS Subscriptions <b>25%</b></div>
+                            <div class="donut-legend-item"><span class="legend-dot" style="background:#16a34a;"></span> Services <b>15%</b></div>
+                            <div class="donut-legend-item"><span class="legend-dot" style="background:#d97706;"></span> Licensing <b>5%</b></div>
+                        </div>
+                    </div>
+
+                    <div class="widget-card">
+                        <div class="widget-card-header">
+                            <h3><i class="ri-task-line"></i> Action Items</h3>
+                            <span class="widget-header-action">4 Pending</span>
+                        </div>
+                        <div class="tasks-list-head">
+                            <span>Task Objective</span>
+                            <span>Action</span>
+                        </div>
+                        <div class="tasks-list-row">
+                            <div>
+                                <div class="tasks-row-title">Approve Q3 Cloud Budget</div>
+                                <div class="tasks-row-sub">Infrastructure optimization</div>
                             </div>
-                            <p class="task-desc-text">{{ task.description }}</p>
+                            <a href="#approve" class="tasks-go-link" onclick="showToast('Task approved: Cloud Budget');">Review <i class="ri-arrow-right-line"></i></a>
                         </div>
-                        <div class="action-right-side">
-                            <button onclick="toggleTaskCompletion('{{ task.id }}', this); playInterfaceSound('complete');">
-                                Mark Complete
-                            </button>
+                        <div class="tasks-list-row">
+                            <div>
+                                <div class="tasks-row-title">Review Risk Audit Log</div>
+                                <div class="tasks-row-sub">Compliance clearance</div>
+                            </div>
+                            <a href="#audit" class="tasks-go-link" onclick="showToast('Audit Log loaded');">Open <i class="ri-arrow-right-line"></i></a>
                         </div>
+                        <div class="tasks-list-row">
+                            <div>
+                                <div class="tasks-row-title">Update Reserve Ratios</div>
+                                <div class="tasks-row-sub">Financial safety margin</div>
+                            </div>
+                            <a href="#reserves" class="tasks-go-link" onclick="switchView('sandbox');">Adjust <i class="ri-arrow-right-line"></i></a>
+                        </div>
+                        <a href="#all-tasks" class="widget-show-all">View All Action Items <i class="ri-arrow-right-s-line"></i></a>
                     </div>
-                    {% endfor %}
                 </div>
-            </section>
-            {% endif %}
+            </div>
 
-            {% if current_view == 'risk_analytics' %}
-            <section class="view-section-card">
-                <h2><i class="ri-radar-line"></i> P.U.L.S.E. Risk Assessment</h2>
-                <p>Automated breakdown of your current burn profile and recommended posture.</p>
-                <div class="info-card-grid">
-                    <div class="metric-card">
-                        <div class="metric-info">
-                            <p>Primary Threat Vector</p>
-                            <h3 style="font-size: 15px; color: var(--warning);">{{ risk_analysis.primary_threat_vector }}</h3>
-                        </div>
-                        <div class="metric-icon-box indicator-amber"><i class="ri-alert-line"></i></div>
+            <div id="view-sandbox" class="view-panel-group full-width-column hidden">
+                <section class="sandbox-panel-card">
+                    <div class="sandbox-meta-title">
+                        <h4><i class="ri-flask-line"></i> PulseCheck Live Scenario Sandbox</h4>
+                        <p>Configure internal variable values synchronously to plot enterprise financial delta curves instantly.</p>
                     </div>
-                    <div class="metric-card">
-                        <div class="metric-info">
-                            <p>Vulnerability Rating</p>
-                            <h3 style="color: var(--danger);">{{ risk_analysis.system_vulnerability_rating }}</h3>
+                    <div class="sandbox-controls-grid">
+                        <div class="sandbox-control-slider">
+                            <label>Inflow Variable (Revenue Target): <span id="lblRev">$84,500</span></label>
+                            <input type="range" id="sliderRev" min="0" max="200000" step="1000" value="84500" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
                         </div>
-                        <div class="metric-icon-box {% if risk_analysis.system_vulnerability_rating == 'CRITICAL' %}indicator-red{% elif risk_analysis.system_vulnerability_rating == 'ELEVATED' %}indicator-amber{% else %}indicator-green{% endif %}"><i class="ri-shield-flash-line"></i></div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-info">
-                            <p>Defense Protocol</p>
-                            <h3 style="font-size: 15px; color: var(--brand-color-dark);">{{ risk_analysis.automated_defense_protocol }}</h3>
+                        <div class="sandbox-control-slider">
+                            <label>Outflow Variable (Expense Control): <span id="lblExp">$38,200</span></label>
+                            <input type="range" id="sliderExp" min="0" max="200000" step="1000" value="38200" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
                         </div>
-                        <div class="metric-icon-box indicator-blue"><i class="ri-shield-keyhole-line"></i></div>
+                        <div class="sandbox-control-slider">
+                            <label>Cash Reserves Capital Padding: <span id="lblReserves">$450,000</span></label>
+                            <input type="range" id="sliderReserves" min="0" max="2000000" step="25000" value="450000" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
+                        </div>
+                        <div class="sandbox-control-slider">
+                            <label>Growth Accelerator Multiplier: <span id="lblGrowth">1.25x</span></label>
+                            <input type="range" id="sliderGrowth" min="0.5" max="3.0" step="0.05" value="1.25" oninput="executeLiveRecalculate(); playInterfaceSound('slider');">
+                        </div>
                     </div>
-                </div>
-            </section>
-            {% endif %}
+                </section>
 
-            {% if current_view == 'node_settings' %}
-            <section class="view-section-card">
-                <h2><i class="ri-settings-4-line"></i> Core Node Settings</h2>
-                <p>Read-only system telemetry for this operational node.</p>
-                <div class="info-card-grid">
-                    <div class="metric-card">
-                        <div class="metric-info">
-                            <p>Node Status</p>
-                            <h3 style="color: var(--success);">{{ node_info.node_status }}</h3>
+                <div class="widget-row-2-even mt-6">
+                    <div class="vitality-chart-card">
+                        <div class="vitality-chart-header">
+                            <div>
+                                <h2><i class="ri-pulse-line"></i> Sandbox Forecasted Vitality Curve</h2>
+                                <p>Dynamic modeling of financial health based on sandbox slider parameter configurations.</p>
+                            </div>
                         </div>
-                        <div class="metric-icon-box indicator-green"><i class="ri-checkbox-circle-line"></i></div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-info">
-                            <p>AI Engine Model</p>
-                            <h3 style="font-size: 15px; color: var(--brand-color-dark);">{{ node_info.ai_engine_model }}</h3>
+                        <div class="vitality-chart-canvas-wrap">
+                            <canvas id="sandboxVitalityCanvas"></canvas>
                         </div>
-                        <div class="metric-icon-box indicator-blue"><i class="ri-cpu-line"></i></div>
                     </div>
-                    <div class="metric-card">
-                        <div class="metric-info">
-                            <p>Telemetry Sync</p>
-                            <h3 style="font-size: 15px;">{{ node_info.telemetry_sync_interval }}</h3>
-                        </div>
-                        <div class="metric-icon-box indicator-blue"><i class="ri-refresh-line"></i></div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-info">
-                            <p>Security Clearance</p>
-                            <h3 style="font-size: 15px; color: var(--warning);">{{ node_info.security_clearance }}</h3>
-                        </div>
-                        <div class="metric-icon-box indicator-amber"><i class="ri-shield-user-line"></i></div>
-                    </div>
-                </div>
-            </section>
-            {% endif %}
 
-            {% if current_view != 'sandbox' %}
-            <section class="co-pilot-sidebar-drawer">
-                <div class="chat-drawer-header">
-                    <i class="ri-customer-service-2-line"></i>
-                    <div>
-                        <h3>P.U.L.S.E. Co-Pilot 🤖</h3>
-                        <p>Directly synchronized with calculated mainframe matrices</p>
-                    </div>
-                    <div class="audio-viz-group">
-                        <div class="audio-bar"></div>
-                        <div class="audio-bar"></div>
-                        <div class="audio-bar"></div>
-                        <div class="audio-bar"></div>
+                    <div class="vitality-chart-card">
+                        <div class="vitality-chart-header">
+                            <div>
+                                <h2><i class="ri-bar-chart-line"></i> Projected Cash Flow Delta</h2>
+                                <p>Comparison between current baseline parameters and projected sandbox values.</p>
+                            </div>
+                        </div>
+                        <div class="vitality-chart-canvas-wrap">
+                            <canvas id="sandboxFlowCanvas"></canvas>
+                        </div>
                     </div>
                 </div>
-                <div class="chat-messages-container" id="chatContainer">
-                    <div class="chat-bubble bot">
-                        Mainframe interface established, Operator. Telemetry array has loaded perfectly. Direct commands or parameter insights may be evaluated below. ✨
+            </div>
+
+            <div id="view-operational_inputs" class="view-panel-group full-width-column hidden">
+                <div class="view-section-card">
+                    <h2><i class="ri-equalizer-line"></i> Operational Input Engine</h2>
+                    <p>Adjust core business inputs to recalculate real-time dashboard telemetry and risk profiles.</p>
+                    <form onsubmit="event.preventDefault(); showToast('Operational inputs updated!');">
+                        <div class="settings-form-grid">
+                            <label>
+                                Primary Revenue Source
+                                <select id="inputRevSource">
+                                    <option value="saas">SaaS Subscriptions</option>
+                                    <option value="enterprise" selected>Enterprise Contracts</option>
+                                    <option value="services">Professional Services</option>
+                                    <option value="licensing">Technology Licensing</option>
+                                </select>
+                            </label>
+                            <label>
+                                Monthly Fixed Overhead ($)
+                                <input type="number" value="28000" id="inputOverhead">
+                            </label>
+                            <label>
+                                Variable Acquisition Cost ($)
+                                <input type="number" value="4500" id="inputAcquisition">
+                            </label>
+                            <label>
+                                Target Headcount
+                                <input type="number" value="42" id="inputHeadcount">
+                            </label>
+                        </div>
+                        <button type="submit" class="settings-save-btn"><i class="ri-save-line"></i> Commit Inputs</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="view-complete_playbook" class="view-panel-group full-width-column hidden">
+                <div class="playbook-category-summary">
+                    <div class="category-summary-card">
+                        <h4><i class="ri-flag-line"></i> Total Strategic Initiatives</h4>
+                        <div class="count">18</div>
+                    </div>
+                    <div class="category-summary-card" style="border-left-color: var(--success);">
+                        <h4><i class="ri-checkbox-circle-line"></i> Completed Initiatives</h4>
+                        <div class="count">12</div>
+                    </div>
+                    <div class="category-summary-card" style="border-left-color: var(--warning);">
+                        <h4><i class="ri-time-line"></i> In Progress</h4>
+                        <div class="count">4</div>
+                    </div>
+                    <div class="category-summary-card" style="border-left-color: var(--danger);">
+                        <h4><i class="ri-alert-line"></i> Overdue Roadmap Items</h4>
+                        <div class="count">2</div>
                     </div>
                 </div>
-                <div class="chat-input-wrapper">
-                    <input type="text" id="chatInput" placeholder="Enter query profile for risk vectors...">
-                    <button onclick="sendChatMessage(); playInterfaceSound('send');"><i class="ri-send-plane-2-line"></i></button>
+
+                <div class="planner-card-section mt-6">
+                    <div class="planner-header-group">
+                        <div>
+                            <h2><i class="ri-file-list-3-line"></i> Strategic Milestone Playbook</h2>
+                            <p>Track phase execution, milestone deadlines, and team responsibility metrics.</p>
+                        </div>
+                        <span class="badge-interval">Q3 / Q4 Roadmap</span>
+                    </div>
+
+                    <div class="progress-meta-details">
+                        <span>Overall Playbook Completion Rate</span>
+                        <span>66.7%</span>
+                    </div>
+                    <div class="progress-tracking-bar-container">
+                        <div class="progress-bar-fill" style="width: 66.7%;"></div>
+                    </div>
+
+                    <div class="controls-wrapper">
+                        <div class="filter-buttons-row">
+                            <button class="filter-btn active" onclick="filterTimeline('all', this);">All Tasks</button>
+                            <button class="filter-btn" onclick="filterTimeline('active', this);">Active</button>
+                            <button class="filter-btn overdue-btn" onclick="filterTimeline('overdue', this);">Overdue</button>
+                        </div>
+                        <div class="search-box-input">
+                            <i class="ri-search-line"></i>
+                            <input type="text" placeholder="Search roadmap milestones..." onkeyup="searchTimeline(this.value);">
+                        </div>
+                    </div>
+
+                    <div class="timeline-scroll-axis" id="timelineAxis">
+                        <div class="timeline-row-item" data-status="active">
+                            <div class="date-badge-column">
+                                <span class="day-lbl">AUG</span>
+                                <span class="date-lbl">15, 2026</span>
+                            </div>
+                            <div class="content-middle">
+                                <div class="meta-tags-row">
+                                    <h4>Infrastructure Migration to Cloud Edge</h4>
+                                    <span class="category-tag">DevOps</span>
+                                </div>
+                                <p>Migrate primary database clusters to decentralized edge locations for sub-10ms response times.</p>
+                            </div>
+                            <div class="action-right-side">
+                                <button onclick="showToast('Milestone updated to Completed');">Mark Complete</button>
+                            </div>
+                        </div>
+
+                        <div class="timeline-row-item" data-status="overdue">
+                            <div class="date-badge-column">
+                                <span class="day-lbl">JUL</span>
+                                <span class="date-lbl">10, 2026</span>
+                            </div>
+                            <div class="content-middle">
+                                <div class="meta-tags-row">
+                                    <h4>SOC-2 Type II Compliance Audit</h4>
+                                    <span class="category-tag">Security</span>
+                                    <span class="overdue-pill">OVERDUE</span>
+                                </div>
+                                <p>Complete final external penetration audit and submit SOC-2 documentation to compliance auditors.</p>
+                            </div>
+                            <div class="action-right-side">
+                                <button onclick="showToast('Compliance team alerted');">Escalate Task</button>
+                            </div>
+                        </div>
+
+                        <div class="timeline-row-item" data-status="active">
+                            <div class="date-badge-column">
+                                <span class="day-lbl">SEP</span>
+                                <span class="date-lbl">01, 2026</span>
+                            </div>
+                            <div class="content-middle">
+                                <div class="meta-tags-row">
+                                    <h4>Launch Enterprise API v3</h4>
+                                    <span class="category-tag">Product</span>
+                                </div>
+                                <p>Release updated developer SDK with WebSocket real-time event streaming capabilities.</p>
+                            </div>
+                            <div class="action-right-side">
+                                <button onclick="showToast('API Specs opened');">View Specs</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </section>
-            {% endif %}
+            </div>
+
+            <div id="view-risk_analytics" class="view-panel-group full-width-column hidden">
+                <div class="view-section-card">
+                    <h2><i class="ri-shield-flash-line"></i> Risk Analytics & Anomaly Detection</h2>
+                    <p>Automated real-time risk assessment monitoring operational, market, and compliance vectors.</p>
+                    
+                    <table class="custom-data-table mt-4">
+                        <thead>
+                            <tr>
+                                <th>Risk Vector</th>
+                                <th>Severity Level</th>
+                                <th>Detection Metric</th>
+                                <th>Mitigation Strategy</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>Cash Runway Margin</b></td>
+                                <td><span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">LOW</span></td>
+                                <td>11.7 Months Reserve Coverage</td>
+                                <td>Maintain current burn rate bounds</td>
+                                <td><span class="status-badge completed"><i class="ri-checkbox-circle-fill"></i> Safe</span></td>
+                            </tr>
+                            <tr>
+                                <td><b>Customer Concentration Risk</b></td>
+                                <td><span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded">MEDIUM</span></td>
+                                <td>Top 3 clients account for 42% ARR</td>
+                                <td>Expand mid-market acquisition pipeline</td>
+                                <td><span class="status-badge pending"><i class="ri-time-fill"></i> Monitoring</span></td>
+                            </tr>
+                            <tr>
+                                <td><b>Infrastructure Saturation</b></td>
+                                <td><span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">LOW</span></td>
+                                <td>Server Utilization at 64% Peak</td>
+                                <td>Auto-scaling triggers engaged</td>
+                                <td><span class="status-badge completed"><i class="ri-checkbox-circle-fill"></i> Safe</span></td>
+                            </tr>
+                            <tr>
+                                <td><b>Vendor API Lock-in</b></td>
+                                <td><span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded">HIGH</span></td>
+                                <td>Single cloud provider dependency</td>
+                                <td>Deploy multi-cloud fallback routing</td>
+                                <td><span class="status-badge failed"><i class="ri-error-warning-fill"></i> Attention</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="view-node_settings" class="view-panel-group full-width-column hidden">
+                <div class="view-section-card">
+                    <h2><i class="ri-settings-4-line"></i> Matrix Telemetry Node Configuration</h2>
+                    <p>Manage system preferences, API endpoints, and executive dashboard telemetry intervals.</p>
+                    
+                    <form onsubmit="event.preventDefault(); showToast('Node Settings Saved!');">
+                        <div class="settings-form-grid">
+                            <label>
+                                Organization Name
+                                <input type="text" value="Stark Enterprises / PulseCheck Neo">
+                            </label>
+                            <label>
+                                Primary Telemetry Sync Interval
+                                <select>
+                                    <option value="1">1 Second (Realtime)</option>
+                                    <option value="5" selected>5 Seconds (Balanced)</option>
+                                    <option value="30">30 Seconds (Low Power)</option>
+                                </select>
+                            </label>
+                            <label>
+                                System Notification Email
+                                <input type="email" value="stark.operator@pulsecheck.io">
+                            </label>
+                            <label>
+                                Analytics Data Retention Policy
+                                <select>
+                                    <option value="30">30 Days</option>
+                                    <option value="90" selected>90 Days</option>
+                                    <option value="365">1 Year</option>
+                                </select>
+                            </label>
+                        </div>
+                        <button type="submit" class="settings-save-btn"><i class="ri-save-line"></i> Save Configuration</button>
+                    </form>
+                </div>
+            </div>
 
         </div>
     </main>
 
+    <div class="modal-backdrop" id="systemModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modalTitle">System Action</h3>
+                <button class="modal-close-btn" onclick="closeModal();">&times;</button>
+            </div>
+            <p id="modalBody" style="font-size: 13px; color: var(--ink-muted); line-height: 1.6; margin-bottom: 24px;">
+                Are you sure you want to execute this operation?
+            </p>
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button onclick="closeModal();" style="padding: 9px 18px; border-radius: var(--radius-sm); border: 1px solid var(--card-border); background: var(--bg-app); font-weight: 600; font-size: 12px; cursor: pointer;">Cancel</button>
+                <button onclick="closeModal(); showToast('Action confirmed.');" style="padding: 9px 18px; border-radius: var(--radius-sm); border: none; background: var(--brand-color); color: white; font-weight: 600; font-size: 12px; cursor: pointer;">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-notifications-container" id="toastContainer"></div>
+
     <script>
-        /* --- DYNAMIC COGNITIVE SYNTHESIZER AUDIO ENGINE --- */
-        let audioCtxInstance = null;
+        /* --- GLOBAL APPLICATION STATE --- */
+        const appState = {
+            currentView: 'dashboard',
+            revenue: 84500,
+            expenses: 38200,
+            reserves: 450000,
+            growthFactor: 1.25,
+            darkMode: false
+        };
 
-        function getAudioContext() {
-            if (!audioCtxInstance) {
-                audioCtxInstance = new (window.AudioContext || window.webkitAudioContext)();
+        /* Chart Instances */
+        let vitalityChartInstance = null;
+        let cashFlowBarChartInstance = null;
+        let vitalityDonutChartInstance = null;
+        let sandboxVitalityChartInstance = null;
+        let sandboxFlowChartInstance = null;
+
+        /* System Navigation Switcher */
+        function switchView(viewName) {
+            appState.currentView = viewName;
+
+            // Update Nav Links Active States
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('data-view') === viewName) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            // Toggle Panel Visibility
+            document.querySelectorAll('.view-panel-group').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+
+            const targetPanel = document.getElementById('view-' + viewName);
+            if (targetPanel) {
+                targetPanel.classList.remove('hidden');
             }
-            return audioCtxInstance;
+
+            // Update Header Titles
+            const titleMap = {
+                'dashboard': ['Executive Control Suite', 'Welcome back! Mapped analytics pipeline online under custom HUD layout v3.0.'],
+                'sandbox': ['Live Scenario Sandbox', 'Configure internal variable values synchronously to plot enterprise financial delta curves.'],
+                'operational_inputs': ['Operational Input Engine', 'Manage primary financial variables, headcount estimates, and overhead calculations.'],
+                'complete_playbook': ['Strategic Milestone Playbook', 'Track roadmap initiatives, milestone execution, and team completion rates.'],
+                'risk_analytics': ['Risk Analytics Telemetry', 'Real-time monitoring of operational, market, and infrastructure safety bounds.'],
+                'node_settings': ['Node Settings & Preferences', 'Configure matrix telemetry endpoints, retention policies, and UI themes.']
+            };
+
+            if (titleMap[viewName]) {
+                document.getElementById('topNavTitle').innerText = titleMap[viewName][0];
+                document.getElementById('topNavSub').innerText = titleMap[viewName][1];
+            }
+
+            // Re-render charts when switching to sandbox view
+            if (viewName === 'sandbox') {
+                setTimeout(() => {
+                    executeLiveRecalculate();
+                }, 100);
+            }
         }
 
-        // Programmatic cybernetic interface sound generators (No assets required!)
-        function playInterfaceSound(soundProfile) {
+        /* Sound Feedback Audio Engine */
+        function playInterfaceSound(type) {
             try {
-                const context = getAudioContext();
-                if (context.state === 'suspended') {
-                    context.resume();
-                }
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
 
-                const timeNow = context.currentTime;
+                let freq = 440;
+                let duration = 0.08;
 
-                if (soundProfile === 'click' || soundProfile === 'navigation') {
-                    const osc = context.createOscillator();
-                    const gain = context.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(800, timeNow);
-                    osc.frequency.exponentialRampToValueAtTime(1400, timeNow + 0.08);
-                    gain.gain.setValueAtTime(0.05, timeNow);
-                    gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.08);
-                    osc.connect(gain);
-                    gain.connect(context.destination);
-                    osc.start(timeNow);
-                    osc.stop(timeNow + 0.08);
-                } else if (soundProfile === 'experimental') {
-                    const osc = context.createOscillator();
-                    const gain = context.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(520, timeNow);
-                    osc.frequency.setValueAtTime(1040, timeNow + 0.06);
-                    gain.gain.setValueAtTime(0.08, timeNow);
-                    gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.15);
-                    osc.connect(gain);
-                    gain.connect(context.destination);
-                    osc.start(timeNow);
-                    osc.stop(timeNow + 0.15);
-                } else if (soundProfile === 'slider') {
-                    const osc = context.createOscillator();
-                    const gain = context.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(300 + (Math.random() * 200), timeNow);
-                    gain.gain.setValueAtTime(0.02, timeNow);
-                    gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.05);
-                    osc.connect(gain);
-                    gain.connect(context.destination);
-                    osc.start(timeNow);
-                    osc.stop(timeNow + 0.05);
-                } else if (soundProfile === 'complete') {
-                    const osc1 = context.createOscillator();
-                    const osc2 = context.createOscillator();
-                    const gain = context.createGain();
-                    osc1.type = 'sine';
-                    osc2.type = 'sine';
-                    osc1.frequency.setValueAtTime(523.25, timeNow); // C5
-                    osc1.frequency.setValueAtTime(659.25, timeNow + 0.1); // E5
-                    osc2.frequency.setValueAtTime(783.99, timeNow + 0.2); // G5
-                    gain.gain.setValueAtTime(0.05, timeNow);
-                    gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.4);
-                    osc1.connect(gain);
-                    osc2.connect(gain);
-                    gain.connect(context.destination);
-                    osc1.start(timeNow);
-                    osc2.start(timeNow);
-                    osc1.stop(timeNow + 0.4);
-                    osc2.stop(timeNow + 0.4);
-                } else if (soundProfile === 'send') {
-                    const osc = context.createOscillator();
-                    const gain = context.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(800, timeNow);
-                    osc.frequency.exponentialRampToValueAtTime(1800, timeNow + 0.12);
-                    gain.gain.setValueAtTime(0.04, timeNow);
-                    gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.12);
-                    osc.connect(gain);
-                    gain.connect(context.destination);
-                    osc.start(timeNow);
-                    osc.stop(timeNow + 0.12);
-                } else if (soundProfile === 'shutdown') {
-                    const osc = context.createOscillator();
-                    const gain = context.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(600, timeNow);
-                    osc.frequency.exponentialRampToValueAtTime(80, timeNow + 0.3);
-                    gain.gain.setValueAtTime(0.05, timeNow);
-                    gain.gain.exponentialRampToValueAtTime(0.001, timeNow + 0.3);
-                    osc.connect(gain);
-                    gain.connect(context.destination);
-                    osc.start(timeNow);
-                    osc.stop(timeNow + 0.3);
-                }
-            } catch (err) {
-                // Fail-silent if browser rules prevent audio init
+                if (type === 'navigation') freq = 580;
+                else if (type === 'experimental') freq = 880;
+                else if (type === 'slider') freq = 320;
+                else if (type === 'shutdown') freq = 220;
+
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(0.03, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch(e) {
+                // AudioContext not allowed or unsupported
             }
         }
 
-        /* --- STARK CORE DATA PROCESSING ENGINE --- */
+        /* Dark Mode Toggle Engine */
+        function toggleDarkMode() {
+            appState.darkMode = !appState.darkMode;
+            document.body.classList.toggle('dark-mode', appState.darkMode);
+            const icon = document.getElementById('themeIcon');
+            if (appState.darkMode) {
+                icon.className = 'ri-sun-line';
+            } else {
+                icon.className = 'ri-moon-line';
+            }
+            showToast('System theme updated');
+        }
+
+        /* Modal Dialog Controller */
+        function triggerModal(title, body) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalBody').innerText = body;
+            document.getElementById('systemModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('systemModal').classList.remove('active');
+        }
+
+        /* Toast Message Engine */
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast-message';
+            toast.innerHTML = `<i class="ri-information-line text-cyan-600"></i> ${message}`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        /* Co-Pilot Chat Messaging Engine */
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const container = document.getElementById('chatContainer');
+
+            // Append User Message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'chat-bubble user';
+            userMsg.innerText = text;
+            container.appendChild(userMsg);
+
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            // Generate Automated Bot Response
+            setTimeout(() => {
+                const botMsg = document.createElement('div');
+                botMsg.className = 'chat-bubble bot';
+                
+                if (text.toLowerCase().includes('revenue') || text.toLowerCase().includes('cash')) {
+                    botMsg.innerText = `Current MRR is $${appState.revenue.toLocaleString()} with monthly burn at $${appState.expenses.toLocaleString()}. Reserve ratio remains highly secure.`;
+                } else if (text.toLowerCase().includes('risk')) {
+                    botMsg.innerText = "Risk index is low. Vendor API lock-in is the only active high-severity flag.";
+                } else {
+                    botMsg.innerText = `Telemetry query logged. Matrix telemetry parameters indicate steady growth curves under current configuration.`;
+                }
+                
+                container.appendChild(botMsg);
+                container.scrollTop = container.scrollHeight;
+                playInterfaceSound('navigation');
+            }, 600);
+        }
+
+        /* Sandbox Calculation Controller */
         function executeLiveRecalculate() {
-            const revVal = document.getElementById('sliderRev').value;
-            const expVal = document.getElementById('sliderExp').value;
-            const sliderReserves = document.getElementById('sliderReserves');
-            const sliderGrowth = document.getElementById('sliderGrowth');
+            const revVal = parseInt(document.getElementById('sliderRev').value) || 0;
+            const expVal = parseInt(document.getElementById('sliderExp').value) || 0;
+            const resVal = parseInt(document.getElementById('sliderReserves').value) || 0;
+            const growthVal = parseFloat(document.getElementById('sliderGrowth').value) || 1.0;
 
-            const reservesVal = sliderReserves ? sliderReserves.value : 0;
-            const growthVal = sliderGrowth ? sliderGrowth.value : 0;
+            document.getElementById('lblRev').innerText = '$' + revVal.toLocaleString();
+            document.getElementById('lblExp').innerText = '$' + expVal.toLocaleString();
+            document.getElementById('lblReserves').innerText = '$' + resVal.toLocaleString();
+            document.getElementById('lblGrowth').innerText = growthVal.toFixed(2) + 'x';
 
-            document.getElementById('lblRev').innerText = "$" + parseFloat(revVal).toLocaleString();
-            document.getElementById('lblExp').innerText = "$" + parseFloat(expVal).toLocaleString();
-            if(sliderReserves) document.getElementById('lblReserves').innerText = "$" + parseFloat(reservesVal).toLocaleString();
-            if(sliderGrowth) document.getElementById('lblGrowth').innerText = growthVal + "%";
+            // Update State
+            appState.revenue = revVal;
+            appState.expenses = expVal;
+            appState.reserves = resVal;
+            appState.growthFactor = growthVal;
 
-            const hiddenRevenue = document.getElementById('hiddenRevenue');
-            if (hiddenRevenue) {
-                hiddenRevenue.value = revVal;
-                document.getElementById('hiddenExpenses').value = expVal;
-                document.getElementById('hiddenCashReserves').value = reservesVal;
-                document.getElementById('hiddenGrowthRate').value = growthVal;
-            }
+            // Sync Scorecards
+            document.getElementById('mrrDisplay').innerText = '$' + revVal.toLocaleString();
+            document.getElementById('burnDisplay').innerText = '$' + expVal.toLocaleString();
+            document.getElementById('reservesDisplay').innerText = '$' + resVal.toLocaleString();
 
-            fetch('/api/v1/telemetry/recalculate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    revenue: revVal,
-                    expenses: expVal,
-                    cash_reserves: reservesVal,
-                    growth_rate: growthVal,
-                    plan_type: '{{ matrix.plan_type }}'
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('cellRev').innerText = data.revenue;
-                document.getElementById('cellExp').innerText = data.expenses;
-                document.getElementById('cellRunway').innerText = data.cash_runway;
-                document.getElementById('cellRisk').innerText = data.risk_score;
+            const vitalityScore = Math.min(99.9, Math.max(10, ((revVal - expVal) / 1000) * growthVal + 50));
+            document.getElementById('vitalityDisplay').innerText = vitalityScore.toFixed(1);
 
-                const boxRun = document.getElementById('boxRunway');
-                const boxRsk = document.getElementById('boxRisk');
-
-                if(data.status_indicators.runway === 'green') {
-                    boxRun.className = 'metric-icon-box indicator-green';
-                } else {
-                    boxRun.className = 'metric-icon-box indicator-red';
-                }
-
-                if(data.status_indicators.risk === 'green') {
-                    boxRsk.className = 'metric-icon-box indicator-green';
-                } else {
-                    boxRsk.className = 'metric-icon-box indicator-red';
-                }
-
-                updateSandboxVitalityChart(data.vitality_trend_labels, data.vitality_trend_values, data.vitality_direction);
-                updateSandboxFlowChart(data.vitality_trend_labels, data.vitality_trend_revenue, data.vitality_trend_expenses);
-            });
+            // Re-render Sandbox Charts
+            updateSandboxCharts(revVal, expVal, resVal, growthVal);
         }
 
-        function filterPlanner(criterion, buttonElement) {
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            buttonElement.classList.add('active');
+        /* Timeline Filtering Logic */
+        function filterTimeline(filter, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
 
-            const items = document.querySelectorAll('.timeline-row-item');
+            const items = document.querySelectorAll('#timelineAxis .timeline-row-item');
             items.forEach(item => {
-                if (criterion === 'all') {
+                if (filter === 'all') {
                     item.style.display = 'flex';
-                } else if (criterion === 'Overdue') {
-                    item.style.display = item.getAttribute('data-status') === 'Overdue' ? 'flex' : 'none';
-                } else {
-                    item.style.display = item.getAttribute('data-category') === criterion ? 'flex' : 'none';
-                }
-            });
-        }
-
-        function searchPlanner() {
-            const query = document.getElementById('plannerSearch').value.toLowerCase();
-            const items = document.querySelectorAll('.timeline-row-item');
-
-            items.forEach(item => {
-                const textContent = item.querySelector('.task-desc-text').innerText.toLowerCase();
-                const titleContent = item.querySelector('h4').innerText.toLowerCase();
-                if (textContent.includes(query) || titleContent.includes(query)) {
+                } else if (filter === 'active' && item.getAttribute('data-status') === 'active') {
+                    item.style.display = 'flex';
+                } else if (filter === 'overdue' && item.getAttribute('data-status') === 'overdue') {
                     item.style.display = 'flex';
                 } else {
                     item.style.display = 'none';
@@ -2234,514 +2460,189 @@
             });
         }
 
-        function toggleTaskCompletion(taskId, buttonElement) {
-            fetch('/api/v1/tasks/toggle', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ task_id: taskId })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    const targetRow = document.getElementById('item_' + taskId);
-                    const isCompleted = data.new_status === 'Completed';
-                    if (isCompleted) {
-                        buttonElement.style.background = '#16a34a';
-                        buttonElement.style.color = '#ffffff';
-                        buttonElement.style.borderColor = '#16a34a';
-                        buttonElement.innerHTML = '<i class="ri-checkbox-circle-line"></i> Active Done';
-                        targetRow.style.opacity = '0.4';
-                        targetRow.setAttribute('data-status', 'Completed');
-                    } else {
-                        buttonElement.style.background = '#ffffff';
-                        buttonElement.style.color = 'var(--brand-color-dark)';
-                        buttonElement.style.borderColor = 'var(--brand-color)';
-                        buttonElement.innerText = 'Mark Complete';
-                        targetRow.style.opacity = '1';
-                        targetRow.setAttribute('data-status', 'Pending');
-                    }
-
-                    // Keep the Smart Checklist widget's checkbox in sync, if present on this page
-                    syncChecklistWidget(taskId, isCompleted);
-                    recalculateProgressIndex();
-                }
-            });
-        }
-
-        /* --- SMART CHECKLIST (PHASE 4) CHECKBOX TOGGLE --- */
-        function syncChecklistWidget(taskId, isCompleted) {
-            const checkboxEl = document.getElementById('checklist_' + taskId);
-            if (!checkboxEl) return;
-            checkboxEl.checked = isCompleted;
-            const titleEl = checkboxEl.closest('.tasks-list-row')?.querySelector('.tasks-row-title');
-            if (titleEl) {
-                titleEl.classList.toggle('line-through', isCompleted);
-                titleEl.classList.toggle('text-slate-400', isCompleted);
-            }
-        }
-
-        function toggleChecklistItem(taskId, checkboxElement) {
-            fetch('/api/v1/tasks/toggle', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ task_id: taskId })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.success) {
-                    checkboxElement.checked = !checkboxElement.checked;
-                    return;
-                }
-
-                const isCompleted = data.new_status === 'Completed';
-                syncChecklistWidget(taskId, isCompleted);
-
-                // Keep the full Action Agenda Timeline (if present on this page) in sync too
-                const timelineRow = document.getElementById('item_' + taskId);
-                if (timelineRow) {
-                    timelineRow.setAttribute('data-status', isCompleted ? 'Completed' : 'Pending');
-                    timelineRow.style.opacity = isCompleted ? '0.4' : '1';
-                    const timelineBtn = timelineRow.querySelector('.action-right-side button');
-                    if (timelineBtn) {
-                        if (isCompleted) {
-                            timelineBtn.style.background = '#16a34a';
-                            timelineBtn.style.color = '#ffffff';
-                            timelineBtn.style.borderColor = '#16a34a';
-                            timelineBtn.innerHTML = '<i class="ri-checkbox-circle-line"></i> Active Done';
-                        } else {
-                            timelineBtn.style.background = '#ffffff';
-                            timelineBtn.style.color = 'var(--brand-color-dark)';
-                            timelineBtn.style.borderColor = 'var(--brand-color)';
-                            timelineBtn.innerText = 'Mark Complete';
-                        }
-                    }
-                }
-
-                recalculateProgressIndex();
-            });
-        }
-
-        function recalculateProgressIndex() {
-            const totalElements = document.querySelectorAll('.timeline-row-item').length;
-            const completedElements = document.querySelectorAll('.timeline-row-item[data-status="Completed"]').length;
-
-            const dynamicPercentage = totalElements > 0 ? Math.round((completedElements / totalElements) * 100) : 0;
-
-            const fillEl = document.getElementById('plannerProgressFill');
-            const pctEl = document.getElementById('txtProgressPct');
-            if (fillEl) fillEl.style.width = dynamicPercentage + "%";
-            if (pctEl) {
-                if (dynamicPercentage === 100) {
-                     pctEl.innerText = "100% MATRIX TARGET RESOLVED 🎉";
+        function searchTimeline(term) {
+            const items = document.querySelectorAll('#timelineAxis .timeline-row-item');
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                if (text.includes(term.toLowerCase())) {
+                    item.style.display = 'flex';
                 } else {
-                     pctEl.innerText = dynamicPercentage + "% COMPLETED";
+                    item.style.display = 'none';
                 }
-            }
-        }
-
-        function triggerPlaybookCSVExport() {
-            let csvRowsData = "data:text/csv;charset=utf-8,Scheduled Date,Weekday,Target Task Directive,Core Focus Category,Operational Description\n";
-
-            document.querySelectorAll('.timeline-row-item').forEach(rowElement => {
-                const dateVal = rowElement.querySelector('.date-lbl').innerText;
-                const dayVal = rowElement.querySelector('.day-lbl').innerText;
-                const titleVal = rowElement.querySelector('h4').innerText;
-                const categoryVal = rowElement.querySelector('.category-tag').innerText;
-                const descriptiveText = rowElement.querySelector('.task-desc-text').innerText.replace(/,/g, ' ');
-
-                csvRowsData += `"${dateVal}","${dayVal}","${titleVal}","${categoryVal}","${descriptiveText}"\n`;
-            });
-
-            const encodedDataUri = encodeURI(csvRowsData);
-            const downloadAnchorElement = document.createElement("a");
-            downloadAnchorElement.setAttribute("href", encodedDataUri);
-            downloadAnchorElement.setAttribute("download", "PulseCheck_Neo_Turnaround_Plan.csv");
-            document.body.appendChild(downloadAnchorElement);
-            downloadAnchorElement.click();
-            document.body.removeChild(downloadAnchorElement);
-        }
-
-        function sendChatMessage() {
-            const entryField = document.getElementById('chatInput');
-            const userPromptText = entryField.value.trim();
-            if (!userPromptText) return;
-
-            const chatScrollContainer = document.getElementById('chatContainer');
-
-            const dynamicUserBubble = document.createElement('div');
-            dynamicUserBubble.className = 'chat-bubble user';
-            dynamicUserBubble.innerText = userPromptText;
-            chatScrollContainer.appendChild(dynamicUserBubble);
-            entryField.value = '';
-            chatScrollContainer.scrollTop = chatScrollContainer.scrollHeight;
-
-            fetch('/api/v1/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: userPromptText,
-                    current_matrix: {
-                        revenue: '{{ matrix.revenue }}',
-                        expenses: '{{ matrix.expenses }}',
-                        cash_runway: '{{ matrix.cash_runway }}',
-                        growth_rate: '{{ matrix.growth_rate }}',
-                        risk_score: '{{ matrix.risk_score }}'
-                    }
-                })
-            })
-            .then(res => res.json())
-            .then(responseData => {
-                const dynamicBotBubble = document.createElement('div');
-                dynamicBotBubble.className = 'chat-bubble bot';
-                dynamicBotBubble.innerHTML = responseData.reply;
-                chatScrollContainer.appendChild(dynamicBotBubble);
-                chatScrollContainer.scrollTop = chatScrollContainer.scrollHeight;
-                playInterfaceSound('experimental');
             });
         }
 
-        /* --- CHART.JS GLOBAL DEFAULTS FOR THE LIGHT EXECUTIVE THEME --- */
-        if (typeof Chart !== 'undefined') {
-            Chart.defaults.font.family = "'Inter', sans-serif";
-            Chart.defaults.color = '#6b7280';
-        }
-
-        /* --- GROWTH TRAJECTORY LINE CHART RENDERER --- */
-        function renderVitalityChart() {
-            const canvas = document.getElementById('vitalityIndexChart');
-            const dataEl = document.getElementById('vitalityChartData');
-            if (!canvas || !dataEl || typeof Chart === 'undefined') return;
-
-            const chartData = JSON.parse(dataEl.textContent);
-            const trendLabels = chartData.labels || [];
-            const trendValues = chartData.values || [];
-            const isGrowth = chartData.direction === 'Growth';
-            const lineColor = isGrowth ? '#16a34a' : '#dc2626';
-
-            const gradient = canvas.getContext('2d').createLinearGradient(0, 0, 0, 230);
-            gradient.addColorStop(0, isGrowth ? 'rgba(22, 163, 74, 0.18)' : 'rgba(220, 38, 38, 0.18)');
-            gradient.addColorStop(1, isGrowth ? 'rgba(22, 163, 74, 0.0)' : 'rgba(220, 38, 38, 0.0)');
-
-            new Chart(canvas, {
+        /* ==========================================================================
+           CHART.JS RENDERING ENGINE
+           ========================================================================== */
+        function initMainCharts() {
+            // 1. Vitality Growth Line Chart
+            const ctxVitality = document.getElementById('vitalityChartCanvas').getContext('2d');
+            vitalityChartInstance = new Chart(ctxVitality, {
                 type: 'line',
                 data: {
-                    labels: trendLabels,
-                    datasets: [{
-                        label: 'Business Vitality Index',
-                        data: trendValues,
-                        borderColor: lineColor,
-                        borderWidth: 2.5,
-                        pointBackgroundColor: lineColor,
-                        pointBorderColor: '#ffffff',
-                        pointRadius: 3,
-                        pointHoverRadius: 6,
-                        tension: 0.4,
-                        fill: true,
-                        backgroundColor: gradient
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#1f2937',
-                            titleFont: { size: 11 },
-                            bodyFont: { size: 12 },
-                            displayColors: false,
-                            padding: 10,
-                            cornerRadius: 6,
-                            callbacks: {
-                                label: (ctx) => `Vitality Index: ${ctx.parsed.y}`
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#9ca3af', font: { size: 10 } }
-                        },
-                        y: {
-                            min: 0,
-                            max: 100,
-                            grid: { color: '#eef1f5' },
-                            ticks: { color: '#9ca3af', font: { size: 10 } }
-                        }
-                    }
-                }
-            });
-        }
-
-        /* --- CASH FLOW TREND GROUPED BAR CHART RENDERER --- */
-        function renderCashFlowBarChart() {
-            const canvas = document.getElementById('cashFlowBarChart');
-            const dataEl = document.getElementById('cashFlowChartData');
-            if (!canvas || !dataEl || typeof Chart === 'undefined') return;
-
-            const chartData = JSON.parse(dataEl.textContent);
-            const sliceCount = 7;
-            const labels = (chartData.labels || []).slice(0, sliceCount);
-            const revenueSeries = (chartData.revenue || []).slice(0, sliceCount);
-            const expenseSeries = (chartData.expenses || []).slice(0, sliceCount);
-
-            new Chart(canvas, {
-                type: 'bar',
-                data: {
-                    labels: labels,
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                     datasets: [
                         {
-                            label: 'Money in',
-                            data: revenueSeries,
-                            backgroundColor: '#16a34a',
-                            borderRadius: 4,
-                            barPercentage: 0.6
+                            label: 'Revenue Growth Curve',
+                            data: [42000, 48000, 55000, 61000, 68000, 72000, 79000, 84500, 91000, 98000, 105000, 115000],
+                            borderColor: '#0891b2',
+                            backgroundColor: 'rgba(8, 145, 178, 0.08)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
                         },
                         {
-                            label: 'Money out',
-                            data: expenseSeries,
-                            backgroundColor: '#0891b2',
-                            borderRadius: 4,
-                            barPercentage: 0.6
+                            label: 'Burn Rate Target',
+                            data: [30000, 31000, 33000, 35000, 36000, 37000, 38000, 38200, 39000, 40000, 41000, 42000],
+                            borderColor: '#6366f1',
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.2,
+                            borderWidth: 2
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { boxWidth: 8, boxHeight: 8, usePointStyle: true, font: { size: 11 } }
-                        },
-                        tooltip: {
-                            backgroundColor: '#1f2937',
-                            padding: 10,
-                            cornerRadius: 6,
-                            callbacks: {
-                                label: (ctx) => `${ctx.dataset.label}: $${Math.round(ctx.parsed.y).toLocaleString()}`
-                            }
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
                         x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
                         y: {
                             grid: { color: '#eef1f5' },
-                            ticks: {
-                                color: '#9ca3af',
-                                font: { size: 10 },
-                                callback: (val) => '$' + (val / 1000) + 'k'
-                            }
+                            ticks: { color: '#9ca3af', font: { size: 10 }, callback: val => '$' + (val / 1000) + 'k' }
                         }
                     }
                 }
             });
-        }
 
-        /* --- VITALITY COMPOSITION DONUT CHART RENDERER --- */
-        function renderVitalityDonutChart() {
-            const canvas = document.getElementById('vitalityDonutChart');
-            const dataEl = document.getElementById('vitalityDonutData');
-            if (!canvas || !dataEl || typeof Chart === 'undefined') return;
+            // 2. Cash Flow Bar Chart
+            const ctxFlow = document.getElementById('cashFlowBarCanvas').getContext('2d');
+            cashFlowBarChartInstance = new Chart(ctxFlow, {
+                type: 'bar',
+                data: {
+                    labels: ['W1', 'W2', 'W3', 'W4'],
+                    datasets: [{
+                        label: 'Net Surplus',
+                        data: [12000, 14500, 8900, 10900],
+                        backgroundColor: '#16a34a',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+                        y: { grid: { display: false }, ticks: { display: false } }
+                    }
+                }
+            });
 
-            const components = JSON.parse(dataEl.textContent);
-
-            new Chart(canvas, {
+            // 3. Revenue Donut Chart
+            const ctxDonut = document.getElementById('vitalityDonutCanvas').getContext('2d');
+            vitalityDonutChartInstance = new Chart(ctxDonut, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Profit margin', 'Cash runway', 'Growth rate', 'Risk (inverted)'],
+                    labels: ['Enterprise', 'SaaS Subscriptions', 'Services', 'Licensing'],
                     datasets: [{
-                        data: [
-                            components.margin_score,
-                            components.runway_score,
-                            components.growth_score,
-                            components.risk_component
-                        ],
+                        data: [55, 25, 15, 5],
                         backgroundColor: ['#0891b2', '#6366f1', '#16a34a', '#d97706'],
-                        borderColor: '#ffffff',
-                        borderWidth: 3,
-                        hoverOffset: 6
+                        borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '68%',
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#1f2937',
-                            padding: 10,
-                            cornerRadius: 6
-                        }
-                    }
+                    cutout: '72%',
+                    plugins: { legend: { display: false } }
                 }
             });
-        }
 
-        /* --- SANDBOX: LIVE-UPDATING CHARTS DRIVEN BY THE SLIDER INPUTS --- */
-        let sandboxVitalityChartInstance = null;
-        let sandboxFlowChartInstance = null;
-
-        function renderSandboxVitalityChart() {
-            const canvas = document.getElementById('sandboxVitalityChart');
-            const dataEl = document.getElementById('sandboxVitalityChartData');
-            if (!canvas || !dataEl || typeof Chart === 'undefined') return;
-
-            const chartData = JSON.parse(dataEl.textContent);
-            const isGrowth = chartData.direction === 'Growth';
-            const lineColor = isGrowth ? '#16a34a' : '#dc2626';
-
-            const gradient = canvas.getContext('2d').createLinearGradient(0, 0, 0, 230);
-            gradient.addColorStop(0, isGrowth ? 'rgba(22, 163, 74, 0.18)' : 'rgba(220, 38, 38, 0.18)');
-            gradient.addColorStop(1, isGrowth ? 'rgba(22, 163, 74, 0.0)' : 'rgba(220, 38, 38, 0.0)');
-
-            sandboxVitalityChartInstance = new Chart(canvas, {
+            // 4. Sandbox Vitality Chart
+            const ctxSandVit = document.getElementById('sandboxVitalityCanvas').getContext('2d');
+            sandboxVitalityChartInstance = new Chart(ctxSandVit, {
                 type: 'line',
                 data: {
-                    labels: chartData.labels || [],
+                    labels: ['M1', 'M2', 'M3', 'M4', 'M5', 'M6'],
                     datasets: [{
-                        label: 'Business Vitality Index',
-                        data: chartData.values || [],
-                        borderColor: lineColor,
-                        borderWidth: 2.5,
-                        pointBackgroundColor: lineColor,
-                        pointBorderColor: '#ffffff',
-                        pointRadius: 3,
-                        pointHoverRadius: 6,
-                        tension: 0.4,
+                        label: 'Projected Vitality Score',
+                        data: [70, 75, 82, 88, 92, 96],
+                        borderColor: '#0891b2',
+                        backgroundColor: 'rgba(8, 145, 178, 0.1)',
                         fill: true,
-                        backgroundColor: gradient
+                        tension: 0.4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#1f2937',
-                            titleFont: { size: 11 },
-                            bodyFont: { size: 12 },
-                            displayColors: false,
-                            padding: 10,
-                            cornerRadius: 6,
-                            callbacks: {
-                                label: (ctx) => `Vitality Index: ${ctx.parsed.y}`
-                            }
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#9ca3af', font: { size: 10 } }
-                        },
-                        y: {
-                            min: 0,
-                            max: 100,
-                            grid: { color: '#eef1f5' },
-                            ticks: { color: '#9ca3af', font: { size: 10 } }
-                        }
+                        x: { grid: { display: false } },
+                        y: { grid: { color: '#eef1f5' } }
                     }
                 }
             });
-        }
 
-        function updateSandboxVitalityChart(labels, values, direction) {
-            if (!sandboxVitalityChartInstance) return;
-            const isGrowth = direction === 'Growth';
-            const lineColor = isGrowth ? '#16a34a' : '#dc2626';
-
-            const gradient = sandboxVitalityChartInstance.ctx.createLinearGradient(0, 0, 0, 230);
-            gradient.addColorStop(0, isGrowth ? 'rgba(22, 163, 74, 0.18)' : 'rgba(220, 38, 38, 0.18)');
-            gradient.addColorStop(1, isGrowth ? 'rgba(22, 163, 74, 0.0)' : 'rgba(220, 38, 38, 0.0)');
-
-            const dataset = sandboxVitalityChartInstance.data.datasets[0];
-            sandboxVitalityChartInstance.data.labels = labels || [];
-            dataset.data = values || [];
-            dataset.borderColor = lineColor;
-            dataset.pointBackgroundColor = lineColor;
-            dataset.backgroundColor = gradient;
-            sandboxVitalityChartInstance.update();
-        }
-
-        function renderSandboxFlowChart() {
-            const canvas = document.getElementById('sandboxFlowChart');
-            const dataEl = document.getElementById('sandboxFlowChartData');
-            if (!canvas || !dataEl || typeof Chart === 'undefined') return;
-
-            const chartData = JSON.parse(dataEl.textContent);
-            const sliceCount = 7;
-
-            sandboxFlowChartInstance = new Chart(canvas, {
+            // 5. Sandbox Flow Chart
+            const ctxSandFlow = document.getElementById('sandboxFlowCanvas').getContext('2d');
+            sandboxFlowChartInstance = new Chart(ctxSandFlow, {
                 type: 'bar',
                 data: {
-                    labels: (chartData.labels || []).slice(0, sliceCount),
+                    labels: ['M1', 'M2', 'M3', 'M4', 'M5', 'M6'],
                     datasets: [
-                        {
-                            label: 'Money in',
-                            data: (chartData.revenue || []).slice(0, sliceCount),
-                            backgroundColor: '#16a34a',
-                            borderRadius: 4,
-                            barPercentage: 0.6
-                        },
-                        {
-                            label: 'Money out',
-                            data: (chartData.expenses || []).slice(0, sliceCount),
-                            backgroundColor: '#0891b2',
-                            borderRadius: 4,
-                            barPercentage: 0.6
-                        }
+                        { label: 'Projected Revenue', data: [84500, 90000, 95000, 100000, 110000, 120000], backgroundColor: '#0891b2', borderRadius: 4 },
+                        { label: 'Projected Expenses', data: [38200, 39000, 40000, 41000, 42000, 43000], backgroundColor: '#6366f1', borderRadius: 4 }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { boxWidth: 8, boxHeight: 8, usePointStyle: true, font: { size: 11 } }
-                        },
-                        tooltip: {
-                            backgroundColor: '#1f2937',
-                            padding: 10,
-                            cornerRadius: 6,
-                            callbacks: {
-                                label: (ctx) => `${ctx.dataset.label}: $${Math.round(ctx.parsed.y).toLocaleString()}`
-                            }
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
-                        y: {
-                            grid: { color: '#eef1f5' },
-                            ticks: {
-                                color: '#9ca3af',
-                                font: { size: 10 },
-                                callback: (val) => '$' + (val / 1000) + 'k'
-                            }
-                        }
+                        x: { grid: { display: false } },
+                        y: { grid: { color: '#eef1f5' }, ticks: { callback: val => '$' + (val / 1000) + 'k' } }
                     }
                 }
             });
         }
 
-        function updateSandboxFlowChart(labels, revenueSeries, expenseSeries) {
-            if (!sandboxFlowChartInstance) return;
-            const sliceCount = 7;
-            sandboxFlowChartInstance.data.labels = (labels || []).slice(0, sliceCount);
-            sandboxFlowChartInstance.data.datasets[0].data = (revenueSeries || []).slice(0, sliceCount);
-            sandboxFlowChartInstance.data.datasets[1].data = (expenseSeries || []).slice(0, sliceCount);
+        function updateSandboxCharts(rev, exp, res, growth) {
+            if (!sandboxVitalityChartInstance || !sandboxFlowChartInstance) return;
+
+            // Generate 6-month projected series based on sandbox inputs
+            const months = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6'];
+            const revSeries = [];
+            const expSeries = [];
+            const vitSeries = [];
+
+            for (let i = 0; i < 6; i++) {
+                const currentRev = rev * Math.pow(growth, i * 0.15);
+                const currentExp = exp * Math.pow(1.02, i);
+                revSeries.push(Math.round(currentRev));
+                expSeries.push(Math.round(currentExp));
+
+                const score = Math.min(99, Math.max(10, ((currentRev - currentExp) / 1000) * 0.8 + 50));
+                vitSeries.push(Math.round(score));
+            }
+
+            sandboxVitalityChartInstance.data.datasets[0].data = vitSeries;
+            sandboxVitalityChartInstance.update();
+
+            sandboxFlowChartInstance.data.datasets[0].data = revSeries;
+            sandboxFlowChartInstance.data.datasets[1].data = expSeries;
             sandboxFlowChartInstance.update();
         }
 
+        /* --- APPLICATION INITIALIZATION --- */
         window.onload = function() {
-            recalculateProgressIndex();
-            renderVitalityChart();
-            renderCashFlowBarChart();
-            renderVitalityDonutChart();
-            renderSandboxVitalityChart();
-            renderSandboxFlowChart();
+            initMainCharts();
+            console.log("PulseCheck Neo Control Suite Initialized Successfully.");
         };
     </script>
 </body>
