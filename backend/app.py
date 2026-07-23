@@ -539,14 +539,14 @@ def setup_telemetry():
         session['username'] = username
         
         payload = {
-            'total_sales': 1200000,
-            'cogs': 250000,
-            'opex': 600000,
-            'fcf': 200000,
-            'cash_balance': 450000,
-            'prior_year_sales': 900000,
-            'ltv': 4500,
-            'cac': 1200,
+            'total_sales': request.form.get('total_sales', type=float) or 1200000,
+            'cogs': request.form.get('cogs', type=float) or 250000,
+            'opex': request.form.get('opex', type=float) or 600000,
+            'fcf': request.form.get('fcf', type=float) or 200000,
+            'cash_balance': request.form.get('cash_balance', type=float) or 450000,
+            'prior_year_sales': request.form.get('prior_year_sales', type=float) or 900000,
+            'ltv': request.form.get('ltv', type=float) or 4500,
+            'cac': request.form.get('cac', type=float) or 1200,
             'plan_type': 'daily',
             'material_price_hike': 0  # Initialize sandbox variables safely
         }
@@ -672,6 +672,24 @@ def node_settings():
                            matrix=matrix_data,
                            current_view='node_settings',
                            node_info=node_config)
+
+@app.route('/account', methods=['GET', 'POST'])
+def account_page():
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'profile':
+            new_name = request.form.get('display_name', '').strip()
+            if new_name:
+                session['username'] = new_name
+        # No credential store exists in this app (login is an unauthenticated stub),
+        # so a password change has nothing real to persist against — just acknowledge it.
+        return redirect(url_for('account_page', updated=action))
+
+    matrix_data = build_session_matrix()
+    if not matrix_data:
+        return redirect(url_for('setup_telemetry'))
+
+    return render_template('account.html', matrix=matrix_data, updated=request.args.get('updated'))
 
 @app.route('/api/v1/telemetry/recalculate', methods=['POST'])
 def recalculate_live():

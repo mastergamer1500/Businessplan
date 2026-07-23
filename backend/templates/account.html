@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings — PulseCheck Neo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-app: #f3f5f8;
+            --card-bg: #ffffff;
+            --card-border: #e5e9f0;
+            --ink: #1f2937;
+            --ink-soft: #374151;
+            --ink-muted: #6b7280;
+            --brand-color: #0891b2;
+            --brand-gradient: linear-gradient(135deg, #06b6d4 0%, #6366f1 100%);
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+            --success: #16a34a;
+            --success-light: #ecfdf3;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
+            --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.10);
+            --transition-fast: all 0.15s ease;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-app);
+            color: var(--ink);
+            min-height: 100vh;
+        }
+
+        .account-topbar {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--card-border);
+            padding: 18px 32px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--ink-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition-fast);
+        }
+
+        .back-link:hover { background: var(--bg-app); color: var(--ink); }
+
+        .account-topbar h1 {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .account-page-body {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 32px 24px 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .success-banner {
+            background: var(--success-light);
+            color: var(--success);
+            border: 1px solid rgba(22, 163, 74, 0.2);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .view-section-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .view-section-card h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .view-section-card h2 i { color: var(--brand-color); }
+
+        .view-section-card > p {
+            font-size: 12px;
+            color: var(--ink-muted);
+            margin-bottom: 22px;
+        }
+
+        .settings-profile-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .settings-avatar-lg {
+            width: 64px;
+            height: 64px;
+            min-width: 64px;
+            border-radius: 50%;
+            background: var(--brand-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: #ffffff;
+            box-shadow: var(--shadow-md);
+        }
+
+        .settings-profile-header h4 { font-size: 15px; font-weight: 700; color: var(--ink); }
+        .settings-profile-header p { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+
+        .settings-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-top: 4px;
+        }
+
+        .settings-form-grid label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--ink-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .settings-form-grid input,
+        .settings-form-grid select {
+            background: var(--bg-app);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-sm);
+            padding: 11px 12px;
+            color: var(--ink);
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition-fast);
+        }
+
+        .settings-form-grid input:focus,
+        .settings-form-grid select:focus {
+            border-color: var(--brand-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.12);
+        }
+
+        .settings-save-btn {
+            margin-top: 22px;
+            background: var(--ink);
+            border: none;
+            color: #ffffff;
+            padding: 12px 26px;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .settings-save-btn:hover { background: #374151; }
+
+        .pref-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .pref-toggle-row:last-child { border-bottom: none; }
+        .pref-toggle-row h6 { font-size: 13px; font-weight: 700; color: var(--ink); }
+        .pref-toggle-row p { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
+
+        .pref-switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+        .pref-switch input { opacity: 0; width: 0; height: 0; }
+
+        .pref-switch-track {
+            position: absolute;
+            inset: 0;
+            background: var(--card-border);
+            border-radius: 999px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .pref-switch-track::before {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            top: 3px;
+            background: #ffffff;
+            border-radius: 50%;
+            transition: var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pref-switch input:checked + .pref-switch-track { background: var(--brand-color); }
+        .pref-switch input:checked + .pref-switch-track::before { transform: translateX(18px); }
+
+        .danger-zone-card { border: 1px solid var(--danger-light); }
+        .danger-zone-card h2 i { color: var(--danger); }
+
+        .danger-action-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--card-border);
+            gap: 16px;
+        }
+
+        .danger-action-row:last-child { border-bottom: none; }
+        .danger-action-row h6 { font-size: 13px; font-weight: 700; color: var(--ink); }
+        .danger-action-row p { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
+
+        .btn-danger-outline {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 9px 16px;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition-fast);
+        }
+
+        .btn-danger-outline:hover { background: var(--danger); color: #ffffff; }
+    </style>
+</head>
+<body>
+
+    <div class="account-topbar">
+        <a href="/dashboard" class="back-link"><i class="ri-arrow-left-line"></i> Back to Dashboard</a>
+        <h1>Account Settings</h1>
+    </div>
+
+    <div class="account-page-body">
+
+        {% if updated == 'profile' %}
+        <div class="success-banner"><i class="ri-checkbox-circle-line"></i> Profile updated successfully!</div>
+        {% elif updated == 'password' %}
+        <div class="success-banner"><i class="ri-checkbox-circle-line"></i> Password updated successfully!</div>
+        {% endif %}
+
+        <div class="view-section-card">
+            <div class="settings-profile-header">
+                <div class="settings-avatar-lg">{{ matrix.username[0]|upper if matrix.username else 'F' }}</div>
+                <div>
+                    <h4>{{ matrix.username }}</h4>
+                    <p>PulseCheck Neo Operator</p>
+                </div>
+            </div>
+            <h2><i class="ri-user-settings-line"></i> Profile Details</h2>
+            <p>Update how your name appears across the dashboard.</p>
+
+            <form method="POST" action="/account">
+                <input type="hidden" name="action" value="profile">
+                <div class="settings-form-grid">
+                    <label>
+                        Display Name
+                        <input type="text" name="display_name" value="{{ matrix.username }}" maxlength="30" required>
+                    </label>
+                    <label>
+                        Email Address
+                        <input type="email" placeholder="you@company.com">
+                    </label>
+                    <label>
+                        Role
+                        <select>
+                            <option selected>Executive Operator</option>
+                            <option>Finance Lead</option>
+                            <option>Operations Manager</option>
+                            <option>Read-Only Analyst</option>
+                        </select>
+                    </label>
+                </div>
+                <button type="submit" class="settings-save-btn"><i class="ri-save-line"></i> Save Profile</button>
+            </form>
+        </div>
+
+        <div class="view-section-card">
+            <h2><i class="ri-lock-password-line"></i> Password &amp; Security</h2>
+            <p>Change your password. Use at least 8 characters, mixing letters and numbers.</p>
+
+            <form method="POST" action="/account" onsubmit="return validatePasswordForm(event);">
+                <input type="hidden" name="action" value="password">
+                <div class="settings-form-grid">
+                    <label>
+                        Current Password
+                        <input type="password" id="currentPassword" placeholder="••••••••" autocomplete="current-password">
+                    </label>
+                    <label>
+                        New Password
+                        <input type="password" id="newPassword" placeholder="••••••••" autocomplete="new-password">
+                    </label>
+                    <label>
+                        Confirm New Password
+                        <input type="password" id="confirmPassword" placeholder="••••••••" autocomplete="new-password">
+                    </label>
+                </div>
+                <button type="submit" class="settings-save-btn"><i class="ri-shield-check-line"></i> Update Password</button>
+            </form>
+        </div>
+
+        <div class="view-section-card">
+            <h2><i class="ri-sliders-line"></i> Preferences</h2>
+            <p>Personalize how PulseCheck Neo notifies you.</p>
+
+            <div class="pref-toggle-row">
+                <div>
+                    <h6>Email Notifications</h6>
+                    <p>Get weekly summaries and anomaly alerts by email.</p>
+                </div>
+                <label class="pref-switch">
+                    <input type="checkbox" checked>
+                    <span class="pref-switch-track"></span>
+                </label>
+            </div>
+            <div class="pref-toggle-row">
+                <div>
+                    <h6>Two-Factor Authentication</h6>
+                    <p>Require a one-time code from your authenticator app at login.</p>
+                </div>
+                <label class="pref-switch">
+                    <input type="checkbox">
+                    <span class="pref-switch-track"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="view-section-card danger-zone-card">
+            <h2><i class="ri-alert-line"></i> Danger Zone</h2>
+            <p>These actions are sensitive — read carefully before continuing.</p>
+
+            <div class="danger-action-row">
+                <div>
+                    <h6>Log Out of All Devices</h6>
+                    <p>Ends every active session, including this one.</p>
+                </div>
+                <button class="btn-danger-outline" onclick="if(confirm('End every active session, including this one?')) window.location.href='/login';">Log Out Everywhere</button>
+            </div>
+            <div class="danger-action-row">
+                <div>
+                    <h6>Deactivate Account</h6>
+                    <p>Disables dashboard access until reactivated by support.</p>
+                </div>
+                <button class="btn-danger-outline" onclick="alert('Account deactivation is not available in this preview build. Contact support to proceed.');">Deactivate Account</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function validatePasswordForm(event) {
+            const current = document.getElementById('currentPassword').value;
+            const next = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+
+            if (!current) {
+                alert('Enter your current password.');
+                event.preventDefault();
+                return false;
+            }
+            if (next.length < 8) {
+                alert('New password must be at least 8 characters.');
+                event.preventDefault();
+                return false;
+            }
+            if (next !== confirm) {
+                alert('New password and confirmation do not match.');
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

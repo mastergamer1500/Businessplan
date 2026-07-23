@@ -29,11 +29,44 @@
 
         /* Minimalist Claude-inspired Black Container Box Box */
         .workspace-card-envelope {
-            position: relative; z-index: 10; width: 460px; max-width: 90%;
+            position: relative; z-index: 10; width: 680px; max-width: 92%;
             background: linear-gradient(165deg, #050814 0%, #010206 100%);
             border: 1px solid var(--border-neon-dim); border-radius: 24px; padding: 48px 40px;
             box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9), 0 0 50px rgba(0, 67, 224, 0.12);
             backdrop-filter: blur(40px); text-align: center;
+            max-height: 92vh; overflow-y: auto;
+        }
+
+        .variable-grid-heading {
+            text-align: left; font-size: 11px; font-weight: 700; color: var(--ps5-blue-electric);
+            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px;
+        }
+
+        .variable-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+            margin-bottom: 32px; text-align: left;
+        }
+
+        .variable-grid label {
+            font-size: 11px; font-weight: 700; color: var(--text-muted-slate);
+            display: flex; flex-direction: column; gap: 8px;
+        }
+
+        .variable-input {
+            width: 100%; background: rgba(4, 7, 18, 0.9); border: 1px solid rgba(51, 65, 85, 0.7);
+            border-radius: 10px; padding: 12px 14px; color: var(--text-ultra-white); font-size: 14px;
+            font-family: inherit; outline: none; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .variable-input:focus {
+            border-color: var(--border-neon-bright);
+            box-shadow: 0 0 12px rgba(37, 117, 252, 0.25);
+            background: #060a18;
+        }
+
+        @media (max-width: 720px) {
+            .workspace-card-envelope { padding: 36px 24px; }
+            .variable-grid { grid-template-columns: 1fr; }
         }
 
         .claude-greeting-meta { font-size: 11px; color: var(--ps5-blue-electric); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
@@ -75,18 +108,54 @@
 <section class="workspace-card-envelope">
     <div class="claude-greeting-meta">Secure Channel Identity Initialization</div>
     <h1 class="workspace-title">Welcome to PulseCheck Matrix</h1>
-    <p class="workspace-desc">Before configuring your corporate telemetry vectors, please specify your name or operational moniker to calibrate the early-warning turnaround workspace.</p>
+    <p class="workspace-desc">Specify your name, then enter your business numbers below so your dashboard's score and health are calculated from real data from the start.</p>
 
     <form action="/setup" method="POST">
         <div class="input-floating-group">
-            <input type="text", 
-                   name="user_name" 
-                   id="user-name-field" 
-                   class="profile-name-input" 
-                   placeholder="Enter your name or callsign..." 
-                   required 
-                   autocomplete="off" 
+            <input type="text",
+                   name="user_name"
+                   id="user-name-field"
+                   class="profile-name-input"
+                   placeholder="Enter your name or callsign..."
+                   required
+                   autocomplete="off"
                    maxlength="30">
+        </div>
+
+        <div class="variable-grid-heading">Business Snapshot (Last 12 Months)</div>
+        <div class="variable-grid">
+            <label>
+                Total Money Earned Last 12 Months
+                <input type="number" name="total_sales" class="variable-input" value="1200000" min="0" step="1000">
+            </label>
+            <label>
+                Direct Costs to Make/Deliver Your Product
+                <input type="number" name="cogs" class="variable-input" value="250000" min="0" step="1000">
+            </label>
+            <label>
+                General Business Bills &amp; Overhead
+                <input type="number" name="opex" class="variable-input" value="600000" min="0" step="1000">
+            </label>
+            <label>
+                Actual Cash Kept at End of Year
+                <input type="number" name="fcf" class="variable-input" value="200000" step="1000">
+            </label>
+            <label>
+                Current Money in the Bank
+                <input type="number" name="cash_balance" class="variable-input" value="450000" min="0" step="1000">
+            </label>
+            <label>
+                Total Money Earned in Prior Year
+                <input type="number" name="prior_year_sales" class="variable-input" value="900000" min="0" step="1000">
+            </label>
+            <label>
+                Average Total Spent Per Customer
+                <input type="number" name="ltv" class="variable-input" value="4500" min="0" step="50">
+            </label>
+            <label>
+                Marketing Cost to Win One Customer
+                <input type="number" name="cac" class="variable-input" value="1200" min="0" step="50">
+            </label>
         </div>
 
         <button type="submit" class="btn-continue-workspace">
